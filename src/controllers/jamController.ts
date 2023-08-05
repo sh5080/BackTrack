@@ -12,6 +12,7 @@ function generateBackingTrack(
   bpm: number
 ): jam.Note[] {
   const keyToScale: Record<string, string[]> = {
+    Cb: ["Cb", "Db", "Eb", "Fb", "Gb", "Ab", "Bb"],
     C: ["C", "D", "E", "F", "G", "A", "B"],
     Db: ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"],
     D: ["D", "E", "F#", "G", "A", "B", "C#"],
