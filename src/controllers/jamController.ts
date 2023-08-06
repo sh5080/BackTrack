@@ -22,16 +22,15 @@ export const createChord = async (
 };
 
 // 백킹트랙 생성 함수
-function generateBackingTrack(key: string, bpm: number) {
-  const scale: string[] = [key];
-  console.log(scale);
-  // 박자당 시간 계산
-  const timePerBeat = 60 / bpm;
+function generateBackingTrack(key: string, measures: number): string[] {
+  const backingTrack: string[] = [];
+  const numChords = key.length;
 
-  // 백킹트랙 생성
-  const backingTrack = [];
-
-  backingTrack.push(key);
+  for (let i = 0; i < measures; i++) {
+    const chordIndex = i % numChords;
+    const chord = key[chordIndex];
+    backingTrack.push(chord);
+  }
 
   return backingTrack;
 }
@@ -43,11 +42,11 @@ export const createJamTrack = async (
   next: NextFunction
 ) => {
   try {
-    const { key, bpm } = req.body;
-    console.log(key);
+    const { key, measures } = req.body;
     // 백킹트랙 생성
-    const backingTrack = generateBackingTrack(key, bpm);
-    console.log(backingTrack);
+    const backingTrack = generateBackingTrack(key, measures);
+    console.log(key);
+    console.log(measures);
     return res.json({ backingTrack });
   } catch (error) {
     console.error(error);
