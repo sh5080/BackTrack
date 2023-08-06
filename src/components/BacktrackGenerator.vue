@@ -1,63 +1,139 @@
 <template>
   <div class="backtrack-generator">
     <form @submit.prevent>
-      <div class="key-selector">
-        <label class="key-label">KEY:</label>
-        <div class="key-grid">
-          <button
-            class="key-button"
-            v-for="key in keyOptions.slice(0, 3)"
-            :key="key"
-            @click="selectKey(key)"
-            :class="{ selected: selectedKey === key }"
-          >
-            {{ key }}
-          </button>
-          <button
-            class="key-button"
-            v-for="key in keyOptions.slice(3, 6)"
-            :key="key"
-            @click="selectKey(key)"
-            :class="{ selected: selectedKey === key }"
-          >
-            {{ key }}
-          </button>
-          <button
-            class="key-button"
-            v-for="key in keyOptions.slice(6)"
-            :key="key"
-            @click="selectKey(key)"
-            :class="{ selected: selectedKey === key }"
-          >
-            {{ key }}
-          </button>
-          <button
-            class="key-button"
-            v-for="modifier in ['b', '#']"
-            :key="modifier"
-            @click="appendModifier(modifier)"
-            :class="{ selected: selectedModifier === modifier }"
-          >
-            {{ modifier }}
-          </button>
+      <div class="input-group">
+        <div class="bpm-label-container">
+          <label class="bpm-label">BPM:</label>
+        </div>
+        <div class="bpm-input">
+          <input class="input-field" v-model.number="bpm" type="number" />
         </div>
       </div>
-      <!-- <label>
-        Beats Per Measure:
-        <input
-          class="input-field"
-          v-model.number="beatsPerMeasure"
-          type="number"
-        />
-      </label> -->
-      <!-- <label>
-        Style:
-        <input class="input-field" v-model="style" />
-      </label> -->
-      <label>
-        BPM:
-        <input class="input-field" v-model.number="bpm" type="number" />
-      </label>
+      <div class="input-group">
+        <div class="key-label-container">
+          <label class="key-label">KEY:</label>
+        </div>
+        <div class="key-selector">
+          <div class="key-grid">
+            <button
+              class="key-button"
+              v-for="key in keyOptions.slice(0, 3)"
+              :key="key"
+              @click="toggleButton('selectedKey', key)"
+              :class="{ selected: selectedKey === key }"
+            >
+              {{ key }}
+            </button>
+            <button
+              class="key-button"
+              v-for="key in keyOptions.slice(3, 6)"
+              :key="key"
+              @click="toggleButton('selectedKey', key)"
+              :class="{ selected: selectedKey === key }"
+            >
+              {{ key }}
+            </button>
+            <button
+              class="key-button"
+              v-for="key in keyOptions.slice(6)"
+              :key="key"
+              @click="toggleButton('selectedKey', key)"
+              :class="{ selected: selectedKey === key }"
+            >
+              {{ key }}
+            </button>
+            <button
+              class="key-button"
+              v-for="modifier_fs in ['b', '#']"
+              :key="modifier_fs"
+              @click="toggleButton('selectedModifier_fs', modifier_fs)"
+              :class="{ selected: selectedModifier_fs === modifier_fs }"
+            >
+              {{ modifier_fs }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="ext-label-container">
+          <label class="ext-label">Extends:</label>
+        </div>
+        <div class="ext-selector">
+          <div class="ext-grid">
+            <button
+              class="ext-button"
+              v-for="extend in extendOptions.slice(0, 3)"
+              :key="extend"
+              @click="toggleButton('selectedExtend', extend)"
+              :class="{ selected: selectedExtend === extend }"
+            >
+              {{ extend }}
+            </button>
+            <button
+              class="ext-button"
+              v-for="extend in extendOptions.slice(3, 6)"
+              :key="extend"
+              @click="toggleButton('selectedExtend', extend)"
+              :class="{ selected: selectedExtend === extend }"
+            >
+              {{ extend }}
+            </button>
+            <button
+              class="key-button"
+              v-for="modifier_67 in ['6', '7']"
+              :key="modifier_67"
+              @click="toggleButton('selectedModifier_67', modifier_67)"
+              :class="{ selected: selectedModifier_67 === modifier_67 }"
+            >
+              {{ modifier_67 }}
+            </button>
+            <button
+              class="key-button"
+              v-for="modifier_b5 in ['b5']"
+              :key="modifier_b5"
+              @click="toggleButton('selectedModifier_b5', modifier_b5)"
+              :class="{ selected: selectedModifier_b5 === modifier_b5 }"
+            >
+              {{ modifier_b5 }}
+            </button>
+            <button
+              class="key-button"
+              v-for="modifier_tension in [
+                'b9',
+                '9',
+                '#9',
+                '11',
+                '#11',
+                'b13',
+                '13',
+                '#13',
+              ]"
+              :key="modifier_tension"
+              @click="
+                toggleButton('selectedModifier_tension', modifier_tension)
+              "
+              :class="{
+                selected: selectedModifier_tension === modifier_tension,
+              }"
+            >
+              {{ modifier_tension }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <button class="register-button" @click="registerBacktrack">등록</button>
+        <button class="reset-button" @click="resetSelections">초기화</button>
+      </div>
+      <div class="result">
+        <label class="key-label">선택한 코드:</label>
+        <div class="code-list">
+          <span class="code" v-for="code in selectedCodes" :key="code">
+            {{ code }}
+          </span>
+        </div>
+      </div>
+
       <button class="generate-button" type="button" @click="generateBacktrack">
         Generate Backtrack
       </button>
@@ -87,8 +163,14 @@ export default {
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
+      extendOptions: ["min", "mM", "sus4", "dim", "hdim", "aug"],
+      selectedExtend: "",
       selectedKey: "",
-      selectedModifier: "",
+      selectedModifier_fs: "",
+      selectedModifier_67: "",
+      selectedModifier_b5: "",
+      selectedModifier_tension: "",
+      selectedCodes: [],
       // beatsPerMeasure: 4,
       // style: "pop",
       bpm: 120,
@@ -98,25 +180,67 @@ export default {
     };
   },
   methods: {
-    selectKey(key) {
-      if (this.selectedKey !== key) {
-        this.selectedKey = key;
-        this.selectedModifier = "";
+    toggleButton(prop, value) {
+      if (this[prop] === value) {
+        this[prop] = "";
+      } else {
+        this[prop] = value;
       }
     },
-    appendModifier(modifier) {
-      if (this.selectedKey) {
-        this.selectedModifier = modifier;
-      }
+
+    registerBacktrack() {
+      const code =
+        this.selectedKey +
+        this.selectedModifier_fs +
+        this.selectedExtend +
+        this.selectedModifier_67 +
+        this.selectedModifier_b5 +
+        this.selectedModifier_tension;
+      this.selectedCodes.push(code);
+      return code;
     },
+    resetSelections() {
+      this.selectedKey = "";
+      this.selectedExtend = "";
+      this.selectedCodes = [];
+    },
+    // selectKey(key) {
+    //   if (this.selectedKey !== key) {
+    //     this.selectedKey = key;
+    //     this.selectedModifier_fs = "";
+    //   }
+    // },
+    // selectExtend(extend) {
+    //   if (this.selectedExtend) {
+    //     this.selectedExtend = extend;
+    //   }
+    // },
+    // appendModifier_fs(modifier_fs) {
+    //   if (this.selectedKey) {
+    //     this.selectedModifier_fs = modifier_fs;
+    //   }
+    // },
+    // appendModifier_67(modifier_67) {
+    //   if (this.selectedKey) {
+    //     this.selectedModifier_67 = modifier_67;
+    //   }
+    // },
+    // appendModifier_b5(modifier_b5) {
+    //   if (this.selectedKey) {
+    //     this.selectedModifier_b5 = modifier_b5;
+    //   }
+    // },
     async generateBacktrack() {
       // e.preventDefault();
       try {
-        const keyWithModifier = this.selectedKey + this.selectedModifier;
+        // const chord =
+        //   this.selectedKey +
+        //   this.selectedModifier_fs +
+        //   this.selectedExtend +
+        //   this.selectedModifier_67;
+        const result = this.registerBacktrack();
         const response = await axios.post("http://localhost:4000/api/jam", {
-          key: keyWithModifier,
-          // beatsPerMeasure: this.beatsPerMeasure,
-          // style: this.style,
+          key: result,
           bpm: this.bpm,
         });
 
@@ -135,31 +259,42 @@ export default {
 </script>
 
 <style scoped>
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input-group-label {
+  display: flex;
+  /* flex-direction: column; */
+  /* margin-right: 20px; */
+}
+.ext-label-container,
+.key-label-container,
+.bpm-label-container {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+.ext-label,
+.key-label,
+.bpm-label {
+  margin-right: 5px;
+}
+
 .key-selector {
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* 왼쪽 정렬 */
 }
+.ext-grid,
 .key-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 10px;
 }
 
-.label-and-buttons {
-  display: flex;
-  align-items: center; /* 수직 정렬 */
-  margin-bottom: 10px;
-}
-
-.key-label {
-  margin-right: 10px;
-}
-
-.key-buttons,
-.modifier-buttons {
-  display: flex;
-}
+.ext-button,
 .key-button {
   background-color: #0c63e4;
   color: #fff;
@@ -169,13 +304,38 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
-
+.ext-button.selected,
 .key-button.selected {
   background-color: #084dbf;
 }
 
 .key-button:hover {
   background-color: #084dbf;
+}
+
+.register-button,
+.reset-button {
+  /* Add your button styles */
+  margin-right: 10px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+}
+.code-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.code {
+  /* Add your styling for code items */
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .backtrack-generator {
