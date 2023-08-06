@@ -122,14 +122,35 @@
         </div>
       </div>
       <div class="input-group">
-        <button class="register-button" @click="registerBacktrack">등록</button>
-        <button class="reset-button" @click="resetSelections">초기화</button>
+        <div class="button-group">
+          <button class="register-button" @click="registerBacktrack">
+            등록
+          </button>
+          <button class="reset-button" @click="resetSelections">초기화</button>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropdown-toggle" @click="toggleDropdown">
+            {{ selectedMeasure ? selectedMeasure + " 마디" : "마디 수 선택" }}
+            <i :class="['arrow-icon', { open: dropdownOpen }]"></i>
+          </button>
+          <ul v-if="dropdownOpen" class="dropdown-menu">
+            <li
+              v-for="measure in measureOptions"
+              :key="measure"
+              @click="selectMeasure(measure)"
+            >
+              {{ measure }} 마디
+            </li>
+          </ul>
+        </div>
       </div>
+      <!--  -->
       <div class="result">
         <label class="key-label">선택한 코드:</label>
-        <div class="code-list">
-          <span class="code" v-for="code in selectedCodes" :key="code">
-            {{ code }}
+        <div class="chord-list">
+          <span class="chord" v-for="chord in selectedChords" :key="chord">
+            {{ chord }}
           </span>
         </div>
       </div>
@@ -138,28 +159,14 @@
         Generate Backtrack
       </button>
     </form>
-
-    <div v-if="backtrack" class="generated-backtrack">
-      <h2>Generated Backtrack:</h2>
-      <ul>
-        <li v-for="note in backtrack" :key="note.pitch">
-          {{ note.pitch }} - {{ note.duration }}s
-        </li>
-      </ul>
-    </div>
-
-    <Toast :message="toastMessage" :color="toastColor" :timeout="3000" />
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import Toast from "./Toast.vue";
+// import Toast from "./Toast.vue";
 
 export default {
-  components: {
-    Toast,
-  },
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
@@ -170,16 +177,22 @@ export default {
       selectedModifier_67: "",
       selectedModifier_b5: "",
       selectedModifier_tension: "",
-      selectedCodes: [],
-      // beatsPerMeasure: 4,
-      // style: "pop",
+      selectedChords: [],
       bpm: 120,
+      dropdownOpen: false,
+      measureOptions: [4, 8, 16, 32],
+      selectedMeasure: null,
       backtrack: null,
-      toastMessage: "",
-      toastColor: "",
     };
   },
   methods: {
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+    selectMeasure(measure) {
+      this.selectedMeasure = measure;
+      this.dropdownOpen = false;
+    },
     toggleButton(prop, value) {
       if (this[prop] === value) {
         this[prop] = "";
@@ -189,70 +202,36 @@ export default {
     },
 
     registerBacktrack() {
-      const code =
+      const chord =
         this.selectedKey +
         this.selectedModifier_fs +
         this.selectedExtend +
         this.selectedModifier_67 +
         this.selectedModifier_b5 +
         this.selectedModifier_tension;
-      this.selectedCodes.push(code);
-      return code;
+      this.selectedChords.push(chord);
+      return this.selectedChords;
     },
     resetSelections() {
       this.selectedKey = "";
       this.selectedExtend = "";
-      this.selectedCodes = [];
+      this.selectedMeasure = "";
+      this.selectedChords = [];
     },
-    // selectKey(key) {
-    //   if (this.selectedKey !== key) {
-    //     this.selectedKey = key;
-    //     this.selectedModifier_fs = "";
-    //   }
-    // },
-    // selectExtend(extend) {
-    //   if (this.selectedExtend) {
-    //     this.selectedExtend = extend;
-    //   }
-    // },
-    // appendModifier_fs(modifier_fs) {
-    //   if (this.selectedKey) {
-    //     this.selectedModifier_fs = modifier_fs;
-    //   }
-    // },
-    // appendModifier_67(modifier_67) {
-    //   if (this.selectedKey) {
-    //     this.selectedModifier_67 = modifier_67;
-    //   }
-    // },
-    // appendModifier_b5(modifier_b5) {
-    //   if (this.selectedKey) {
-    //     this.selectedModifier_b5 = modifier_b5;
-    //   }
-    // },
+
     async generateBacktrack() {
       // e.preventDefault();
       try {
-        // const chord =
-        //   this.selectedKey +
-        //   this.selectedModifier_fs +
-        //   this.selectedExtend +
-        //   this.selectedModifier_67;
-        const result = this.registerBacktrack();
         const response = await axios.post("http://localhost:4000/api/jam", {
-          key: result,
+          key: this.selectedChords,
           bpm: this.bpm,
+          measure: this.selectedMeasure,
         });
-
+        console.log("res: ", this.selectedMeasure);
         this.backtrack = response.data.backtrack;
       } catch (error) {
         console.error("Error generating backtrack:", error);
-        this.showToast("Error generating back", "error");
       }
-    },
-    showToast(message, color) {
-      this.toastMessage = message;
-      this.toastColor = color;
     },
   },
 };
@@ -261,7 +240,16 @@ export default {
 <style scoped>
 .input-group {
   display: flex;
+  justify-content: center;
   align-items: center;
+  margin-top: 20px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
 }
 
 .input-group-label {
@@ -281,7 +269,7 @@ export default {
 .bpm-label {
   margin-right: 5px;
 }
-
+.ext-selector,
 .key-selector {
   display: flex;
   flex-direction: column;
@@ -315,10 +303,43 @@ export default {
 
 .register-button,
 .reset-button {
-  /* Add your button styles */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-right: 10px;
 }
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
 
+.dropdown-toggle {
+  /* 드롭다운 토글 버튼 스타일링 */
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.dropdown-menu {
+  /* 드롭다운 메뉴 스타일링 */
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f2f2f2;
+}
 .result {
   display: flex;
   align-items: center;
@@ -327,13 +348,13 @@ export default {
   border: 1px solid #ccc;
   background-color: #f8f8f8;
 }
-.code-list {
+.chord-list {
   display: flex;
   flex-wrap: wrap;
 }
 
-.code {
-  /* Add your styling for code items */
+.chord {
+  /* Add your styling for chord items */
   margin-right: 10px;
   margin-bottom: 10px;
 }
