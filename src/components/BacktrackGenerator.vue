@@ -164,8 +164,7 @@
 
 <script>
 import axios from "axios";
-// import Toast from "./Toast.vue";
-
+import * as Toast from "../plugins/toast";
 export default {
   data() {
     return {
@@ -186,6 +185,9 @@ export default {
     };
   },
   methods: {
+    errorMessage() {
+      this.t;
+    },
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
     },
@@ -222,15 +224,28 @@ export default {
     async generateBacktrack() {
       // e.preventDefault();
       try {
-        const response = await axios.post("http://localhost:4000/api/jam", {
-          key: this.selectedChords,
-          bpm: this.bpm,
-          measure: this.selectedMeasure,
-        });
-        console.log("res: ", this.selectedMeasure);
+        const response = await axios.post(
+          "http://localhost:4000/api/jam",
+          {
+            key: this.selectedChords,
+            measures: this.selectedMeasure,
+          },
+          { withCredential: true }
+        );
+        console.log(response);
+        Toast.alertMessage(
+          "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
+        );
         this.backtrack = response.data.backtrack;
       } catch (error) {
         console.error("Error generating backtrack:", error);
+
+        if (
+          error.response.data.message ===
+          "필수 입력값이 누락되었습니다: measures"
+        ) {
+          Toast.customError("마디수를 선택해 주세요.");
+        } else Toast.errorMessage(error);
       }
     },
   },
