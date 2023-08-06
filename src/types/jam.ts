@@ -1,4 +1,4 @@
 export interface Note {
-  pitch: string;
+  key: string;
   // duration: number;
 }
