@@ -211,22 +211,46 @@
             "
           >
             <v-col cols="1">
+              <label class="key-label">프리뷰 코드:</label>
+              <div class="chord-list">
+                <span class="chord" v-for="chord in previewChords" :key="chord">
+                  {{ chord }}
+                </span>
+              </div>
+            </v-col>
+            <v-col cols="1">
               <button class="register-button" @click="registerBacktrack">
                 등록
               </button>
             </v-col>
-            <v-col cols="1">
-              <button class="reset-button" @click="resetSelections">
-                초기화
-              </button>
-            </v-col>
 
+            <!-- dd -->
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
+              background-color: #f0f0f0;
+              padding: 10px;
+              border: 1px solid #ccc;
+              font-size: 500%;
+            "
+          >
             <label class="key-label">선택한 코드:</label>
             <div class="chord-list">
               <span class="chord" v-for="chord in selectedChords" :key="chord">
                 {{ chord }}
               </span>
             </div>
+            <v-col cols="1">
+              <button class="reset-button" @click="resetSelections">
+                초기화
+              </button>
+            </v-col>
           </div>
         </v-col>
       </v-row>
@@ -270,6 +294,7 @@ export default {
       selectedModifier_67: "",
       selectedModifier_b5: "",
       selectedModifier_tension: "",
+      previewChords: [],
       selectedChords: [],
       bpm: 60,
       measure: 4,
@@ -350,9 +375,51 @@ export default {
     toggleButton(prop, value) {
       if (this[prop] === value) {
         this[prop] = "";
+        this.previewChords = [];
       } else {
         this[prop] = value;
+        this.registerChord();
       }
+    },
+    // registerChord() {
+    //   const chord =
+    //     this.selectedKey +
+    //     this.selectedModifier_fs +
+    //     this.selectedExtend +
+    //     this.selectedModifier_67 +
+    //     this.selectedModifier_b5 +
+    //     this.selectedModifier_tension;
+    //   this.previewChords.push(chord);
+    //   return this.previewChords;
+    // },
+    registerChord() {
+      // 선택한 key 값
+      const key = this.selectedKey + this.selectedModifier_fs;
+
+      // 선택한 extends와 tensions 값
+      const extendsValue = this.selectedExtend || "";
+      const tensionsValue =
+        this.selectedModifier_67 +
+          this.selectedModifier_b5 +
+          this.selectedModifier_tension || "";
+
+      // 프리뷰 코드 생성
+      const chord = key + extendsValue + tensionsValue;
+
+      // 이미 해당 코드가 프리뷰 코드 배열에 있는지 확인
+      const index = this.previewChords.findIndex((existingChord) =>
+        existingChord.includes(key)
+      );
+
+      // 이미 해당 코드가 있는 경우 업데이트
+      if (index > -1) {
+        this.previewChords[index] = chord;
+      } else {
+        // 없는 경우 새로 추가
+        this.previewChords.push(chord);
+      }
+
+      return this.previewChords;
     },
 
     registerBacktrack() {
@@ -367,10 +434,6 @@ export default {
       return this.selectedChords;
     },
     resetSelections() {
-      this.selectedKey = "";
-      this.selectedExtend = "";
-      this.selectedBpm = "";
-      this.selectedMeasure = "";
       this.selectedChords = [];
     },
 
