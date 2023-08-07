@@ -1,163 +1,247 @@
 <template>
   <div class="backtrack-generator">
     <form @submit.prevent>
-      <div class="input-group">
-        <div class="bpm-label-container">
-          <label class="bpm-label">BPM:</label>
-        </div>
-        <div class="bpm-input">
-          <input class="input-field" v-model.number="bpm" type="number" />
-        </div>
-      </div>
-      <div class="input-group">
-        <div class="key-label-container">
-          <label class="key-label">KEY:</label>
-        </div>
-        <div class="key-selector">
-          <div class="key-grid">
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
+              background-color: #f0f0f0;
+              border: 1px solid #ccc;
+              font-size: 400%;
+            "
+          >
+            <div class="bpm-container">
+              <div class="bpm-input-container">
+                <div class="bpm-label-container">
+                  <label class="bpm-label">BPM:</label>
+                </div>
+                <div class="bpm-input">
+                  <input
+                    class="input-field"
+                    v-model.number="bpm"
+                    type="number"
+                  />
+                </div>
+              </div>
+
+              <div class="toggle-container">
+                <button class="dropdown-toggle" @click="toggleBpmDropdown">
+                  BPM 선택
+                  <i :class="['arrow-icon', { open: bpmDropdownOpen }]"></i>
+                </button>
+                <ul
+                  v-if="bpmDropdownOpen"
+                  class="dropdown-menu"
+                  :style="bpmDropdownStyle"
+                >
+                  <li
+                    v-for="bpm in bpmOptions"
+                    :key="bpm"
+                    @click="selectBpm(bpm)"
+                  >
+                    {{ bpm }}
+                  </li>
+                  <li @click="selectMeasureDirectInput">직접입력</li>
+                </ul>
+              </div>
+            </div>
+            <div class="measure-container">
+              <div class="measure-input-container">
+                <div class="measure-label-container">
+                  <label class="measure-label">마디수:</label>
+                </div>
+                <div class="measure-input">
+                  <input
+                    class="input-field"
+                    v-model.number="measure"
+                    type="number"
+                  />
+                </div>
+              </div>
+              <div class="toggle-container">
+                <button class="dropdown-toggle" @click="toggleMeasureDropdown">
+                  마디 수 선택
+
+                  <i :class="['arrow-icon', { open: measureDropdownOpen }]"></i>
+                </button>
+                <ul
+                  v-if="measureDropdownOpen"
+                  class="dropdown-menu"
+                  :style="measureDropdownStyle"
+                >
+                  <li
+                    v-for="measure in measureOptions"
+                    :key="measure"
+                    @click="selectMeasure(measure)"
+                  >
+                    {{ measure }} 마디
+                  </li>
+                  <li @click="selectMeasureDirectInput">직접입력</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
+              background-color: #f0f0f0;
+              padding: 10px;
+              border: 1px solid #ccc;
+              font-size: 400%;
+            "
+          >
+            <div class="key-label-container">
+              <label class="key-label">Key:</label>
+            </div>
+            <div class="key-selector">
+              <div class="key-grid">
+                <button
+                  class="key-button"
+                  v-for="key in keyOptions"
+                  :key="key"
+                  @click="toggleButton('selectedKey', key)"
+                  :class="{ selected: selectedKey === key }"
+                >
+                  {{ key }}
+                </button>
+                <button
+                  class="key-button"
+                  v-for="modifier_fs in ['b', '#']"
+                  :key="modifier_fs"
+                  @click="toggleButton('selectedModifier_fs', modifier_fs)"
+                  :class="{ selected: selectedModifier_fs === modifier_fs }"
+                >
+                  {{ modifier_fs }}
+                </button>
+              </div>
+            </div>
+            <div class="ext-label-container">
+              <label class="ext-label">Extends:</label>
+            </div>
+            <div class="ext-selector">
+              <div class="ext-grid">
+                <button
+                  class="ext-button"
+                  v-for="extend in extendOptions"
+                  :key="extend"
+                  @click="toggleButton('selectedExtend', extend)"
+                  :class="{ selected: selectedExtend === extend }"
+                >
+                  {{ extend }}
+                </button>
+                <button
+                  class="key-button"
+                  v-for="modifier_67 in ['6', '7']"
+                  :key="modifier_67"
+                  @click="toggleButton('selectedModifier_67', modifier_67)"
+                  :class="{ selected: selectedModifier_67 === modifier_67 }"
+                >
+                  {{ modifier_67 }}
+                </button>
+                <button
+                  class="key-button"
+                  v-for="modifier_b5 in ['b5']"
+                  :key="modifier_b5"
+                  @click="toggleButton('selectedModifier_b5', modifier_b5)"
+                  :class="{ selected: selectedModifier_b5 === modifier_b5 }"
+                >
+                  {{ modifier_b5 }}
+                </button>
+              </div>
+            </div>
+
+            <div class="ext-label-container">
+              <label class="ext-label">Tensions:</label>
+            </div>
+            <div class="ext-selector">
+              <div class="ext-grid">
+                <button
+                  class="key-button"
+                  v-for="modifier_tension in [
+                    'b9',
+                    '9',
+                    '#9',
+                    '11',
+                    '#11',
+                    'b13',
+                    '13',
+                    '#13',
+                  ]"
+                  :key="modifier_tension"
+                  @click="
+                    toggleButton('selectedModifier_tension', modifier_tension)
+                  "
+                  :class="{
+                    selected: selectedModifier_tension === modifier_tension,
+                  }"
+                >
+                  {{ modifier_tension }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
+              background-color: #f0f0f0;
+              padding: 10px;
+              border: 1px solid #ccc;
+              font-size: 400%;
+            "
+          >
+            <v-col cols="1">
+              <button class="register-button" @click="registerBacktrack">
+                등록
+              </button>
+            </v-col>
+            <v-col cols="1">
+              <button class="reset-button" @click="resetSelections">
+                초기화
+              </button>
+            </v-col>
+
+            <label class="key-label">선택한 코드:</label>
+            <div class="chord-list">
+              <span class="chord" v-for="chord in selectedChords" :key="chord">
+                {{ chord }}
+              </span>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
+              background-color: #f0f0f0;
+              padding: 10px;
+              border: 1px solid #ccc;
+              font-size: 500%;
+            "
+          >
             <button
-              class="key-button"
-              v-for="key in keyOptions.slice(0, 3)"
-              :key="key"
-              @click="toggleButton('selectedKey', key)"
-              :class="{ selected: selectedKey === key }"
+              class="generate-button"
+              type="button"
+              @click="generateBacktrack"
             >
-              {{ key }}
-            </button>
-            <button
-              class="key-button"
-              v-for="key in keyOptions.slice(3, 6)"
-              :key="key"
-              @click="toggleButton('selectedKey', key)"
-              :class="{ selected: selectedKey === key }"
-            >
-              {{ key }}
-            </button>
-            <button
-              class="key-button"
-              v-for="key in keyOptions.slice(6)"
-              :key="key"
-              @click="toggleButton('selectedKey', key)"
-              :class="{ selected: selectedKey === key }"
-            >
-              {{ key }}
-            </button>
-            <button
-              class="key-button"
-              v-for="modifier_fs in ['b', '#']"
-              :key="modifier_fs"
-              @click="toggleButton('selectedModifier_fs', modifier_fs)"
-              :class="{ selected: selectedModifier_fs === modifier_fs }"
-            >
-              {{ modifier_fs }}
+              Generate Backtrack
             </button>
           </div>
-        </div>
-      </div>
-      <div class="input-group">
-        <div class="ext-label-container">
-          <label class="ext-label">Extends:</label>
-        </div>
-        <div class="ext-selector">
-          <div class="ext-grid">
-            <button
-              class="ext-button"
-              v-for="extend in extendOptions.slice(0, 3)"
-              :key="extend"
-              @click="toggleButton('selectedExtend', extend)"
-              :class="{ selected: selectedExtend === extend }"
-            >
-              {{ extend }}
-            </button>
-            <button
-              class="ext-button"
-              v-for="extend in extendOptions.slice(3, 6)"
-              :key="extend"
-              @click="toggleButton('selectedExtend', extend)"
-              :class="{ selected: selectedExtend === extend }"
-            >
-              {{ extend }}
-            </button>
-            <button
-              class="key-button"
-              v-for="modifier_67 in ['6', '7']"
-              :key="modifier_67"
-              @click="toggleButton('selectedModifier_67', modifier_67)"
-              :class="{ selected: selectedModifier_67 === modifier_67 }"
-            >
-              {{ modifier_67 }}
-            </button>
-            <button
-              class="key-button"
-              v-for="modifier_b5 in ['b5']"
-              :key="modifier_b5"
-              @click="toggleButton('selectedModifier_b5', modifier_b5)"
-              :class="{ selected: selectedModifier_b5 === modifier_b5 }"
-            >
-              {{ modifier_b5 }}
-            </button>
-            <button
-              class="key-button"
-              v-for="modifier_tension in [
-                'b9',
-                '9',
-                '#9',
-                '11',
-                '#11',
-                'b13',
-                '13',
-                '#13',
-              ]"
-              :key="modifier_tension"
-              @click="
-                toggleButton('selectedModifier_tension', modifier_tension)
-              "
-              :class="{
-                selected: selectedModifier_tension === modifier_tension,
-              }"
-            >
-              {{ modifier_tension }}
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="input-group">
-        <div class="button-group">
-          <button class="register-button" @click="registerBacktrack">
-            등록
-          </button>
-          <button class="reset-button" @click="resetSelections">초기화</button>
-        </div>
-
-        <div class="dropdown">
-          <button class="dropdown-toggle" @click="toggleDropdown">
-            {{ selectedMeasure ? selectedMeasure + " 마디" : "마디 수 선택" }}
-            <i :class="['arrow-icon', { open: dropdownOpen }]"></i>
-          </button>
-          <ul v-if="dropdownOpen" class="dropdown-menu">
-            <li
-              v-for="measure in measureOptions"
-              :key="measure"
-              @click="selectMeasure(measure)"
-            >
-              {{ measure }} 마디
-            </li>
-          </ul>
-        </div>
-      </div>
-      <!--  -->
-      <div class="result">
-        <label class="key-label">선택한 코드:</label>
-        <div class="chord-list">
-          <span class="chord" v-for="chord in selectedChords" :key="chord">
-            {{ chord }}
-          </span>
-        </div>
-      </div>
-
-      <button class="generate-button" type="button" @click="generateBacktrack">
-        Generate Backtrack
-      </button>
+        </v-col>
+      </v-row>
     </form>
   </div>
 </template>
@@ -177,23 +261,81 @@ export default {
       selectedModifier_b5: "",
       selectedModifier_tension: "",
       selectedChords: [],
-      bpm: 120,
-      dropdownOpen: false,
+      bpm: 60,
+      measure: 4,
+      bpmDropdownOpen: false,
+      measureDropdownOpen: false,
+      bpmDirectInput: false,
+      measureDirectInput: false,
       measureOptions: [4, 8, 16, 32],
+      bpmOptions: [60, 90, 120, 180],
       selectedMeasure: null,
+      selectedBpm: null,
       backtrack: null,
+      bpmDropdownStyle: {},
+      measureDropdownStyle: {},
     };
   },
   methods: {
-    errorMessage() {
-      this.t;
+    errorMessage() {},
+    toggleBpmDropdown(event) {
+      this.bpmDropdownOpen = !this.bpmDropdownOpen;
+      if (this.bpmDropdownOpen) {
+        const buttonRect = event.target.getBoundingClientRect();
+        this.bpmDropdownStyle = {
+          top: `${buttonRect.bottom}px`,
+          left: `${buttonRect.left}px`,
+        };
+      } else {
+        this.bpmDropdownStyle = {};
+      }
     },
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
+
+    toggleMeasureDropdown(event) {
+      this.measureDropdownOpen = !this.measureDropdownOpen;
+      if (this.measureDropdownOpen) {
+        const buttonRect = event.target.getBoundingClientRect();
+        this.measureDropdownStyle = {
+          top: `${buttonRect.bottom}px`,
+          left: `${buttonRect.left}px`,
+        };
+      } else {
+        this.measureDropdownStyle = {};
+      }
+    },
+    selectMeasureDirectInput() {
+      this.measureDirectInput = true;
+      this.selectedMeasure = "";
+      this.measureDropdownOpen = false;
+      this.measureDirectInput = false;
+    },
+    selectBpmDirectInput() {
+      this.bpmDirectInput = true;
+      this.selectedBpm = "";
+      this.BpmDropdownOpen = false;
+      this.bpmDirectInput = false;
     },
     selectMeasure(measure) {
-      this.selectedMeasure = measure;
-      this.dropdownOpen = false;
+      if (this.measureDirectInput) {
+        this.selectedMeasure = measure;
+        this.measureDropdownOpen = false;
+        this.measureDirectInput = false;
+      } else {
+        this.measure = measure;
+        this.selectedMeasure = measure;
+        this.measureDropdownOpen = false;
+      }
+    },
+    selectBpm(bpm) {
+      if (this.bpmDirectInput) {
+        this.selectedBpm = bpm;
+        this.bpmDropdownOpen = false;
+        this.bpmDirectInput = false;
+      } else {
+        this.bpm = bpm;
+        this.selectedbpm = bpm;
+        this.bpmDropdownOpen = false;
+      }
     },
     toggleButton(prop, value) {
       if (this[prop] === value) {
@@ -257,14 +399,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 10px;
+  margin-top: 100px;
+  /* padding: 20px; */
+  /* font-size: 100px; */
+  /* font-family: Pretendard, system-ui, Avenir, Helvetica, Arial, sans-serif; */
 }
 
 .input-group-label {
@@ -272,12 +410,22 @@ export default {
   /* flex-direction: column; */
   /* margin-right: 20px; */
 }
+.measure-label-container,
 .ext-label-container,
 .key-label-container,
 .bpm-label-container {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 40px;
+  padding: 80px;
+}
+.toggle-container,
+.bpm-container,
+.measure-container,
+.measure-input-container,
+.bpm-input-container {
+  display: flex;
+  align-items: center;
 }
 .ext-label,
 .key-label,
@@ -301,9 +449,9 @@ export default {
 .key-button {
   background-color: #0c63e4;
   color: #fff;
-  border: none;
+  /* border: 1px solid #ccc; border 값 추가 */
   padding: 5px 10px;
-  margin-right: 5px;
+  margin-right: 20px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -321,7 +469,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px;
+  /* margin-right: 10px; */
+  margin: 0 5px;
 }
 .dropdown {
   position: relative;
@@ -375,7 +524,9 @@ export default {
 }
 
 .backtrack-generator {
-  max-width: 400px;
+  /* max-width: 3000px; */
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -423,17 +574,5 @@ export default {
 
 .backtrack-generator li {
   margin-bottom: 6px;
-}
-
-/* Toast 컴포넌트 스타일 추가 */
-.toast-message {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 </style>
