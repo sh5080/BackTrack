@@ -6,7 +6,7 @@
           <div
             class="input-group"
             style="
-              background-color: #f0f0f0;
+              background-color: #302d2d;
               border: 1px solid #ccc;
               font-size: 400%;
             "
@@ -21,6 +21,10 @@
                     class="input-field"
                     v-model.number="bpm"
                     type="number"
+                    :disabled="!bpmDirectInput"
+                    :style="{
+                      backgroundColor: bpmDirectInput ? 'white' : 'lightgray',
+                    }"
                   />
                 </div>
               </div>
@@ -42,7 +46,7 @@
                   >
                     {{ bpm }}
                   </li>
-                  <li @click="selectMeasureDirectInput">직접입력</li>
+                  <li @click="selectBpmDirectInput">직접입력</li>
                 </ul>
               </div>
             </div>
@@ -56,6 +60,12 @@
                     class="input-field"
                     v-model.number="measure"
                     type="number"
+                    :disabled="!measureDirectInput"
+                    :style="{
+                      backgroundColor: measureDirectInput
+                        ? 'white'
+                        : 'lightgray',
+                    }"
                   />
                 </div>
               </div>
@@ -307,13 +317,13 @@ export default {
       this.measureDirectInput = true;
       this.selectedMeasure = "";
       this.measureDropdownOpen = false;
-      this.measureDirectInput = false;
+      // this.measureDirectInput = false;
     },
     selectBpmDirectInput() {
       this.bpmDirectInput = true;
       this.selectedBpm = "";
-      this.BpmDropdownOpen = false;
-      this.bpmDirectInput = false;
+      this.bpmDropdownOpen = false;
+      // this.bpmDirectInput = false;
     },
     selectMeasure(measure) {
       if (this.measureDirectInput) {
@@ -359,6 +369,7 @@ export default {
     resetSelections() {
       this.selectedKey = "";
       this.selectedExtend = "";
+      this.selectedBpm = "";
       this.selectedMeasure = "";
       this.selectedChords = [];
     },
