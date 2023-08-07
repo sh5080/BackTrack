@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 // import * as jamService from "../services/jamService";
-// import { AppError, CommonError } from "../types/AppError";
+import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import * as jam from "../types/jam";
-import { CommonError } from "../types/AppError";
 
 /** jamTrack 생성 */
 export const createChord = async (
@@ -25,13 +24,22 @@ export const createChord = async (
 function generateBackingTrack(key: string, measures: number): string[] {
   const backingTrack: string[] = [];
   const numChords = key.length;
+  console.log(numChords);
+  console.log(measures);
+  if (numChords > measures) {
+    throw new AppError(
+      CommonError.INVALID_INPUT,
+      "등록한 코드가 마디수보다 많습니다. 마디수를 늘려주세요.",
+      400
+    );
+  }
 
   for (let i = 0; i < measures; i++) {
     const chordIndex = i % numChords;
     const chord = key[chordIndex];
     backingTrack.push(chord);
   }
-
+  console.log(backingTrack);
   return backingTrack;
 }
 
@@ -42,11 +50,10 @@ export const createJamTrack = async (
   next: NextFunction
 ) => {
   try {
-    const { key, measures } = req.body;
+    const { key, bpm, measures } = req.body;
     // 백킹트랙 생성
     const backingTrack = generateBackingTrack(key, measures);
-    console.log(key);
-    console.log(measures);
+
     return res.json({ backingTrack });
   } catch (error) {
     console.error(error);
