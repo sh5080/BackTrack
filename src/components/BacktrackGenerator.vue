@@ -205,26 +205,29 @@
             class="input-group"
             style="
               background-color: #f0f0f0;
-              padding: 10px;
+              padding: 100px;
               border: 1px solid #ccc;
               font-size: 400%;
             "
           >
-            <v-col cols="1">
-              <label class="key-label">프리뷰 코드:</label>
-              <div class="chord-list">
-                <!-- <span class="chord" v-for="chord in previewChords" :key="chord"> -->
-                <span class="chord" v-for="chord in testArr" :key="chord">
-                  {{ chord }}
-                </span>
-              </div>
-            </v-col>
-            <v-col cols="1">
-              <button class="register-button" @click="registerBacktrack">
-                등록
-              </button>
-            </v-col>
+            <v-row class="align-center">
+              <v-col cols="4" style="text-align: right">
+                <label class="key-label">Chord:</label>
+              </v-col>
+              <v-col cols="3">
+                <div class="chord-list">
+                  <span class="chord" v-for="chord in testArr" :key="chord">
+                    {{ chord }}
+                  </span>
+                </div>
+              </v-col>
 
+              <v-col cols="2" style="text-align: left">
+                <button class="register-button" @click="registerBacktrack">
+                  등록
+                </button>
+              </v-col>
+            </v-row>
             <!-- dd -->
           </div>
         </v-col>
@@ -241,17 +244,36 @@
               font-size: 500%;
             "
           >
-            <label class="key-label">선택한 코드:</label>
-            <div class="chord-list">
-              <span class="chord" v-for="chord in selectedChords" :key="chord">
-                {{ chord }}
-              </span>
-            </div>
-            <v-col cols="1">
+            <v-col cols="0" style="display: flex max-width: 200%;">
+              <label class="key-label">Preview:</label>
+              <div class="chord-list" style="/* max-width: 50% */">
+                <span
+                  class="chord"
+                  v-for="chord in selectedChords"
+                  :key="chord"
+                >
+                  {{ chord }}
+                </span>
+              </div>
+            </v-col>
+            <!-- <v-row class="button-container"> -->
+            <v-col
+              cols="2"
+              style="
+                /* position: fixed; */
+                display: flex;
+                max-width: 90%;
+                justify-content: flex-end;
+              "
+            >
+              <button class="reset-button" @click="removeSelections">
+                지우기
+              </button>
               <button class="reset-button" @click="resetSelections">
                 초기화
               </button>
             </v-col>
+            <!-- </v-row> -->
           </div>
         </v-col>
       </v-row>
@@ -306,13 +328,21 @@ export default {
       measureOptions: [4, 8, 16, 32],
       bpmOptions: [60, 90, 120, 180],
       selectedMeasure: null,
+      measure: "",
       selectedBpm: null,
       backtrack: null,
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
       testArr: [],
+      testArr2: [],
+      resultArr: [],
       teststr: "",
     };
+  },
+  watch: {
+    measure(newValue) {
+      this.selectedMeasure = newValue;
+    },
   },
   methods: {
     errorMessage() {},
@@ -343,15 +373,14 @@ export default {
     },
     selectMeasureDirectInput() {
       this.measureDirectInput = true;
+
       this.selectedMeasure = "";
       this.measureDropdownOpen = false;
-      // this.measureDirectInput = false;
     },
     selectBpmDirectInput() {
       this.bpmDirectInput = true;
       this.selectedBpm = "";
       this.bpmDropdownOpen = false;
-      // this.bpmDirectInput = false;
     },
     selectMeasure(measure) {
       if (this.measureDirectInput) {
@@ -378,48 +407,158 @@ export default {
 
     toggleButton(prop, value) {
       console.log("value: ", value);
-      console.log("teststr: ", this.testArr);
-      console.log("length: ", this.testArr.length);
+      console.log("여기1: ", this.testArr[1]);
+      console.log("test: ", this.testArr);
       if (this[prop] === value) {
         //지울 때
         this[prop] = "";
         console.log("if");
 
         this.testRemoveArr(prop, value);
+        this.testArr = this.testArr.filter((chord) => chord !== "");
       } else {
         //만들 때
         console.log("else", value);
         this[prop] = value;
-        if (
-          (prop === "selectedKey" && this.testArr[0] === undefined) ||
-          this.testArr[0] === ""
-        ) {
+        if (prop === "selectedKey" && this.testArr[0] === undefined) {
           this.testAddArr(value);
         }
         if (prop === "selectedKey" && this.testArr.length > 0) {
           this.testArr = [];
           this.testAddArr(value);
         }
-        if (prop === "selectedModifier_fs" && this.testArr[0] === undefined) {
+        if (
+          (prop === "selectedModifier_fs" && this.testArr[0] === undefined) ||
+          (prop === "selectedExtend" && this.testArr[0] === undefined) ||
+          (prop === "selectedModifier_67" && this.testArr[0] === undefined) ||
+          (prop === "selectedModifier_b5" && this.testArr[0] === undefined) ||
+          (prop === "selectedModifier_tension" && this.testArr[0] === undefined)
+        ) {
           Toast.customError("Key를 먼저 선택해주세요.");
         }
-        if (prop === "selectedModifier_fs" && this.testArr[0]) {
-          this.testAddArr(this.testArr.splice(0, 1, this.testArr[0] + value));
-          this.testArr.pop();
+
+        if (prop === "selectedModifier_fs" && this.testArr[0] !== undefined) {
+          // selectedModifier_fs의 value(b 또는 #)를 추가하거나 교체
+          const currentValue = this.testArr[0];
+          const newValue = currentValue.replace(/[#b]/g, "") + value;
+          this.testArr.splice(0, 1, newValue); // 요소를 newValue로 교체
         }
-        // this.testAddArr(this.teststr);
-        // this.registerChord();
+        if (
+          prop === "selectedExtend" &&
+          this.testArr[0] &&
+          this.testArr[1] === undefined
+        ) {
+          this.testAddArr(value);
+        }
+        if (
+          prop === "selectedExtend" &&
+          this.testArr[1] !== undefined &&
+          this.testArr[0]
+        ) {
+          this.testArr.splice(1, 1, value);
+        }
+
+        if (
+          (value === "6" && this.testArr[0] !== undefined) ||
+          (value === "7" && this.testArr[0] !== undefined)
+        ) {
+          // 6 또는 7 버튼일 경우
+          if (this.testArr.includes("6") || this.testArr.includes("7")) {
+            // 이미 6 또는 7 버튼이 있는 경우 교체
+            const index =
+              this.testArr.indexOf("6") !== -1
+                ? this.testArr.indexOf("6")
+                : this.testArr.indexOf("7");
+            this[prop] = value;
+            this.testArr.splice(index, 1, value);
+          } else {
+            // 6 또는 7 버튼이 없는 경우 추가
+            this[prop] = value;
+            this.testAddArr(value);
+          }
+        }
+        if (value === "b5" && this.testArr[0] !== undefined) {
+          this[prop] = value;
+          this.testAddArr(value);
+        }
+        if (
+          ["b9", "9", "#9"].includes(value) &&
+          this.testArr[0] !== undefined
+        ) {
+          // b9, 9, #9 버튼일 경우
+          const replaceableValues = ["b9", "9", "#9"];
+          if (
+            replaceableValues.some((replaceValue) =>
+              this.testArr.includes(replaceValue)
+            )
+          ) {
+            // 이미 교체 가능한 버튼이 있는 경우 교체
+            const index = replaceableValues.reduce((acc, replaceValue) => {
+              const replaceIndex = this.testArr.indexOf(replaceValue);
+              return replaceIndex !== -1 ? replaceIndex : acc;
+            }, -1);
+
+            this[prop] = value;
+            this.testArr.splice(index, 1, value);
+          } else {
+            // 교체 가능한 버튼이 없는 경우 추가
+            this[prop] = value;
+            this.testAddArr(value);
+          }
+        }
+        if (["11", "#11"].includes(value) && this.testArr[0] !== undefined) {
+          const replaceableValues = ["11", "#11"];
+          if (
+            replaceableValues.some((replaceValue) =>
+              this.testArr.includes(replaceValue)
+            )
+          ) {
+            // 이미 교체 가능한 버튼이 있는 경우 교체
+            const index = replaceableValues.reduce((acc, replaceValue) => {
+              const replaceIndex = this.testArr.indexOf(replaceValue);
+              return replaceIndex !== -1 ? replaceIndex : acc;
+            }, -1);
+
+            this[prop] = value;
+            this.testArr.splice(index, 1, value);
+          } else {
+            // 교체 가능한 버튼이 없는 경우 추가
+            this[prop] = value;
+            this.testAddArr(value);
+          }
+        }
+        if (
+          ["b13", "13", "#13"].includes(value) &&
+          this.testArr[0] !== undefined
+        ) {
+          const replaceableValues = ["b13", "13", "#13"];
+          if (
+            replaceableValues.some((replaceValue) =>
+              this.testArr.includes(replaceValue)
+            )
+          ) {
+            // 이미 교체 가능한 버튼이 있는 경우 교체
+            const index = replaceableValues.reduce((acc, replaceValue) => {
+              const replaceIndex = this.testArr.indexOf(replaceValue);
+              return replaceIndex !== -1 ? replaceIndex : acc;
+            }, -1);
+
+            this[prop] = value;
+            this.testArr.splice(index, 1, value);
+          } else {
+            // 교체 가능한 버튼이 없는 경우 추가
+            this[prop] = value;
+            this.testAddArr(value);
+          }
+        }
+
+        this.testArr = this.testArr.filter((chord) => chord !== "");
+        this[prop] = value;
       }
     },
-    // testAddStr(value) {
-    //   this.teststr += value;
-    //   return this.teststr;
-    // },
-    // testRemoveStr(value) {
-    //   this.teststr = this.teststr.replace(value, "");
-    //   return this.teststr;
-    // },
+
     testAddArr(value) {
+      this.testArr = this.testArr.filter((chord) => chord !== ""); // 빈 요소 제거
       this.testArr.push(value); // 값을 배열에 추가
     },
     testRemoveArr(prop, value) {
@@ -436,59 +575,20 @@ export default {
         }
     },
 
-    registerChord() {
-      // 선택한 key 값
-      const key = this.selectedKey + this.selectedModifier_fs;
-
-      // 선택한 extends와 tensions 값
-      const extendsValue = this.selectedExtend || "";
-      const tensionsValue =
-        this.selectedModifier_67 +
-          this.selectedModifier_b5 +
-          this.selectedModifier_tension || "";
-
-      // 프리뷰 코드 생성
-      const chord = key + extendsValue + tensionsValue;
-
-      // 이미 해당 코드가 프리뷰 코드 배열에 있는지 확인
-      // const index = this.previewChords.findIndex((existingChord) =>
-      //   existingChord.includes(key)
-      // );
-
-      // if (index > -1) {
-      //   this.previewChords.splice(index, 1); // 이미 있는 코드를 제거
-      // }
-
-      if (key || extendsValue || tensionsValue) {
-        this.previewChords.push(chord); // 새로운 코드를 추가
-      }
-      const result = this.previewChords;
-      return result;
-    },
-    clearPreviewChords(value) {
-      const index = this.previewChords[0].indexOf(value);
-      if (index === -1) {
-        this.previewChords = [];
-      }
-      console.log("val: ", value);
-      console.log("index: ", index);
-      // if (index === 0) {
-      //   this.previewChords.splice(index, 1);
-      // }
-      if (index > -1) {
-        this.previewChords.splice(index, 1); // value 값 제거
-      }
-    },
     registerBacktrack() {
       const chord =
-        this.selectedKey +
-        this.selectedModifier_fs +
-        this.selectedExtend +
-        this.selectedModifier_67 +
-        this.selectedModifier_b5 +
-        this.selectedModifier_tension;
+        // this.selectedKey +
+        // this.selectedModifier_fs +
+        // this.selectedExtend +
+        // this.selectedModifier_67 +
+        // this.selectedModifier_b5 +
+        // this.selectedModifier_tension;
+        this.testArr.join("");
       this.selectedChords.push(chord);
       return this.selectedChords;
+    },
+    removeSelections() {
+      this.selectedChords.pop();
     },
     resetSelections() {
       this.selectedChords = [];
@@ -550,6 +650,16 @@ export default {
   margin-right: 40px;
   padding: 80px;
 }
+/* .button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+} */
+
 .toggle-container,
 .bpm-container,
 .measure-container,
