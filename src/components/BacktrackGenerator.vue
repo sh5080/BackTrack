@@ -309,6 +309,7 @@ export default {
       backtrack: null,
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
+      testArr: [],
     };
   },
   methods: {
@@ -372,26 +373,47 @@ export default {
         this.bpmDropdownOpen = false;
       }
     },
+
     toggleButton(prop, value) {
+      console.log("va: ", value);
+      console.log("pre: ", this.previewChords[0]);
       if (this[prop] === value) {
+        //지울 때
         this[prop] = "";
-        this.previewChords = [];
+        console.log("if");
+        // if (prop === "selectedKey") {
+        //   this.previewChords = [];
+        // }
+        // if (
+        //   prop === "selectedModifier_fs" &&
+        //   this.previewChords.includes(value)
+        // ) {
+        //   this.clearPreviewChords(value);
+        // }
+        // this.clearPreviewChords(value);
       } else {
+        //만들 때
+        console.log("else");
         this[prop] = value;
+        if (prop === "selectedKey" && this.previewChords[0] !== undefined) {
+          this.previewChords = [];
+        }
+        // if (prop === "selectedKey" || prop === "selectedModifier_fs") {
+        //   this.previewChords = [];
+        // }
+        // if (
+        //   prop === "selectedModifier_fs" &&
+        //   this.previewChords.includes(value)
+        // ) {
+        //   this.clearPreviewChords(value);
+        // }
+        // this.clearPreviewChords(value);
         this.registerChord();
       }
     },
-    // registerChord() {
-    //   const chord =
-    //     this.selectedKey +
-    //     this.selectedModifier_fs +
-    //     this.selectedExtend +
-    //     this.selectedModifier_67 +
-    //     this.selectedModifier_b5 +
-    //     this.selectedModifier_tension;
-    //   this.previewChords.push(chord);
-    //   return this.previewChords;
-    // },
+    test(value) {
+      return this.testArr.push(value);
+    },
     registerChord() {
       // 선택한 key 값
       const key = this.selectedKey + this.selectedModifier_fs;
@@ -407,21 +429,34 @@ export default {
       const chord = key + extendsValue + tensionsValue;
 
       // 이미 해당 코드가 프리뷰 코드 배열에 있는지 확인
-      const index = this.previewChords.findIndex((existingChord) =>
-        existingChord.includes(key)
-      );
+      // const index = this.previewChords.findIndex((existingChord) =>
+      //   existingChord.includes(key)
+      // );
 
-      // 이미 해당 코드가 있는 경우 업데이트
-      if (index > -1) {
-        this.previewChords[index] = chord;
-      } else {
-        // 없는 경우 새로 추가
-        this.previewChords.push(chord);
+      // if (index > -1) {
+      //   this.previewChords.splice(index, 1); // 이미 있는 코드를 제거
+      // }
+
+      if (key || extendsValue || tensionsValue) {
+        this.previewChords.push(chord); // 새로운 코드를 추가
       }
-
-      return this.previewChords;
+      const result = this.previewChords;
+      return result;
     },
-
+    clearPreviewChords(value) {
+      const index = this.previewChords[0].indexOf(value);
+      if (index === -1) {
+        this.previewChords = [];
+      }
+      console.log("val: ", value);
+      console.log("index: ", index);
+      // if (index === 0) {
+      //   this.previewChords.splice(index, 1);
+      // }
+      if (index > -1) {
+        this.previewChords.splice(index, 1); // value 값 제거
+      }
+    },
     registerBacktrack() {
       const chord =
         this.selectedKey +
