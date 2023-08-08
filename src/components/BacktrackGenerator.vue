@@ -213,7 +213,8 @@
             <v-col cols="1">
               <label class="key-label">프리뷰 코드:</label>
               <div class="chord-list">
-                <span class="chord" v-for="chord in previewChords" :key="chord">
+                <!-- <span class="chord" v-for="chord in previewChords" :key="chord"> -->
+                <span class="chord" v-for="chord in testArr" :key="chord">
                   {{ chord }}
                 </span>
               </div>
@@ -310,6 +311,7 @@ export default {
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
       testArr: [],
+      teststr: "",
     };
   },
   methods: {
@@ -375,45 +377,65 @@ export default {
     },
 
     toggleButton(prop, value) {
-      console.log("va: ", value);
-      console.log("pre: ", this.previewChords[0]);
+      console.log("value: ", value);
+      console.log("teststr: ", this.testArr);
+      console.log("length: ", this.testArr.length);
       if (this[prop] === value) {
         //지울 때
         this[prop] = "";
         console.log("if");
-        // if (prop === "selectedKey") {
-        //   this.previewChords = [];
-        // }
-        // if (
-        //   prop === "selectedModifier_fs" &&
-        //   this.previewChords.includes(value)
-        // ) {
-        //   this.clearPreviewChords(value);
-        // }
-        // this.clearPreviewChords(value);
+
+        this.testRemoveArr(prop, value);
       } else {
         //만들 때
-        console.log("else");
+        console.log("else", value);
         this[prop] = value;
-        if (prop === "selectedKey" && this.previewChords[0] !== undefined) {
-          this.previewChords = [];
+        if (
+          (prop === "selectedKey" && this.testArr[0] === undefined) ||
+          this.testArr[0] === ""
+        ) {
+          this.testAddArr(value);
         }
-        // if (prop === "selectedKey" || prop === "selectedModifier_fs") {
-        //   this.previewChords = [];
-        // }
-        // if (
-        //   prop === "selectedModifier_fs" &&
-        //   this.previewChords.includes(value)
-        // ) {
-        //   this.clearPreviewChords(value);
-        // }
-        // this.clearPreviewChords(value);
-        this.registerChord();
+        if (prop === "selectedKey" && this.testArr.length > 0) {
+          this.testArr = [];
+          this.testAddArr(value);
+        }
+        if (prop === "selectedModifier_fs" && this.testArr[0] === undefined) {
+          Toast.customError("Key를 먼저 선택해주세요.");
+        }
+        if (prop === "selectedModifier_fs" && this.testArr[0]) {
+          this.testAddArr(this.testArr.splice(0, 1, this.testArr[0] + value));
+          this.testArr.pop();
+        }
+        // this.testAddArr(this.teststr);
+        // this.registerChord();
       }
     },
-    test(value) {
-      return this.testArr.push(value);
+    // testAddStr(value) {
+    //   this.teststr += value;
+    //   return this.teststr;
+    // },
+    // testRemoveStr(value) {
+    //   this.teststr = this.teststr.replace(value, "");
+    //   return this.teststr;
+    // },
+    testAddArr(value) {
+      this.testArr.push(value); // 값을 배열에 추가
     },
+    testRemoveArr(prop, value) {
+      if (prop === "selectedKey") {
+        this.testArr = [];
+      } else
+        for (let i = 0; i < this.testArr.length; i++) {
+          if (this.testArr[i].includes(value)) {
+            // 검색 문자열이 포함된 요소를 찾았을 때
+            const newValue = this.testArr[i].replace(value, ""); // # 제거
+            this.testArr.splice(i, 1, newValue); // 요소를 newValue로 교체
+            break; // 원하는 요소를 찾았으므로 반복문 종료
+          }
+        }
+    },
+
     registerChord() {
       // 선택한 key 값
       const key = this.selectedKey + this.selectedModifier_fs;
