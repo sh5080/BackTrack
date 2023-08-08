@@ -4,22 +4,6 @@ import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import * as jam from "../types/jam";
 
-/** jamTrack 생성 */
-export const createChord = async (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { key, bpm } = req.body;
-
-    return res.json();
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
-
 // 백킹트랙 생성 함수
 function generateBackingTrack(key: string, measures: number): string[] {
   const backingTrack: string[] = [];
