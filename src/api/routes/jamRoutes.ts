@@ -7,7 +7,7 @@ const router = Router();
 /** open AI 프롬프트 json에 저장 */
 router.post(
   "/",
-  validateRequestBody(["key", "measures"]),
+  validateRequestBody(["bpm", "measures", "key"]),
   jamController.createJamTrack
 );
 
