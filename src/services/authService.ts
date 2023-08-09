@@ -128,7 +128,7 @@ export const getUser = async (username?: string) => {
         404
       );
     }
-    const { id, password, ...userData } = user;
+    const { password, ...userData } = user;
 
     return userData;
   } catch (error) {
@@ -151,7 +151,7 @@ export const getUser = async (username?: string) => {
  */
 export const updateUser = async (
   username: string,
-  updateData: Partial<User.UserType>
+  updateData: Partial<User.User>
 ) => {
   try {
     const existingUser = await authModel.getUserByUsername(username);
