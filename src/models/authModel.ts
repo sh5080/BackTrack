@@ -18,11 +18,7 @@ export const createUser = async (user: User.User): Promise<void> => {
       throw error;
     } else {
       console.error(error);
-      throw new AppError(
-        CommonError.UNEXPECTED_ERROR,
-        "회원가입에 실패했습니다.",
-        500
-      );
+      throw new AppError(CommonError.DB_ERROR, "회원가입에 실패했습니다.", 500);
     }
   }
 };
@@ -30,15 +26,15 @@ export const createUser = async (user: User.User): Promise<void> => {
 /**
  * 사용자 아이디로 사용자 정보 조회
  */
-export const getUserByUsername = async (
-  username?: string
-): Promise<User.User | null> => {
+export const getUserByUsername = async (username?: string) => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await db.execute(
       "SELECT * FROM user WHERE username = ?",
       [username]
     );
-
+    if (rows.length > 0) {
+      return rows[0];
+    }
     return null;
   } catch (error) {
     if (error instanceof AppError) {
@@ -47,7 +43,7 @@ export const getUserByUsername = async (
     } else {
       console.error(error);
       throw new AppError(
-        CommonError.UNEXPECTED_ERROR,
+        CommonError.DB_ERROR,
         "사용자 정보 조회에 실패했습니다.",
         500
       );
@@ -75,7 +71,7 @@ export const getUserByEmail = async (
     } else {
       console.error(error);
       throw new AppError(
-        CommonError.UNEXPECTED_ERROR,
+        CommonError.DB_ERROR,
         "사용자 정보 조회에 실패했습니다.",
         500
       );
@@ -89,7 +85,7 @@ export const getUserByEmail = async (
 export const updateUserByUsername = async (
   userId: string,
   updateData: Partial<Pick<User.User, "email" | "password">>
-): Promise<User.User | null> => {
+) => {
   try {
     const { email, password } = updateData;
 
@@ -107,7 +103,7 @@ export const updateUserByUsername = async (
     } else {
       console.error(error);
       throw new AppError(
-        CommonError.UNEXPECTED_ERROR,
+        CommonError.DB_ERROR,
         "사용자 정보 수정에 실패했습니다.",
         500
       );
@@ -130,7 +126,7 @@ export const deleteUserByUsername = async (username: string) => {
 
     if (rows.length === 0) {
       throw new AppError(
-        CommonError.AUTHENTICATION_ERROR,
+        CommonError.DB_ERROR,
         "존재하지 않는 사용자입니다.",
         401
       );
@@ -149,7 +145,7 @@ export const deleteUserByUsername = async (username: string) => {
     } else {
       console.error(error);
       throw new AppError(
-        CommonError.UNEXPECTED_ERROR,
+        CommonError.DB_ERROR,
         "회원 탈퇴에 실패했습니다.",
         500
       );
