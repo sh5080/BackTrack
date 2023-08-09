@@ -1,8 +1,10 @@
 import express from "express";
-import jamRouter from "./jamRoutes";
+import backtrackRouter from "./backtrackRoutes";
+import authRouter from "./authRoutes";
 
 const router = express.Router();
 
-router.use("/jam", jamRouter);
+router.use("/backtrack", backtrackRouter);
+router.use("/auth", authRouter);
 
 export default router;
