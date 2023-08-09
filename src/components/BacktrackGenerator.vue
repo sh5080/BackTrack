@@ -246,7 +246,7 @@
           >
             <v-col cols="0" style="display: flex max-width: 200%;">
               <label class="key-label">Preview:</label>
-              <div class="chord-list" style="/* max-width: 50% */">
+              <div class="chord-list">
                 <span
                   class="chord"
                   v-for="chord in selectedChords"
@@ -256,15 +256,9 @@
                 </span>
               </div>
             </v-col>
-            <!-- <v-row class="button-container"> -->
             <v-col
               cols="2"
-              style="
-                /* position: fixed; */
-                display: flex;
-                max-width: 90%;
-                justify-content: flex-end;
-              "
+              style="display: flex; max-width: 90%; justify-content: flex-end"
             >
               <button class="reset-button" @click="removeSelections">
                 지우기
@@ -273,7 +267,6 @@
                 초기화
               </button>
             </v-col>
-            <!-- </v-row> -->
           </div>
         </v-col>
       </v-row>
@@ -576,14 +569,7 @@ export default {
     },
 
     registerBacktrack() {
-      const chord =
-        // this.selectedKey +
-        // this.selectedModifier_fs +
-        // this.selectedExtend +
-        // this.selectedModifier_67 +
-        // this.selectedModifier_b5 +
-        // this.selectedModifier_tension;
-        this.testArr.join("");
+      const chord = this.testArr.join("");
       this.selectedChords.push(chord);
       return this.selectedChords;
     },
@@ -640,15 +626,10 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 100px;
-  /* padding: 20px; */
-  /* font-size: 100px; */
-  /* font-family: Pretendard, system-ui, Avenir, Helvetica, Arial, sans-serif; */
 }
 
 .input-group-label {
   display: flex;
-  /* flex-direction: column; */
-  /* margin-right: 20px; */
 }
 .measure-label-container,
 .ext-label-container,
@@ -659,15 +640,6 @@ export default {
   margin-right: 40px;
   padding: 80px;
 }
-/* .button-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-} */
 
 .toggle-container,
 .bpm-container,
@@ -686,7 +658,7 @@ export default {
 .key-selector {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* 왼쪽 정렬 */
+  align-items: flex-start;
 }
 .ext-grid,
 .key-grid {
@@ -699,7 +671,7 @@ export default {
 .key-button {
   background-color: #0c63e4;
   color: #fff;
-  /* border: 1px solid #ccc; border 값 추가 */
+  border: 1px solid #ccc;
   padding: 5px 10px;
   margin-right: 20px;
   border-radius: 4px;
@@ -719,7 +691,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin-right: 10px; */
   margin: 0 5px;
 }
 .dropdown {
