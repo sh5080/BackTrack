@@ -294,7 +294,7 @@
               type="button"
               @click="generateBacktrack"
             >
-              Generate Backtrack
+              Backingtrack 생성하기
             </button>
           </div>
         </v-col>
@@ -327,21 +327,20 @@ export default {
       measureDirectInput: false,
       measureOptions: [4, 8, 16, 32],
       bpmOptions: [60, 90, 120, 180],
-      selectedMeasure: null,
-      measure: "",
-      selectedBpm: null,
+      selectedMeasure: 4,
+      selectedBpm: 60,
       backtrack: null,
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
       testArr: [],
-      testArr2: [],
-      resultArr: [],
-      teststr: "",
     };
   },
   watch: {
     measure(newValue) {
       this.selectedMeasure = newValue;
+    },
+    bpm(newValue) {
+      this.selectedBpm = newValue;
     },
   },
   methods: {
@@ -373,13 +372,14 @@ export default {
     },
     selectMeasureDirectInput() {
       this.measureDirectInput = true;
-
       this.selectedMeasure = "";
+      this.measure = "";
       this.measureDropdownOpen = false;
     },
     selectBpmDirectInput() {
       this.bpmDirectInput = true;
       this.selectedBpm = "";
+      this.bpm = "";
       this.bpmDropdownOpen = false;
     },
     selectMeasure(measure) {
@@ -600,8 +600,9 @@ export default {
         const response = await axios.post(
           "http://localhost:4000/api/jam",
           {
-            key: this.selectedChords,
+            bpm: this.selectedBpm,
             measures: this.selectedMeasure,
+            key: this.selectedChords,
           },
           { withCredential: true }
         );
@@ -612,12 +613,20 @@ export default {
         this.backtrack = response.data.backtrack;
       } catch (error) {
         console.error("Error generating backtrack:", error);
-
         if (
+          error.response.data.message ===
+          "필수 입력값이 누락되었습니다: bpm, measures"
+        ) {
+          Toast.customError("BPM, 마디수를 확인해 주세요.");
+        } else if (
+          error.response.data.message === "필수 입력값이 누락되었습니다: bpm"
+        ) {
+          Toast.customError("BPM을 선택하거나 입력해 주세요.");
+        } else if (
           error.response.data.message ===
           "필수 입력값이 누락되었습니다: measures"
         ) {
-          Toast.customError("마디수를 선택해 주세요.");
+          Toast.customError("마디수를 선택하거나 입력해 주세요.");
         } else Toast.errorMessage(error);
       }
     },
