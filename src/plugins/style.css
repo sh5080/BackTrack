@@ -6,7 +6,7 @@
   position: fixed;
   min-height: 64px;
   max-height: 3000px;
-  height: 500px;
+  height: 400px;
   box-sizing: border-box;
   overflow: hidden;
   padding: 12px 8px;
@@ -33,20 +33,20 @@
 }
 .mosha__toast__content {
   font-family: sans-serif;
-  line-height: 40px;
+  line-height: 90px;
   display: flex;
   flex-direction: column;
   color: #fff;
 }
 .mosha__toast__content__text {
   margin-bottom: 2px;
-  font-size: 90px;
-  font-weight: 950;
-  padding: 120px;
+  font-size: 70px;
+  font-weight: 550;
+  padding: 20px;
 }
 .mosha__toast__content__description {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 70px;
+  font-weight: 500;
 }
 .mosha__toast__slot-wrapper {
   width: 100%;
@@ -74,6 +74,11 @@
   bottom: 0;
   margin-left: -8px;
 }
+
+.mosha__icon {
+  margin-left: 80px;
+}
+
 .mosha__toast.success {
   background-color: #06d6a0;
 }

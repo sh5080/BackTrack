@@ -76,12 +76,17 @@
       ></div>
       <div class="alternative-option mt-4" style="font-size: 3em">
         이미 가입되어 있으신가요?
-        <span @click="moveToLogin" style="font-size: 1.3em; cursor: pointer"
-          >Login</span
+        <span @click="showLoginModal" style="font-size: 1.3em; cursor: pointer"
+          >로그인</span
         >
       </div>
 
-      <button type="submit" class="mt-4 btn-pers" style="font-size: 3.5em">
+      <button
+        v-if="showRegisterButton"
+        type="submit"
+        class="mt-4 btn-pers"
+        style="font-size: 3.5em"
+      >
         Register
       </button>
     </form>
@@ -92,14 +97,27 @@
 import axios from "axios";
 
 export default {
+  components: {},
   data() {
     return {
       username: "",
       email: "",
       password: "",
+      showRegisterButton: true,
+      isLoginModalVisible: false,
     };
   },
   methods: {
+    showLoginModal() {
+      this.$emit("close");
+      this.$emit("showLogin");
+      this.$emit("restoreLoginButton");
+      // this.isLoginModalVisible = true;
+      // this.showRegisterButton = false;
+    },
+    hideLoginModal() {
+      this.isLoginModalVisible = false;
+    },
     async register() {
       try {
         const response = await axios.post(
@@ -111,6 +129,7 @@ export default {
           },
           { withCredentials: true }
         );
+        // this.showRegisterButton = false;
         console.log(response.data);
         // this.$router.push("/");
       } catch (error) {
@@ -139,9 +158,6 @@ export default {
           console.log(alert_2);
         }
       }
-    },
-    moveToLogin() {
-      this.$router.push("/");
     },
   },
 };

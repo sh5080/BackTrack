@@ -12,8 +12,9 @@
 <script>
 import Backtrack from "./components/BacktrackGenerator.vue";
 import { defineComponent } from "vue";
-import { createToast } from "mosha-vue-toastify";
+import { createToast } from "@/libs/mosha-vue-toastify";
 import "../src/plugins/style.css";
+
 export default defineComponent({
   name: "App",
 
