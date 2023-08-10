@@ -1,5 +1,5 @@
 <template>
-  <div id="content" class="container" style="">
+  <div id="content" class="container">
     <form @submit.prevent="login" style="margin-left: 10px">
       <h2 class="mb-3" style="font-size: 6em">로그인</h2>
       <div class="input">
@@ -49,11 +49,15 @@
       ></div>
       <div class="alternative-option mt-4" style="font-size: 3em">
         회원이 아니신가요?
-        <span @click="moveToRegister" style="font-size: 1.5em; cursor: pointer"
+        <span
+          @click="showRegisterModal"
+          style="font-size: 1.3em; cursor: pointer"
           >회원가입</span
         >
       </div>
+      <RegisterModal v-if="isRegisterModalVisible" @close="hideRegisterModal" />
       <button
+        v-if="showLoginButton"
         type="submit"
         class="mt-4 btn-pers"
         id="login_button"
@@ -67,15 +71,27 @@
 
 <script>
 import axios from "axios";
-
+import RegisterModal from "./RegisterModal.vue";
 export default {
+  components: {
+    RegisterModal,
+  },
   data() {
     return {
       username: "",
       password: "",
+      showLoginButton: true,
+      isRegisterModalVisible: false,
     };
   },
   methods: {
+    showRegisterModal() {
+      this.isRegisterModalVisible = true;
+      this.showLoginButton = false;
+    },
+    hideRegisterModal() {
+      this.isRegisterModalVisible = false;
+    },
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
       this.password = submitEvent.target.elements.password.value;
@@ -89,7 +105,8 @@ export default {
           },
           { withCredentials: true }
         );
-
+        // 로그인 성공 시 로그인 버튼 숨김
+        this.showLoginButton = false;
         // 백엔드에서 반환된 데이터 처리
         if (response.data.success) {
           this.$router.push("/");
@@ -105,10 +122,6 @@ export default {
           console.error("Alert element not found.");
         }
       }
-    },
-    moveToRegister() {
-      console.log("1");
-      this.$router.push("/signup");
     },
   },
 };

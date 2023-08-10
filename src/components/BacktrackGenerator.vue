@@ -375,7 +375,6 @@ export default {
       measureDropdownStyle: {},
       resultChords: [],
       showLoginModal: false,
-      showRegisterModal: false,
     };
   },
   watch: {
