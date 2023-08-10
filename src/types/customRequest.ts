@@ -10,5 +10,6 @@ export interface CustomRequest extends Request {
     chordPattern: string;
     measures: number;
     bpm: number;
+    backtrack: string;
   };
 }

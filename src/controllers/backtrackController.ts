@@ -5,10 +5,7 @@ import { CustomRequest } from "../types/customRequest";
 import * as Tone from "tone";
 
 // 백킹트랙 생성 함수
-function generateBackingTrack(
-  chordPattern: string,
-  measures: number
-): string[] {
+function generateBacktrack(chordPattern: string, measures: number): string[] {
   const backingTrack: string[] = [];
   const numChords = chordPattern.length;
 
@@ -49,13 +46,21 @@ export const createBacktrack = async (
       );
     }
     // 백킹트랙 생성
-    const backingTrack = generateBackingTrack(chordPattern, measures);
+    const backingTrack = generateBacktrack(chordPattern, measures);
 
     return res.json({ backingTrack });
   } catch (error) {
     console.error(error);
     next(error);
   }
+};
+
+export const saveBacktrack = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { backtrack } = req.body;
 };
 
 // const synth = new Tone.Synth().toDestination();
