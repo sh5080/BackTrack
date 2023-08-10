@@ -6,9 +6,46 @@
           <div
             class="input-group"
             style="
+              background-color: #f0f0f0;
+              border: 1px solid #ccc;
+              font-size: 70px;
+              padding: 10px;
+            "
+          >
+            <v-col cols="12" style="display: flex; justify-content: flex-end">
+              <div class="auth-container">
+                <div class="button-container">
+                  <button class="auth-button" @click="showLoginModal = true">
+                    로그인
+                  </button>
+                </div>
+              </div>
+              <!-- <div class="auth-container">
+                <div class="button-container">
+                  <button class="auth-button" @click="showEnvModal = true">
+                    환경설정
+                  </button>
+                </div>
+              </div> -->
+            </v-col>
+            <v-dialog v-model="showLoginModal">
+              <Login />
+            </v-dialog>
+            <!-- <v-dialog v-model="showEnvModal">
+              <Env />
+            </v-dialog> -->
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <div
+            class="input-group"
+            style="
               background-color: #302d2d;
               border: 1px solid #ccc;
-              font-size: 400%;
+              font-size: 70px;
             "
           >
             <div class="bpm-container">
@@ -103,7 +140,7 @@
               background-color: #f0f0f0;
               padding: 10px;
               border: 1px solid #ccc;
-              font-size: 400%;
+              font-size: 70px;
             "
           >
             <div class="key-label-container">
@@ -207,7 +244,7 @@
               background-color: #f0f0f0;
               padding: 100px;
               border: 1px solid #ccc;
-              font-size: 400%;
+              font-size: 70px;
             "
           >
             <v-row class="align-center">
@@ -216,7 +253,11 @@
               </v-col>
               <v-col cols="3">
                 <div class="chord-list">
-                  <span class="chord" v-for="chord in testArr" :key="chord">
+                  <span
+                    class="chord"
+                    v-for="chord in resultChords"
+                    :key="chord"
+                  >
                     {{ chord }}
                   </span>
                 </div>
@@ -256,16 +297,17 @@
                 </span>
               </div>
             </v-col>
-            <v-col
-              cols="2"
-              style="display: flex; max-width: 90%; justify-content: flex-end"
-            >
-              <button class="reset-button" @click="removeSelections">
-                지우기
-              </button>
-              <button class="reset-button" @click="resetSelections">
-                초기화
-              </button>
+            <v-col cols="3" style="display: flex; justify-content: flex-end">
+              <div class="auth-container">
+                <div class="button-container">
+                  <button class="reset-button" @click="removeSelections">
+                    지우기
+                  </button>
+                  <button class="reset-button" @click="resetSelections">
+                    초기화
+                  </button>
+                </div>
+              </div>
             </v-col>
           </div>
         </v-col>
@@ -299,7 +341,13 @@
 <script>
 import axios from "axios";
 import * as Toast from "../plugins/toast";
+import Login from "@/components/LoginModal.vue";
+// import Register from "@/components/RegisterModal.vue";
 export default {
+  components: {
+    Login,
+    // Register,
+  },
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
@@ -325,7 +373,9 @@ export default {
       backtrack: null,
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
-      testArr: [],
+      resultChords: [],
+      showLoginModal: false,
+      showRegisterModal: false,
     };
   },
   watch: {
@@ -399,121 +449,129 @@ export default {
     },
 
     toggleButton(prop, value) {
-      console.log("value: ", value);
-      console.log("여기1: ", this.testArr[1]);
-      console.log("test: ", this.testArr);
       if (this[prop] === value) {
         //지울 때
         this[prop] = "";
-        console.log("if");
 
         this.testRemoveArr(prop, value);
-        this.testArr = this.testArr.filter((chord) => chord !== "");
+        this.resultChords = this.resultChords.filter((chord) => chord !== "");
       } else {
         //만들 때
-        console.log("else", value);
         this[prop] = value;
-        if (prop === "selectedKey" && this.testArr[0] === undefined) {
+        if (prop === "selectedKey" && this.resultChords[0] === undefined) {
           this.testAddArr(value);
         }
-        if (prop === "selectedKey" && this.testArr.length > 0) {
-          this.testArr = [];
+        if (prop === "selectedKey" && this.resultChords.length > 0) {
+          this.resultChords = [];
           this.testAddArr(value);
         }
         if (
-          (prop === "selectedModifier_fs" && this.testArr[0] === undefined) ||
-          (prop === "selectedExtend" && this.testArr[0] === undefined) ||
-          (prop === "selectedModifier_67" && this.testArr[0] === undefined) ||
-          (prop === "selectedModifier_b5" && this.testArr[0] === undefined) ||
-          (prop === "selectedModifier_tension" && this.testArr[0] === undefined)
+          (prop === "selectedModifier_fs" &&
+            this.resultChords[0] === undefined) ||
+          (prop === "selectedExtend" && this.resultChords[0] === undefined) ||
+          (prop === "selectedModifier_67" &&
+            this.resultChords[0] === undefined) ||
+          (prop === "selectedModifier_b5" &&
+            this.resultChords[0] === undefined) ||
+          (prop === "selectedModifier_tension" &&
+            this.resultChords[0] === undefined)
         ) {
           Toast.customError("Key를 먼저 선택해주세요.");
         }
 
-        if (prop === "selectedModifier_fs" && this.testArr[0] !== undefined) {
+        if (
+          prop === "selectedModifier_fs" &&
+          this.resultChords[0] !== undefined
+        ) {
           // selectedModifier_fs의 value(b 또는 #)를 추가하거나 교체
-          const currentValue = this.testArr[0];
+          const currentValue = this.resultChords[0];
           const newValue = currentValue.replace(/[#b]/g, "") + value;
-          this.testArr.splice(0, 1, newValue); // 요소를 newValue로 교체
+          this.resultChords.splice(0, 1, newValue); // 요소를 newValue로 교체
         }
         if (
           prop === "selectedExtend" &&
-          this.testArr[0] &&
-          this.testArr[1] === undefined
+          this.resultChords[0] &&
+          this.resultChords[1] === undefined
         ) {
           this.testAddArr(value);
         }
         if (
           prop === "selectedExtend" &&
-          this.testArr[1] !== undefined &&
-          this.testArr[0]
+          this.resultChords[1] !== undefined &&
+          this.resultChords[0]
         ) {
-          this.testArr.splice(1, 1, value);
+          this.resultChords.splice(1, 1, value);
         }
 
         if (
-          (value === "6" && this.testArr[0] !== undefined) ||
-          (value === "7" && this.testArr[0] !== undefined)
+          (value === "6" && this.resultChords[0] !== undefined) ||
+          (value === "7" && this.resultChords[0] !== undefined)
         ) {
           // 6 또는 7 버튼일 경우
-          if (this.testArr.includes("6") || this.testArr.includes("7")) {
+          if (
+            this.resultChords.includes("6") ||
+            this.resultChords.includes("7")
+          ) {
             // 이미 6 또는 7 버튼이 있는 경우 교체
             const index =
-              this.testArr.indexOf("6") !== -1
-                ? this.testArr.indexOf("6")
-                : this.testArr.indexOf("7");
+              this.resultChords.indexOf("6") !== -1
+                ? this.resultChords.indexOf("6")
+                : this.resultChords.indexOf("7");
             this[prop] = value;
-            this.testArr.splice(index, 1, value);
+            this.resultChords.splice(index, 1, value);
           } else {
             // 6 또는 7 버튼이 없는 경우 추가
             this[prop] = value;
             this.testAddArr(value);
           }
         }
-        if (value === "b5" && this.testArr[0] !== undefined) {
+        if (value === "b5" && this.resultChords[0] !== undefined) {
           this[prop] = value;
           this.testAddArr(value);
         }
         if (
           ["b9", "9", "#9"].includes(value) &&
-          this.testArr[0] !== undefined
+          this.resultChords[0] !== undefined
         ) {
           // b9, 9, #9 버튼일 경우
           const replaceableValues = ["b9", "9", "#9"];
           if (
             replaceableValues.some((replaceValue) =>
-              this.testArr.includes(replaceValue)
+              this.resultChords.includes(replaceValue)
             )
           ) {
             // 이미 교체 가능한 버튼이 있는 경우 교체
             const index = replaceableValues.reduce((acc, replaceValue) => {
-              const replaceIndex = this.testArr.indexOf(replaceValue);
+              const replaceIndex = this.resultChords.indexOf(replaceValue);
               return replaceIndex !== -1 ? replaceIndex : acc;
             }, -1);
 
             this[prop] = value;
-            this.testArr.splice(index, 1, value);
+            this.resultChords.splice(index, 1, value);
           } else {
             // 교체 가능한 버튼이 없는 경우 추가
             this[prop] = value;
             this.testAddArr(value);
           }
         }
-        if (["11", "#11"].includes(value) && this.testArr[0] !== undefined) {
+        if (
+          ["11", "#11"].includes(value) &&
+          this.resultChords[0] !== undefined
+        ) {
           const replaceableValues = ["11", "#11"];
           if (
             replaceableValues.some((replaceValue) =>
-              this.testArr.includes(replaceValue)
+              this.resultChords.includes(replaceValue)
             )
           ) {
             // 이미 교체 가능한 버튼이 있는 경우 교체
             const index = replaceableValues.reduce((acc, replaceValue) => {
-              const replaceIndex = this.testArr.indexOf(replaceValue);
+              const replaceIndex = this.resultChords.indexOf(replaceValue);
               return replaceIndex !== -1 ? replaceIndex : acc;
             }, -1);
 
             this[prop] = value;
-            this.testArr.splice(index, 1, value);
+            this.resultChords.splice(index, 1, value);
           } else {
             // 교체 가능한 버튼이 없는 경우 추가
             this[prop] = value;
@@ -522,22 +580,22 @@ export default {
         }
         if (
           ["b13", "13", "#13"].includes(value) &&
-          this.testArr[0] !== undefined
+          this.resultChords[0] !== undefined
         ) {
           const replaceableValues = ["b13", "13", "#13"];
           if (
             replaceableValues.some((replaceValue) =>
-              this.testArr.includes(replaceValue)
+              this.resultChords.includes(replaceValue)
             )
           ) {
             // 이미 교체 가능한 버튼이 있는 경우 교체
             const index = replaceableValues.reduce((acc, replaceValue) => {
-              const replaceIndex = this.testArr.indexOf(replaceValue);
+              const replaceIndex = this.resultChords.indexOf(replaceValue);
               return replaceIndex !== -1 ? replaceIndex : acc;
             }, -1);
 
             this[prop] = value;
-            this.testArr.splice(index, 1, value);
+            this.resultChords.splice(index, 1, value);
           } else {
             // 교체 가능한 버튼이 없는 경우 추가
             this[prop] = value;
@@ -545,31 +603,31 @@ export default {
           }
         }
 
-        this.testArr = this.testArr.filter((chord) => chord !== "");
+        this.resultChords = this.resultChords.filter((chord) => chord !== "");
         this[prop] = value;
       }
     },
 
     testAddArr(value) {
-      this.testArr = this.testArr.filter((chord) => chord !== ""); // 빈 요소 제거
-      this.testArr.push(value); // 값을 배열에 추가
+      this.resultChords = this.resultChords.filter((chord) => chord !== ""); // 빈 요소 제거
+      this.resultChords.push(value); // 값을 배열에 추가
     },
     testRemoveArr(prop, value) {
       if (prop === "selectedKey") {
-        this.testArr = [];
+        this.resultChords = [];
       } else
-        for (let i = 0; i < this.testArr.length; i++) {
-          if (this.testArr[i].includes(value)) {
+        for (let i = 0; i < this.resultChords.length; i++) {
+          if (this.resultChords[i].includes(value)) {
             // 검색 문자열이 포함된 요소를 찾았을 때
-            const newValue = this.testArr[i].replace(value, ""); // # 제거
-            this.testArr.splice(i, 1, newValue); // 요소를 newValue로 교체
+            const newValue = this.resultChords[i].replace(value, ""); // # 제거
+            this.resultChords.splice(i, 1, newValue); // 요소를 newValue로 교체
             break; // 원하는 요소를 찾았으므로 반복문 종료
           }
         }
     },
 
     registerBacktrack() {
-      const chord = this.testArr.join("");
+      const chord = this.resultChords.join("");
       this.selectedChords.push(chord);
       return this.selectedChords;
     },
@@ -584,15 +642,15 @@ export default {
       // e.preventDefault();
       try {
         const response = await axios.post(
-          "http://localhost:4000/api/jam",
+          "http://localhost:4000/api/backtrack",
           {
             bpm: this.selectedBpm,
             measures: this.selectedMeasure,
-            key: this.selectedChords,
+            chordPattern: this.selectedChords,
           },
           { withCredential: true }
         );
-        console.log(response);
+
         Toast.alertMessage(
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
@@ -621,11 +679,16 @@ export default {
 </script>
 
 <style scoped>
+#app {
+  overflow: hidden;
+}
+
 .input-group {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 100px;
+  overflow: hidden;
 }
 
 .input-group-label {
@@ -640,7 +703,6 @@ export default {
   margin-right: 40px;
   padding: 80px;
 }
-
 .toggle-container,
 .bpm-container,
 .measure-container,
@@ -665,6 +727,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 10px;
+  /* border: 1px solid; */
 }
 
 .ext-button,
@@ -685,14 +748,13 @@ export default {
 .key-button:hover {
   background-color: #084dbf;
 }
-
-.register-button,
-.reset-button {
+.auth-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
   margin: 0 5px;
+  justify-content: flex-end !important;
+  /* 다른 스타일 정의 */
 }
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -700,11 +762,13 @@ export default {
 
 .dropdown-toggle {
   /* 드롭다운 토글 버튼 스타일링 */
-  background-color: #3498db;
+  background-color: #0c63e4;
   color: white;
-  border: none;
+  border: #0c63e4;
   padding: 8px 12px;
   cursor: pointer;
+  width: 400px;
+  height: 130px;
 }
 .dropdown-menu {
   /* 드롭다운 메뉴 스타일링 */
@@ -775,12 +839,12 @@ export default {
 
 .backtrack-generator button {
   margin-top: 10px;
-  background-color: #0c63e4;
   color: #fff;
-  border: none;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
+  border: none;
+  background: linear-gradient(to top, #00b869, #03c75a);
 }
 
 .backtrack-generator button:hover {
