@@ -1,7 +1,3 @@
-export interface Note {
-  chordPattern: string;
-  // duration: number;
-}
 export interface User {
   username: string;
   password: string | null;
@@ -9,4 +5,9 @@ export interface User {
   role?: string;
   accessToken?: string;
   activated?: number;
+}
+export interface Backtrack {
+  chordPattern: string;
+  measures: number;
+  bpm: number;
 }

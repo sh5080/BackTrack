@@ -12,7 +12,7 @@ router.post(
   jamController.createBacktrack
 );
 
-router.get(
+router.post(
   "/save",
   validateToken,
   validateRequestBody(["backtrack"]),

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-// import * as jamService from "../services/jamService";
+import * as backtrackService from "../services/backtrackService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import * as Tone from "tone";
@@ -60,7 +60,16 @@ export const saveBacktrack = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { backtrack } = req.body;
+  try {
+    const { chordPattern, bpm, measures } = req.body;
+
+    const backtrackData = { chordPattern, bpm, measures };
+    await backtrackService.saveBacktrack(backtrackData);
+    return res.json({ message: "백킹트랙 저장에 성공했습니다." });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 // const synth = new Tone.Synth().toDestination();
