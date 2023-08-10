@@ -55,7 +55,12 @@
           >회원가입</span
         >
       </div>
-      <RegisterModal v-if="isRegisterModalVisible" @close="hideRegisterModal" />
+      <Register
+        v-if="isRegisterModalVisible"
+        @close="hideRegisterModal"
+        @showLogin="showLoginModal"
+        @restoreLoginButton="restoreLoginButton"
+      />
       <button
         v-if="showLoginButton"
         type="submit"
@@ -71,10 +76,11 @@
 
 <script>
 import axios from "axios";
-import RegisterModal from "./RegisterModal.vue";
+import Register from "./RegisterModal.vue";
+import { mapMutations } from "vuex";
 export default {
   components: {
-    RegisterModal,
+    Register,
   },
   data() {
     return {
@@ -92,6 +98,17 @@ export default {
     hideRegisterModal() {
       this.isRegisterModalVisible = false;
     },
+    closeRegisterModal() {
+      this.isRegisterModalVisible = false;
+    },
+    showLoginModal() {
+      this.isLoginModalVisible = true;
+      this.showLoginButton = false;
+    },
+    restoreLoginButton() {
+      this.showLoginButton = true;
+    },
+    ...mapMutations(["setAuthenticated"]),
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
       this.password = submitEvent.target.elements.password.value;
@@ -108,8 +125,15 @@ export default {
         // 로그인 성공 시 로그인 버튼 숨김
         this.showLoginButton = false;
         // 백엔드에서 반환된 데이터 처리
-        if (response.data.success) {
+        console.log("로그인?: ", response.data);
+        if (response.data.message === "로그인 성공") {
+          this.setAuthenticated(true);
+          this.$store.commit(
+            "setLoggedInUsername",
+            response.data.user.username
+          );
           this.$router.push("/");
+          console.log("여기: ", this.$store.state.isAuthenticated);
         }
       } catch (error) {
         console.error("Error logging in:", error);
@@ -119,7 +143,7 @@ export default {
           alert_1.classList.remove("d-none");
           alert_1.innerHTML = "아이디 혹은 비밀번호를 확인해주세요.";
         } else {
-          console.error("Alert element not found.");
+          console.error("일시적인 오류입니다. 다시 시도해주세요.");
         }
       }
     },

@@ -15,25 +15,28 @@
             <v-col cols="12" style="display: flex; justify-content: flex-end">
               <div class="auth-container">
                 <div class="button-container">
-                  <button class="auth-button" @click="showLoginModal = true">
+                  <button
+                    class="auth-button"
+                    v-show="!$store.state.isAuthenticated"
+                    @click="showLoginModal = true"
+                  >
                     로그인
+                  </button>
+                  <div
+                    class="welcome-message"
+                    v-if="$store.state.isAuthenticated"
+                  >
+                    {{ $store.state.loggedInUsername }}님 환영합니다.
+                  </div>
+                  <button v-show="$store.state.isAuthenticated" @click="logout">
+                    로그아웃
                   </button>
                 </div>
               </div>
-              <!-- <div class="auth-container">
-                <div class="button-container">
-                  <button class="auth-button" @click="showEnvModal = true">
-                    환경설정
-                  </button>
-                </div>
-              </div> -->
             </v-col>
             <v-dialog v-model="showLoginModal">
               <Login />
             </v-dialog>
-            <!-- <v-dialog v-model="showEnvModal">
-              <Env />
-            </v-dialog> -->
           </div>
         </v-col>
       </v-row>
@@ -342,7 +345,7 @@
 import axios from "axios";
 import * as Toast from "../plugins/toast";
 import Login from "@/components/LoginModal.vue";
-// import Register from "@/components/RegisterModal.vue";
+import { mapMutations } from "vuex";
 export default {
   components: {
     Login,
@@ -636,7 +639,21 @@ export default {
     resetSelections() {
       this.selectedChords = [];
     },
-
+    ...mapMutations(["setAuthenticated"]),
+    async logout() {
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/api/auth/logout"
+        );
+        if (response.data.message === "로그아웃 되었습니다.") {
+          this.setAuthenticated(false);
+          this.$router.push("/");
+        }
+      } catch (error) {
+        console.error("Error during logout:", error);
+        // 에러 처리
+      }
+    },
     async generateBacktrack() {
       // e.preventDefault();
       try {
@@ -749,9 +766,19 @@ export default {
 }
 .auth-container {
   display: flex;
-  margin: 0 5px;
+  justify-content: space-between;
+  align-items: center;
+}
+.button-container {
+  display: flex;
   justify-content: flex-end !important;
-  /* 다른 스타일 정의 */
+  align-items: center;
+}
+.welcome-message {
+  display: flex;
+  margin-top: 15px;
+  margin-right: 25px;
+  align-items: center;
 }
 
 .dropdown {
