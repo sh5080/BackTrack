@@ -1,4 +1,3 @@
-// import { defineComponent } from "vue";
 import { createToast } from "mosha-vue-toastify";
 
 export function errorMessage(error) {
