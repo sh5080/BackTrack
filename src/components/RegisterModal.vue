@@ -9,8 +9,8 @@
           >
           <button
             @click="checkUsername"
-            :class="{ 'shake-animation': isShaking }"
-            style="font-size: 3em; margin-left: 1000px"
+            class="mt-4 btn-check"
+            style="font-size: 3em; margin-left: 300px"
           >
             중복확인
           </button>
@@ -24,20 +24,22 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: 10px;
+            margin-top: -10px;
             margin-bottom: 20px;
           "
         />
       </div>
 
       <div
-        class="alert alert-warning alert-dismissible fade show mt-5 shake-animation"
+        class="alert alert-warning alert-dismissible fade show error-shake-animation"
         role="alert"
         v-if="usernameError"
-        :class="{ 'shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
+        :class="{ 'error-shake-animation': isShaking }"
+        style="font-size: 3em; text-align: center; /* height: 1px */"
       >
-        {{ usernameErrorMessage }}
+        <div class="error-message">
+          {{ usernameErrorMessage }}
+        </div>
       </div>
       <div
         class="alert alert-success alert-dismissible fade show mt-5"
@@ -65,11 +67,25 @@
             margin-bottom: 20px;
           "
         />
+        <input
+          class="form-control"
+          type="password"
+          v-model="passwordConfirm"
+          placeholder="비밀번호 확인"
+          style="
+            font-size: 4em;
+            padding: 0.5em;
+            height: 1em;
+            margin-top: 10px;
+            margin-bottom: 20px;
+          "
+        />
       </div>
       <div
         class="alert alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="passwordError"
+        :class="{ 'error-shake-animation': isShaking }"
         style="font-size: 3em; text-align: center"
       >
         {{ passwordErrorMessage }}
@@ -97,6 +113,7 @@
         class="alert alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="emailError"
+        :class="{ 'error-shake-animation': isShaking }"
         style="font-size: 3em; text-align: center"
       >
         {{ emailErrorMessage }}
@@ -110,8 +127,8 @@
       </div>
       <button
         v-if="showRegisterButton"
-        type="submit"
-        class="mt-4 btn-pers"
+        @click="register"
+        class="mt-4 btn-reg"
         style="font-size: 3.5em"
       >
         Register
@@ -130,6 +147,7 @@ export default {
       username: "",
       email: "",
       password: "",
+      passwordConfirm: "",
       showRegisterButton: true,
       isLoginModalVisible: false,
       emailError: false,
@@ -151,8 +169,11 @@ export default {
       this.usernameErrorMessage = "";
       this.passwordError = false;
       this.passwordErrorMessage = "";
+      this.usernameIsValid = false;
+      this.usernameMessage = "";
     },
     handleErrors(error) {
+      this.isShaking = true;
       this.clearErrors(); // 이전 에러를 초기화
 
       const errorMessage = error.response.data.message;
@@ -171,6 +192,10 @@ export default {
         this.emailError = true;
         this.emailErrorMessage = errorMessage;
       }
+      setTimeout(() => {
+        this.isShaking = false;
+        this.clearErrors();
+      }, 3000);
     },
     showLoginModal() {
       this.$emit("close");
@@ -183,39 +208,35 @@ export default {
       this.isLoginModalVisible = false;
     },
     async checkUsername() {
-      this.isShaking = true;
+      // this.isShaking = true;
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/auth/check/${this.username}`,
+          `http://localhost:4000/api/auth/check`,
           {
-            username: this.username,
+            params: { username: this.username },
           },
           { withCredentials: true }
         );
-        console.log(response.data);
+
         this.usernameError = false;
         this.usernameIsValid = true;
         this.usernameMessage = response.data.message;
       } catch (error) {
         console.error("Error checking username availability:", error);
-        const err = error.response.data.message;
-        if (err) {
-          this.usernameError = true;
-          this.usernameErrorMessage = err;
-        }
-      } finally {
-        this.isShaking = false;
+        this.handleErrors(error);
       }
     },
   },
 
   async register() {
+    console.log("1");
     try {
       const response = await axios.post(
         "http://localhost:4000/api/auth/signup",
         {
           username: this.username,
           password: this.password,
+          passwordConfirm: this.passwordConfirm,
           email: this.email,
         },
         { withCredentials: true }
@@ -229,7 +250,7 @@ export default {
 </script>
 
 <style>
-.shake-animation {
+.error-shake-animation {
   animation: shake 0.5s;
 }
 
@@ -294,7 +315,7 @@ export default {
   height: 100px !important;
 }
 
-.btn-pers {
+.btn-reg {
   position: relative;
   left: 50%;
   padding: 1em 2.5em;
@@ -312,15 +333,37 @@ export default {
   outline: none;
   transform: translateX(-50%);
 }
-
-.btn-pers:hover {
+.btn-check {
+  position: relative;
+  top: -10%;
+  left: 50%;
+  padding: 0.5em 2.5em;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-weight: 700;
+  color: #000;
+  background-color: #fff;
+  border: none;
+  border-radius: 45px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  transform: translateX(-50%);
+}
+.btn-check:hover,
+.btn-reg:hover {
   background-color: #198754;
   box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
   color: #fff;
   transform: translate(-50%, -7px);
 }
 
-.btn-pers:active {
+.btn-reg:active {
+  transform: translate(-50%, -1px);
+}
+.btn-check:active {
   transform: translate(-50%, -1px);
 }
 
@@ -335,6 +378,8 @@ export default {
 
 .alert {
   font-size: 0.9rem;
+
+  margin-bottom: -73px;
   margin-top: 1rem;
 }
 </style>

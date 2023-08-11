@@ -35,7 +35,7 @@
               </div>
             </v-col>
             <v-dialog v-model="showLoginModal">
-              <Login />
+              <Login @close="hideLoginModal" />
             </v-dialog>
           </div>
         </v-col>
@@ -351,6 +351,7 @@ export default {
     Login,
     // Register,
   },
+
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
@@ -638,6 +639,9 @@ export default {
     },
     resetSelections() {
       this.selectedChords = [];
+    },
+    hideLoginModal() {
+      this.showLoginModal = false;
     },
     ...mapMutations(["setAuthenticated"]),
     async logout() {

@@ -37,17 +37,21 @@
             padding: 0.5em;
             height: 1em;
             margin-top: 10px;
-            margin-bottom: 100px;
+            /* margin-bottom: 100px; */
           "
         />
       </div>
       <div
-        class="alert alert-warning alert-dismissible fade show mt-5 d-none"
+        class="alert alert-warning alert-dismissible fade show mt-5"
         role="alert"
-        id="alert_1"
+        v-if="errorAlert"
+        :class="{ 'error-shake-animation': isShaking }"
         style="font-size: 3em; text-align: center"
-      ></div>
-      <div class="alternative-option mt-4" style="font-size: 3em">
+      >
+        {{ errorMessage }}
+      </div>
+
+      <div class="alternative-option" style="font-size: 3em">
         회원이 아니신가요?
         <span
           @click="showRegisterModal"
@@ -88,9 +92,32 @@ export default {
       password: "",
       showLoginButton: true,
       isRegisterModalVisible: false,
+      errorAlert: false,
+      isShaking: false,
+
+      errorMessage: "",
     };
   },
   methods: {
+    clearErrors() {
+      this.errorAlert = false;
+      this.errorMessage = "";
+    },
+    handleErrors(error) {
+      this.isShaking = true;
+      this.clearErrors();
+
+      const errorMessage = error.response.data.message;
+      if (errorMessage.includes("필수 입력값이 누락되었습니다:"))
+        this.errorAlert = true;
+      this.errorMessage = "아이디 혹은 비밀번호를 확인해주세요.";
+
+      setTimeout(() => {
+        this.isShaking = false;
+        this.clearErrors();
+      }, 3000);
+    },
+
     showRegisterModal() {
       this.isRegisterModalVisible = true;
       this.showLoginButton = false;
@@ -125,26 +152,18 @@ export default {
         // 로그인 성공 시 로그인 버튼 숨김
         this.showLoginButton = false;
         // 백엔드에서 반환된 데이터 처리
-        console.log("로그인?: ", response.data);
         if (response.data.message === "로그인 성공") {
           this.setAuthenticated(true);
           this.$store.commit(
             "setLoggedInUsername",
             response.data.user.username
           );
+          this.$emit("close");
           this.$router.push("/");
-          console.log("여기: ", this.$store.state.isAuthenticated);
         }
       } catch (error) {
         console.error("Error logging in:", error);
-        // 로그인 실패 시에만 아래 코드가 실행됩니다.
-        let alert_1 = document.querySelector("#alert_1");
-        if (alert_1) {
-          alert_1.classList.remove("d-none");
-          alert_1.innerHTML = "아이디 혹은 비밀번호를 확인해주세요.";
-        } else {
-          console.error("일시적인 오류입니다. 다시 시도해주세요.");
-        }
+        this.handleErrors(error);
       }
     },
   },
@@ -153,7 +172,7 @@ export default {
 
 <style>
 #content {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -175,17 +194,40 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.error-shake-animation {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
 
 .container {
   width: 1500px !important;
-  height: 1800px;
+  height: 2000px;
   max-width: 95%;
 }
 
 .input {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
 }
 
 .input > label {
@@ -231,16 +273,17 @@ export default {
 
 .alternative-option {
   text-align: center;
+  margin-top: 100px;
 }
 
 .alternative-option > span {
   color: #0e9448;
   cursor: pointer;
 }
+.alert {
+  font-size: 0.9rem;
 
-#sign_out {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-bottom: -91px;
+  margin-top: 1rem;
 }
 </style>
