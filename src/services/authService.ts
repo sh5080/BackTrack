@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import * as authModel from "../models/authModel";
 import jwt from "jsonwebtoken";
 import config from "../config";
-import * as User from "../types/type";
+import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 
 const { saltRounds } = config.bcrypt;
@@ -14,7 +14,7 @@ const REFRESH_TOKEN_EXPIRES_IN = config.jwt.ACCESS_TOKEN_EXPIRES_IN;
 /**
  * 사용자 회원가입
  */
-export const signupUser = async (user: User.User) => {
+export const signupUser = async (user: Type.User) => {
   try {
     const hashedPassword = await bcrypt.hash(String(user.password), saltRounds);
     const foundUserId = await authModel.getUserByUsername(
@@ -38,6 +38,35 @@ export const signupUser = async (user: User.User) => {
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원가입에 실패했습니다.",
+        500
+      );
+    }
+  }
+};
+
+/**
+ * 회원가입시 아이디 중복검사
+ */
+export const getUsername = async (username: string) => {
+  try {
+    const user = await authModel.getUserByUsername(username);
+    if (user) {
+      throw new AppError(
+        CommonError.DUPLICATE_ENTRY,
+        "이미 사용중인 아이디입니다.",
+        400
+      );
+    }
+    return user;
+  } catch (error) {
+    if (error instanceof AppError) {
+      console.error(error);
+      throw error;
+    } else {
+      console.error(error);
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "아이디 중복검사에 실패했습니다.",
         500
       );
     }
@@ -151,7 +180,7 @@ export const getUser = async (username?: string) => {
  */
 export const updateUser = async (
   username: string,
-  updateData: Partial<User.User>
+  updateData: Partial<Type.User>
 ) => {
   try {
     const existingUser = await authModel.getUserByUsername(username);

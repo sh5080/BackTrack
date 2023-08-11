@@ -10,6 +10,9 @@ router.post(
   validateRequestBody(["username", "email", "password"]),
   authController.signup
 );
+/** [회원가입] 아이디 중복검사 */
+router.get("/check/:username", authController.getUsername);
+
 /** [인증] 로그인 */
 router.post(
   "/login",

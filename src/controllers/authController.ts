@@ -45,6 +45,37 @@ export const signup = async (
   }
 };
 
+/** 아이디 중복검사 */
+export const getUsername = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username } = req.params;
+    const user = await authService.getUsername(username);
+
+    if (username === undefined) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "아이디를 입력해 주세요.",
+        400
+      );
+    }
+    if (username.length < 6 || username.length > 20) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "아이디는 6자 이상 20자 이내로 설정해야 합니다.",
+        400
+      );
+    }
+    res.status(200).json({ message: "사용 가능한 아이디입니다." });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 /** 로그인 */
 export const login = async (
   req: Request,
