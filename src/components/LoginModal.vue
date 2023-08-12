@@ -1,7 +1,9 @@
 <template>
   <div id="content" class="container">
     <form @submit.prevent="login" style="margin-left: 10px">
-      <h2 class="mb-3" style="font-size: 6em">로그인</h2>
+      <h2 class="mb-3" style="position: relative; top: 50px; font-size: 6em">
+        로그인
+      </h2>
       <div class="input">
         <label for="username" style="font-size: 4.5em; margin-top: 100px"
           >아이디</label
@@ -42,7 +44,7 @@
         />
       </div>
       <div
-        class="alert alert-warning alert-dismissible fade show mt-5"
+        class="login-error-alert alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="errorAlert"
         :class="{ 'error-shake-animation': isShaking }"
@@ -108,8 +110,7 @@ export default {
       this.clearErrors();
 
       const errorMessage = error.response.data.message;
-      if (errorMessage.includes("필수 입력값이 누락되었습니다:"))
-        this.errorAlert = true;
+      if (errorMessage) this.errorAlert = true;
       this.errorMessage = "아이디 혹은 비밀번호를 확인해주세요.";
 
       setTimeout(() => {
@@ -227,7 +228,7 @@ export default {
 .input {
   display: flex;
   flex-direction: column;
-  /* margin-bottom: 15px; */
+  margin-bottom: 15px;
 }
 
 .input > label {
@@ -280,7 +281,7 @@ export default {
   color: #0e9448;
   cursor: pointer;
 }
-.alert {
+.login-error-alert {
   font-size: 0.9rem;
 
   margin-bottom: -91px;

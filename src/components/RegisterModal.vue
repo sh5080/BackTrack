@@ -1,20 +1,25 @@
 <template>
   <div id="content" class="container">
+    <button
+      @click="checkUsername"
+      class="btn-check"
+      style="font-size: 3em; /* margin-left: 500px; 
+      margin-top: 200px */"
+    >
+      중복확인
+    </button>
     <form @submit.prevent="register" style="margin-left: 10px">
-      <h2 class="modal-title" style="font-size: 6em">회원가입</h2>
-      <div class="input">
-        <v-col>
-          <label for="username" style="font-size: 4em; margin-top: 100px"
-            >아이디</label
-          >
-          <button
-            @click="checkUsername"
-            class="mt-4 btn-check"
-            style="font-size: 3em; margin-left: 300px"
-          >
-            중복확인
-          </button>
-        </v-col>
+      <h2
+        class="mb-3"
+        style="font-size: 6em; margin-top: -70px; padding-bottom: 0px"
+      >
+        회원가입
+      </h2>
+      <div class="input-reg">
+        <label for="username" style="font-size: 4.5em; margin-top: 80px"
+          >아이디</label
+        >
+
         <input
           class="form-control"
           type="text"
@@ -24,7 +29,7 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: -10px;
+            margin-top: 10px;
             margin-bottom: 20px;
           "
         />
@@ -35,23 +40,24 @@
         role="alert"
         v-if="usernameError"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center; /* height: 1px */"
+        style="font-size: 3em; text-align: center"
       >
         <div class="error-message">
           {{ usernameErrorMessage }}
         </div>
       </div>
       <div
-        class="alert alert-success alert-dismissible fade show mt-5"
+        class="alert alert-success alert-dismissible fade show"
         role="alert"
-        v-else-if="usernameIsValid"
+        v-if="usernameIsValid"
+        :class="{ 'error-shake-animation': isShaking }"
         style="font-size: 3em; text-align: center"
       >
-        사용 가능한 아이디입니다.
+        {{ usernameMessage }}
       </div>
 
-      <div class="input">
-        <label for="password" style="font-size: 4em; margin-top: 100px"
+      <div class="input-reg">
+        <label for="password" style="font-size: 4.5em; margin-top: 130px"
           >비밀번호</label
         >
         <input
@@ -59,6 +65,7 @@
           type="password"
           v-model="password"
           placeholder="비밀번호"
+          @blur="validatePasswordValidity"
           style="
             font-size: 4em;
             padding: 0.5em;
@@ -72,6 +79,7 @@
           type="password"
           v-model="passwordConfirm"
           placeholder="비밀번호 확인"
+          @blur="validatePasswordEquality"
           style="
             font-size: 4em;
             padding: 0.5em;
@@ -91,8 +99,8 @@
         {{ passwordErrorMessage }}
       </div>
 
-      <div class="input">
-        <label for="email" style="font-size: 4em; margin-top: 100px"
+      <div class="input-reg">
+        <label for="email" style="font-size: 4.5em; margin-top: 130px"
           >이메일</label
         >
         <input
@@ -100,6 +108,7 @@
           type="text"
           v-model="email"
           placeholder="이메일"
+          @blur="register"
           style="
             font-size: 4em;
             padding: 0.5em;
@@ -110,7 +119,7 @@
         />
       </div>
       <div
-        class="alert alert-warning alert-dismissible fade show mt-5"
+        class="alert-reg alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="emailError"
         :class="{ 'error-shake-animation': isShaking }"
@@ -119,7 +128,7 @@
         {{ emailErrorMessage }}
       </div>
 
-      <div class="alternative-option mt-4" style="font-size: 3em">
+      <div class="alternative-option" style="font-size: 3em">
         이미 가입되어 있으신가요?
         <span @click="showLoginModal" style="font-size: 1.3em; cursor: pointer"
           >로그인</span
@@ -127,10 +136,12 @@
       </div>
       <button
         v-if="showRegisterButton"
+        type="submit"
         @click="register"
         class="mt-4 btn-reg"
         style="font-size: 3.5em"
       >
+        <!-- 버튼 안에 :disabled="!usernameIsValid" -->
         Register
       </button>
     </form>
@@ -161,7 +172,50 @@ export default {
       usernameMessage: "",
     };
   },
+
   methods: {
+    validatePasswordEquality() {
+      if (this.password !== this.passwordConfirm) {
+        this.isShaking = true;
+        this.passwordErrorMessage =
+          "비밀번호와 비밀번호 확인이 일치하지 않습니다.";
+        this.passwordError = true;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      } else {
+        this.passwordErrorMessage = "";
+        this.passwordError = false;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      }
+    },
+    validatePasswordValidity() {
+      const passwordPattern =
+        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,20}$/;
+
+      if (!passwordPattern.test(this.password)) {
+        this.isShaking = true;
+        this.passwordErrorMessage =
+          "비밀번호는 영문, 숫자, 특수문자를 포함하여 10자 이상 20자 이내여야 합니다.";
+        this.passwordError = true;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      } else {
+        this.passwordErrorMessage = "";
+        this.passwordError = false;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      }
+    },
+
     clearErrors() {
       this.emailError = false;
       this.emailErrorMessage = "";
@@ -169,16 +223,13 @@ export default {
       this.usernameErrorMessage = "";
       this.passwordError = false;
       this.passwordErrorMessage = "";
-      this.usernameIsValid = false;
-      this.usernameMessage = "";
     },
     handleErrors(error) {
       this.isShaking = true;
       this.clearErrors(); // 이전 에러를 초기화
 
       const errorMessage = error.response.data.message;
-
-      if (errorMessage.includes("필수 입력값이 누락되었습니다:")) {
+      if (errorMessage.includes("password") || errorMessage.includes("email")) {
         this.emailError = true;
         this.emailErrorMessage = "빈 칸을 모두 입력해주세요.";
       } else if (errorMessage.includes("아이디")) {
@@ -195,7 +246,7 @@ export default {
       setTimeout(() => {
         this.isShaking = false;
         this.clearErrors();
-      }, 3000);
+      }, 1000);
     },
     showLoginModal() {
       this.$emit("close");
@@ -218,33 +269,52 @@ export default {
           { withCredentials: true }
         );
 
-        this.usernameError = false;
         this.usernameIsValid = true;
+
         this.usernameMessage = response.data.message;
       } catch (error) {
+        this.isShaking = true;
         console.error("Error checking username availability:", error);
-        this.handleErrors(error);
+        this.usernameIsValid = true;
+        this.usernameMessage = error.response.data.message;
+
+        setTimeout(() => {
+          this.isShaking = false;
+          this.usernameIsValid = false;
+        }, 1000);
       }
     },
-  },
 
-  async register() {
-    console.log("1");
-    try {
-      const response = await axios.post(
-        "http://localhost:4000/api/auth/signup",
-        {
-          username: this.username,
-          password: this.password,
-          passwordConfirm: this.passwordConfirm,
-          email: this.email,
-        },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.error("Registration error:", error);
-      this.handleErrors(error);
-    }
+    async register() {
+      // if (!this.usernameMessage === "사용 가능한 아이디입니다.") {
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/api/auth/signup",
+          {
+            username: this.username,
+            password: this.password,
+            passwordConfirm: this.passwordConfirm,
+            email: this.email,
+          },
+          { withCredentials: true }
+        );
+        console.log(response);
+        if (response.data.message.includes("회원가입에 성공했습니다.")) {
+          this.setAuthenticated(true);
+          this.$store.commit(
+            "setLoggedInUsername",
+            response.data.user.username
+          );
+          this.$emit("close");
+          this.$router.push("/");
+        }
+      } catch (error) {
+        const errorMessage = error.response.data.message;
+        console.error("Registration error:", error);
+        this.handleErrors(error);
+      }
+      // }
+    },
   },
 };
 </script>
@@ -288,7 +358,7 @@ export default {
   width: 1500px;
 }
 
-.modal-content {
+.mt-3nt {
   max-height: calc(100% - 48px);
   width: calc(100% - 48px);
   max-width: calc(100% - 48px);
@@ -299,17 +369,18 @@ export default {
   align-items: center;
 }
 
-.input {
+.input-reg {
   display: flex;
   flex-direction: column;
+  margin-top: -30px;
   margin-bottom: 15px;
 }
 
-.input > label {
+.input-reg > label {
   text-align: start;
 }
 
-.input > input {
+.input-reg > input {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: 100px !important;
@@ -335,8 +406,8 @@ export default {
 }
 .btn-check {
   position: relative;
-  top: -10%;
-  left: 50%;
+  top: 13%;
+  left: 85%;
   padding: 0.5em 2.5em;
   font-size: 8px;
   text-transform: uppercase;
@@ -367,19 +438,22 @@ export default {
   transform: translate(-50%, -1px);
 }
 
-.alternative-option {
+/* .alternative-option {
   text-align: center;
-}
+  margin-top: 100px;
+} */
 
-.alternative-option > span {
+/* .alternative-option > span {
   color: #0e9448;
   cursor: pointer;
-}
+} */
 
 .alert {
   font-size: 0.9rem;
-
-  margin-bottom: -73px;
-  margin-top: 1rem;
+  margin-bottom: -102px;
+}
+.alert-reg {
+  font-size: 0.9rem;
+  margin-bottom: -92px;
 }
 </style>
