@@ -9,17 +9,18 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, passwordConfirm, email } = req.body;
     const userData = { username, email, password };
     const exceptPassword = { username, email };
 
-    if (username.length < 6 || username.length > 20) {
+    if (password !== passwordConfirm) {
       throw new AppError(
         CommonError.INVALID_INPUT,
-        "아이디는 6자 이상 20자 이내로 설정해야 합니다.",
+        "동일한 비밀번호를 입력해주세요.",
         400
       );
     }
+
     const passwordRegex =
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{10,20}$/;
     if (!passwordRegex.test(password)) {
@@ -38,7 +39,9 @@ export const signup = async (
     }
 
     await authService.signupUser(userData);
-    res.status(201).json(exceptPassword);
+    res
+      .status(201)
+      .json({ message: "회원가입에 성공했습니다.", exceptPassword });
   } catch (error) {
     console.error(error);
     next(error);
@@ -47,12 +50,12 @@ export const signup = async (
 
 /** 아이디 중복검사 */
 export const getUsername = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { username } = req.params;
+    const { username } = req.query;
     const user = await authService.getUsername(username);
 
     if (username === undefined) {

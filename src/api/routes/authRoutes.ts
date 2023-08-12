@@ -7,11 +7,11 @@ const router = Router();
 /** 회원가입 */
 router.post(
   "/signup",
-  validateRequestBody(["username", "email", "password"]),
+  validateRequestBody(["username", "password", "passwordConfirm", "email"]),
   authController.signup
 );
 /** [회원가입] 아이디 중복검사 */
-router.get("/check/:username", authController.getUsername);
+router.get("/check", authController.getUsername);
 
 /** [인증] 로그인 */
 router.post(
