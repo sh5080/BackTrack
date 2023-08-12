@@ -12,10 +12,8 @@ export const saveBacktrack = async (
     );
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.DB_ERROR,
         "백킹트랙 저장에 실패했습니다.",

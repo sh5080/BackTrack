@@ -14,10 +14,8 @@ export const createUser = async (user: User.User): Promise<void> => {
     );
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(CommonError.DB_ERROR, "회원가입에 실패했습니다.", 500);
     }
   }
@@ -38,10 +36,8 @@ export const getUserByUsername = async (username?: string) => {
     return null;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.DB_ERROR,
         "사용자 정보 조회에 실패했습니다.",
@@ -66,10 +62,8 @@ export const getUserByEmail = async (
     return null;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.DB_ERROR,
         "사용자 정보 조회에 실패했습니다.",
@@ -98,10 +92,8 @@ export const updateUserByUsername = async (
     return updatedUser;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.DB_ERROR,
         "사용자 정보 수정에 실패했습니다.",
@@ -140,10 +132,8 @@ export const deleteUserByUsername = async (username: string) => {
   } catch (error) {
     await connection.rollback();
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.DB_ERROR,
         "회원 탈퇴에 실패했습니다.",

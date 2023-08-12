@@ -31,10 +31,8 @@ export const signupUser = async (user: Type.User) => {
     await authModel.createUser({ ...user, password: hashedPassword });
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원가입에 실패했습니다.",
@@ -60,10 +58,8 @@ export const getUsername = async (username: string) => {
     return user;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "아이디 중복검사에 실패했습니다.",
@@ -130,10 +126,8 @@ export const loginUser = async (
     return { accessToken, refreshToken };
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "로그인에 실패했습니다.",
@@ -162,10 +156,8 @@ export const getUser = async (username?: string) => {
     return userData;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원정보 조회에 실패했습니다.",
@@ -234,10 +226,8 @@ export const updateUser = async (
     return userInfo;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원정보 수정에 실패했습니다.",
@@ -256,10 +246,8 @@ export const deleteUser = async (username: string) => {
     return deletedUser;
   } catch (error) {
     if (error instanceof AppError) {
-      console.error(error);
       throw error;
     } else {
-      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원탈퇴에 실패했습니다.",

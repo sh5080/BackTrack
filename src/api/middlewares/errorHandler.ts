@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../../types/AppError';
+import { Request, Response, NextFunction } from "express";
+import { AppError } from "../../types/AppError";
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (err instanceof AppError) {
     const { message, name, status } = err;
     const errorResponse = {
@@ -10,15 +15,16 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
       status,
     };
     res.status(status).json(errorResponse);
-  } 
-  else {
+    console.error(err);
+  } else {
     res.status(500).json({
       error: {
-        message: 'Unexpected Error',
+        message: "Unexpected Error",
         name: err.message,
         status: 500,
       },
     });
+    console.error(err);
   }
 };
 

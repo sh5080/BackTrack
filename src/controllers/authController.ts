@@ -12,6 +12,13 @@ export const signup = async (
     const { username, password, passwordConfirm, email } = req.body;
     const userData = { username, email, password };
     const exceptPassword = { username, email };
+    if (username.length < 6 || username.length > 20) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "아이디는 6자 이상 20자 이내로 설정해야 합니다.",
+        400
+      );
+    }
 
     if (password !== passwordConfirm) {
       throw new AppError(
@@ -43,7 +50,6 @@ export const signup = async (
       .status(201)
       .json({ message: "회원가입에 성공했습니다.", exceptPassword });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -58,13 +64,6 @@ export const getUsername = async (
     const { username } = req.query;
     const user = await authService.getUsername(username);
 
-    if (username === undefined) {
-      throw new AppError(
-        CommonError.INVALID_INPUT,
-        "아이디를 입력해 주세요.",
-        400
-      );
-    }
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -74,7 +73,6 @@ export const getUsername = async (
     }
     res.status(200).json({ message: "사용 가능한 아이디입니다." });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -107,7 +105,6 @@ export const login = async (
       .status(200)
       .json({ message: "로그인 성공", user: userData });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -124,7 +121,6 @@ export const logout = async (
       .status(200)
       .json({ message: "로그아웃 되었습니다." });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -147,7 +143,6 @@ export const getUserInfo = async (
     }
     res.status(200).json({ userData });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -177,7 +172,6 @@ export const updateUserInfo = async (
 
     res.status(200).json(updatedUserData);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -204,7 +198,6 @@ export const deleteUserInfo = async (
     const responseData = { name, username, email };
     res.clearCookie("token").status(200).json(responseData);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };

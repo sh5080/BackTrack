@@ -50,7 +50,6 @@ export const createBacktrack = async (
 
     return res.json({ backingTrack });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -67,7 +66,6 @@ export const saveBacktrack = async (
     await backtrackService.saveBacktrack(backtrackData);
     return res.json({ message: "백킹트랙 저장에 성공했습니다." });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
