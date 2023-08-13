@@ -11,3 +11,10 @@ export interface Backtrack {
   measures: number;
   bpm: number;
 }
+
+export interface OauthUser extends User {
+  username: string;
+  email: string;
+  activated?: number;
+  oauthProvider?: "KAKAO" | "GOOGLE" | "ORIGIN";
+}

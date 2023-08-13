@@ -16,4 +16,16 @@ export interface Config {
   bcrypt: {
     saltRounds: number;
   };
+  google: {
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
+    GOOGLE_REDIRECT_URI: string;
+  };
+  kakao: {
+    KAKAO_CLIENT_ID: string;
+    KAKAO_REDIRECT_URI: string;
+  };
+  server: {
+    URL: string;
+  };
 }
