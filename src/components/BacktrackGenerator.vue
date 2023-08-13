@@ -18,7 +18,7 @@
                   <button
                     class="auth-button"
                     v-show="!$store.state.isAuthenticated"
-                    @click="showLoginModal = true"
+                    @click="openLoginModal"
                   >
                     로그인
                   </button>
@@ -34,8 +34,8 @@
                 </div>
               </div>
             </v-col>
-            <v-dialog v-model="showLoginModal">
-              <Login @close="hideLoginModal" />
+            <v-dialog v-model="$store.state.showLoginModal">
+              <Login @closeLogin="closeLoginModal" />
             </v-dialog>
           </div>
         </v-col>
@@ -378,7 +378,7 @@ export default {
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
       resultChords: [],
-      showLoginModal: false,
+      // showLoginModal: false,
     };
   },
   watch: {
@@ -640,8 +640,12 @@ export default {
     resetSelections() {
       this.selectedChords = [];
     },
-    hideLoginModal() {
-      this.showLoginModal = false;
+    openLoginModal() {
+      this.$store.commit("toggleLoginModal", true);
+    },
+
+    closeLoginModal() {
+      this.$store.commit("toggleLoginModal", false);
     },
     ...mapMutations(["setAuthenticated"]),
     async logout() {
@@ -651,6 +655,7 @@ export default {
         );
         if (response.data.message === "로그아웃 되었습니다.") {
           this.setAuthenticated(false);
+          this.$store.commit("setLoggedInUsername", null);
           this.$router.push("/");
         }
       } catch (error) {

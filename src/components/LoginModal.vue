@@ -56,17 +56,17 @@
       <div class="alternative-option" style="font-size: 3em">
         회원이 아니신가요?
         <span
-          @click="showRegisterModal"
+          @click="openRegisterModal"
           style="font-size: 1.3em; cursor: pointer"
           >회원가입</span
         >
       </div>
-      <Register
-        v-if="isRegisterModalVisible"
-        @close="hideRegisterModal"
-        @showLogin="showLoginModal"
-        @restoreLoginButton="restoreLoginButton"
-      />
+      <v-dialog v-model="$store.state.showRegisterModal">
+        <Register
+          @closeRegister="hideRegisterModal"
+          @closeLoginInRegister="hideLoginModal"
+        />
+      </v-dialog>
       <button
         v-if="showLoginButton"
         type="submit"
@@ -92,11 +92,10 @@ export default {
     return {
       username: "",
       password: "",
-      showLoginButton: true,
-      isRegisterModalVisible: false,
+
       errorAlert: false,
       isShaking: false,
-
+      showLoginButton: true,
       errorMessage: "",
     };
   },
@@ -119,28 +118,24 @@ export default {
       }, 3000);
     },
 
-    showRegisterModal() {
-      this.isRegisterModalVisible = true;
-      this.showLoginButton = false;
+    openRegisterModal() {
+      this.$store.commit("toggleRegisterModal", true);
     },
     hideRegisterModal() {
-      this.isRegisterModalVisible = false;
+      this.$store.commit("toggleRegisterModal", false);
     },
-    closeRegisterModal() {
-      this.isRegisterModalVisible = false;
+
+    // openRegisterSuccessModal() {
+    //   this.$store.commit("toggleRegisterSuccessModal");
+    // },
+    hideLoginModal() {
+      this.$store.commit("toggleLoginModal", false);
     },
-    showLoginModal() {
-      this.isLoginModalVisible = true;
-      this.showLoginButton = false;
-    },
-    restoreLoginButton() {
-      this.showLoginButton = true;
-    },
+
     ...mapMutations(["setAuthenticated"]),
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
       this.password = submitEvent.target.elements.password.value;
-
       try {
         const response = await axios.post(
           "http://localhost:4000/api/auth/login",
@@ -150,16 +145,15 @@ export default {
           },
           { withCredentials: true }
         );
+
         // 로그인 성공 시 로그인 버튼 숨김
         this.showLoginButton = false;
         // 백엔드에서 반환된 데이터 처리
         if (response.data.message === "로그인 성공") {
           this.setAuthenticated(true);
-          this.$store.commit(
-            "setLoggedInUsername",
-            response.data.user.username
-          );
-          this.$emit("close");
+          this.$store.commit("setLoggedInUsername", response.data.user);
+
+          this.$emit("closeLogin");
           this.$router.push("/");
         }
       } catch (error) {

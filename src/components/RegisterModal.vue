@@ -3,8 +3,9 @@
     <button
       @click="checkUsername"
       class="btn-check"
-      style="font-size: 3em; /* margin-left: 500px; 
-      margin-top: 200px */"
+      type="button"
+      :class="{ 'btn-success': usernameIsValid }"
+      style="font-size: 3em"
     >
       중복확인
     </button>
@@ -108,7 +109,7 @@
           type="text"
           v-model="email"
           placeholder="이메일"
-          @blur="register"
+          @blur="validateEmail"
           style="
             font-size: 4em;
             padding: 0.5em;
@@ -130,7 +131,7 @@
 
       <div class="alternative-option" style="font-size: 3em">
         이미 가입되어 있으신가요?
-        <span @click="showLoginModal" style="font-size: 1.3em; cursor: pointer"
+        <span @click="openLoginModal" style="font-size: 1.3em; cursor: pointer"
           >로그인</span
         >
       </div>
@@ -141,18 +142,21 @@
         class="mt-4 btn-reg"
         style="font-size: 3.5em"
       >
-        <!-- 버튼 안에 :disabled="!usernameIsValid" -->
         Register
       </button>
+      <v-dialog v-model="$store.state.showRegisterSuccessModal">
+        <RegisterSuccess @closeRegisterSuccess="closeRegisterSuccessModal" />
+      </v-dialog>
     </form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-
+import { mapMutations } from "vuex";
+import RegisterSuccess from "@/components/RegisterSuccessModal.vue";
 export default {
-  components: {},
+  components: { RegisterSuccess },
   data() {
     return {
       username: "",
@@ -215,6 +219,24 @@ export default {
         }, 1000);
       }
     },
+    validateEmail() {
+      if (!this.email.includes("@")) {
+        this.isShaking = true;
+        this.emailErrorMessage = "올바른 이메일 형식을 사용해주세요.";
+        this.emailError = true;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      } else {
+        this.emailErrorMessage = "";
+        this.emailError = false;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.clearErrors();
+        }, 1000);
+      }
+    },
 
     clearErrors() {
       this.emailError = false;
@@ -229,7 +251,11 @@ export default {
       this.clearErrors(); // 이전 에러를 초기화
 
       const errorMessage = error.response.data.message;
-      if (errorMessage.includes("password") || errorMessage.includes("email")) {
+      if (
+        errorMessage.includes("password") ||
+        errorMessage.includes("email") ||
+        errorMessage.includes("username")
+      ) {
         this.emailError = true;
         this.emailErrorMessage = "빈 칸을 모두 입력해주세요.";
       } else if (errorMessage.includes("아이디")) {
@@ -248,16 +274,19 @@ export default {
         this.clearErrors();
       }, 1000);
     },
-    showLoginModal() {
-      this.$emit("close");
-      this.$emit("showLogin");
+    openLoginModal() {
+      this.$emit("closeRegister");
       this.$emit("restoreLoginButton");
-      // this.isLoginModalVisible = true;
-      // this.showRegisterButton = false;
     },
-    hideLoginModal() {
-      this.isLoginModalVisible = false;
+    openRegisterSuccessModal() {
+      this.$store.commit("toggleRegisterSuccessModal", true);
+      // this.$emit("closeRegister");
+      // this.$emit("closeLoginInRegister");
     },
+    closeRegisterSuccessModal() {
+      this.$store.commit("toggleRegisterSuccessModal", false);
+    },
+
     async checkUsername() {
       // this.isShaking = true;
       try {
@@ -284,36 +313,52 @@ export default {
         }, 1000);
       }
     },
-
+    ...mapMutations(["setAuthenticated"]),
     async register() {
-      // if (!this.usernameMessage === "사용 가능한 아이디입니다.") {
-      try {
-        const response = await axios.post(
-          "http://localhost:4000/api/auth/signup",
-          {
-            username: this.username,
-            password: this.password,
-            passwordConfirm: this.passwordConfirm,
-            email: this.email,
-          },
-          { withCredentials: true }
-        );
-        console.log(response);
-        if (response.data.message.includes("회원가입에 성공했습니다.")) {
-          this.setAuthenticated(true);
-          this.$store.commit(
-            "setLoggedInUsername",
-            response.data.user.username
+      if (
+        this.usernameIsValid &&
+        this.usernameMessage === "사용 가능한 아이디입니다."
+      ) {
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/auth/signup",
+            {
+              username: this.username,
+              password: this.password,
+              passwordConfirm: this.passwordConfirm,
+              email: this.email,
+            },
+            { withCredentials: true }
           );
-          this.$emit("close");
-          this.$router.push("/");
+          if (response.data.message.includes("회원가입에 성공했습니다.")) {
+            this.setAuthenticated(true);
+
+            this.$store.commit(
+              "setLoggedInUsername",
+              response.data.exceptPassword.username
+            );
+
+            this.$store.commit("toggleRegisterSuccessModal", true);
+
+            // if (this.$store.commit("toggleRegisterSuccessModal", true)) {
+            //   this.$emit("closeRegister");
+            //   this.$emit("closeLoginInRegister");
+            // }
+            this.$router.push("/");
+          }
+        } catch (error) {
+          console.error("Registration error:", error);
+          this.handleErrors(error);
         }
-      } catch (error) {
-        const errorMessage = error.response.data.message;
-        console.error("Registration error:", error);
-        this.handleErrors(error);
+      } else {
+        this.isShaking = true;
+        this.emailError = true;
+        this.emailErrorMessage = "아이디 중복확인이 필요합니다.";
+        setTimeout(() => {
+          this.isShaking = false;
+          this.emailError = false;
+        }, 1000);
       }
-      // }
     },
   },
 };
@@ -429,6 +474,9 @@ export default {
   box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
   color: #fff;
   transform: translate(-50%, -7px);
+}
+.btn-success {
+  background-color: #198754;
 }
 
 .btn-reg:active {
