@@ -1,7 +1,7 @@
 import express, { Application } from "express";
-
+import { AppDataSource } from "../loaders/dbLoader";
 import cors from "cors";
-import { dbLoader } from "../loaders/dbLoader";
+// import { dbLoader } from "../loaders/dbLoader";
 import routeLoader from "./routeLoader";
 import { errorHandler } from "../api/middlewares/errorHandler";
 import responseTime from "../api/middlewares/responseTime";
@@ -10,7 +10,7 @@ export default async function expressLoader(
   app: Application
 ): Promise<Application> {
   try {
-    const db = await dbLoader();
+    // const db = await dbLoader();
     const corsOptions = {
       origin: ["http://localhost:8080"],
       credentials: true,
@@ -21,7 +21,8 @@ export default async function expressLoader(
 
     app.use(cors(corsOptions));
 
-    app.set("db", db);
+    // app.set("db", db);
+    app.set("connection", AppDataSource);
 
     routeLoader(app);
     app.use(errorHandler);
