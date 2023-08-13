@@ -10,7 +10,7 @@ export const signup = async (
 ) => {
   try {
     const { username, password, passwordConfirm, email } = req.body;
-    const userData = { username, email, password };
+
     const exceptPassword = { username, email };
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
@@ -45,7 +45,13 @@ export const signup = async (
       );
     }
 
-    await authService.signupUser(userData);
+    // await authService.signupUser(userData);
+    const newUser = await authService.signupUser({
+      username,
+      email,
+      password,
+    });
+    // console.log(newUser);
     res
       .status(201)
       .json({ message: "회원가입에 성공했습니다.", exceptPassword });
@@ -62,7 +68,7 @@ export const getUsername = async (
 ) => {
   try {
     const { username } = req.query;
-    const user = await authService.getUsername(username);
+    await authService.getUsername(username);
 
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
@@ -71,6 +77,7 @@ export const getUsername = async (
         400
       );
     }
+
     res.status(200).json({ message: "사용 가능한 아이디입니다." });
   } catch (error) {
     next(error);
@@ -85,15 +92,16 @@ export const login = async (
 ) => {
   try {
     const { username, password } = req.body;
-    const userData = await authService.getUser(username);
+    // const userData = await authService.getUsername(username);
 
-    if (!userData.activated) {
-      throw new AppError(
-        CommonError.UNAUTHORIZED_ACCESS,
-        "탈퇴한 회원입니다.",
-        400
-      );
-    }
+    // if (!userData.activated) {
+    //   throw new AppError(
+    //     CommonError.UNAUTHORIZED_ACCESS,
+    //     "탈퇴한 회원입니다.",
+    //     400
+    //   );
+    // }
+
     const token = await authService.loginUser(username!, password!);
 
     res
@@ -103,7 +111,10 @@ export const login = async (
         maxAge: 3600000,
       })
       .status(200)
-      .json({ message: "로그인 성공", user: userData });
+      .json({
+        message: "로그인 성공",
+        user: username,
+      });
   } catch (error) {
     next(error);
   }

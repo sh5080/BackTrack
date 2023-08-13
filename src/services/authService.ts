@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
+import { AuthRepository } from "../models/repositories/auth.repository";
+import { AuthEntity } from "../models/entities/auth.entity";
 
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
@@ -14,25 +16,23 @@ const REFRESH_TOKEN_EXPIRES_IN = config.jwt.ACCESS_TOKEN_EXPIRES_IN;
 /**
  * 사용자 회원가입
  */
+
 export const signupUser = async (user: Type.User) => {
   try {
     const hashedPassword = await bcrypt.hash(String(user.password), saltRounds);
-    const foundUserId = await authModel.getUserByUsername(
-      String(user.username)
-    );
-    if (foundUserId) {
-      throw new AppError(
-        CommonError.DUPLICATE_ENTRY,
-        "이미 존재하는 아이디입니다.",
-        409
-      );
-    }
 
-    await authModel.createUser({ ...user, password: hashedPassword });
+    const newUser = await AuthRepository.createUser({
+      username: user.username,
+      email: user.email,
+      password: hashedPassword,
+    });
+    console.log(newUser);
+    return newUser;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
     } else {
+      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "회원가입에 실패했습니다.",
@@ -45,17 +45,41 @@ export const signupUser = async (user: Type.User) => {
 /**
  * 회원가입시 아이디 중복검사
  */
-export const getUsername = async (username: string) => {
+// export const getUsername = async (username: string) => {
+//   try {
+//     const user = await authModel.getUserByUsername(username);
+//     if (user) {
+//       throw new AppError(
+//         CommonError.DUPLICATE_ENTRY,
+//         "이미 사용중인 아이디입니다.",
+//         400
+//       );
+//     }
+//     return user;
+//   } catch (error) {
+//     if (error instanceof AppError) {
+//       throw error;
+//     } else {
+//       throw new AppError(
+//         CommonError.UNEXPECTED_ERROR,
+//         "아이디 중복검사에 실패했습니다.",
+//         500
+//       );
+//     }
+//   }
+// };
+export const getUsername = async (username: string): Promise<boolean> => {
   try {
-    const user = await authModel.getUserByUsername(username);
-    if (user) {
+    const existingUser = await AuthRepository.checkDuplicateUsername(username);
+    if (!existingUser) {
       throw new AppError(
         CommonError.DUPLICATE_ENTRY,
         "이미 사용중인 아이디입니다.",
         400
       );
     }
-    return user;
+    console.log(existingUser);
+    return existingUser;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
