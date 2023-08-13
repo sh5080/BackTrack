@@ -47,6 +47,8 @@ const config: Config = {
     DB_PASSWORD: getEnv("DB_PASSWORD"),
     /** [데이터베이스] 데이터베이스 이름 */
     DB_NAME: getEnv("DB_NAME"),
+    /** [데이터베이스] 서버시작시 데이터 초기화 여부 */
+    DB_SYNCRONIZE: getEnvNumber("DB_SYNCRONIZE"),
   },
 
   bcrypt: {
@@ -60,22 +62,14 @@ const config: Config = {
     /** [Google] 클라이언트 시크릿 */
     GOOGLE_CLIENT_SECRET: getEnv("GOOGLE_CLIENT_SECRET"),
     /** [Google] 리디렉션 URI */
-    GOOGLE_REDIRECT_URI: getEnv(
-      process.env.SERVER_MODE === "PRO"
-        ? "PRO_GOOGLE_REDIRECT_URI"
-        : "DEV_GOOGLE_REDIRECT_URI"
-    ),
+    GOOGLE_REDIRECT_URI: getEnv("GOOGLE_REDIRECT_URI"),
   },
 
   kakao: {
     /** [Kakao] 클라이언트 ID */
     KAKAO_CLIENT_ID: getEnv("KAKAO_CLIENT_ID"),
     /** [Kakao] 리디렉션 URI */
-    KAKAO_REDIRECT_URI: getEnv(
-      process.env.SERVER_MODE === "PRO"
-        ? "PRO_KAKAO_REDIRECT_URI"
-        : "DEV_KAKAO_REDIRECT_URI"
-    ),
+    KAKAO_REDIRECT_URI: getEnv("KAKAO_REDIRECT_URI"),
   },
   server: {
     URL: getEnv("SERVER_URL"),

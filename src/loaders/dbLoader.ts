@@ -2,7 +2,8 @@ import mysql, { Pool } from "mysql2/promise";
 import config from "../config";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = config.database;
+const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_SYNCRONIZE } =
+  config.database;
 export let db: Pool;
 
 export const dbLoader = async () => {
@@ -33,7 +34,7 @@ export const AppDataSource = new DataSource({
   username: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME,
-  synchronize: true,
+  synchronize: Boolean(DB_SYNCRONIZE),
   logging: false,
   // entities: [AuthEntity],
   // entities: [__dirname + "/../models/entities/*.entity.{js,ts}"],
