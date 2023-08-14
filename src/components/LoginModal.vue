@@ -1,13 +1,10 @@
 <template>
   <div id="content" class="container">
-    <form @submit.prevent="login" style="margin-left: 10px">
+    <form @submit.prevent="login" style="margin-left: 10px" autocomplete="off">
       <h2 class="mb-3" style="position: relative; top: 50px; font-size: 6em">
         로그인
       </h2>
       <div class="input">
-        <label for="username" style="font-size: 4.5em; margin-top: 100px"
-          >아이디</label
-        >
         <input
           class="form-control"
           type="text"
@@ -18,16 +15,13 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 100px;
+            /* margin-bottom: 150px; */
           "
         />
       </div>
 
       <div class="input">
-        <label for="password" style="font-size: 4.5em; margin-top: 100px"
-          >비밀번호</label
-        >
         <input
           class="form-control"
           type="password"
@@ -38,7 +32,7 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: 10px;
+            margin-top: -90px;
             /* margin-bottom: 100px; */
           "
         />
@@ -53,29 +47,57 @@
         {{ errorMessage }}
       </div>
 
-      <div class="alternative-option" style="font-size: 3em">
-        회원이 아니신가요?
-        <span
-          @click="openRegisterModal"
-          style="font-size: 1.3em; cursor: pointer"
-          >회원가입</span
-        >
-      </div>
+      <!-- <div class="oauth-login-buttons">
+        <button @click="oauthLogin('kakao')" class="oauth-button">
+          Kakao 로그인
+        </button>
+        <button @click="oauthLogin('google')" class="oauth-button">
+          Google 로그인
+        </button>
+        <button @click="oauthLogin('naver')" class="oauth-button">
+          Naver 로그인
+        </button>
+     
+      </div> -->
+
       <v-dialog v-model="$store.state.showRegisterModal">
         <Register
           @closeRegister="hideRegisterModal"
           @closeLoginInRegister="hideLoginModal"
         />
       </v-dialog>
+      <v-dialog v-model="$store.state.showFindUsernameModal">
+        <FindUsername />
+      </v-dialog>
       <button
         v-if="showLoginButton"
         type="submit"
-        class="mt-4 btn-pers"
+        class="btn-pers"
         id="login_button"
         style="font-size: 3.5em"
       >
         Login
       </button>
+      <div
+        class="alternative-option"
+        style="
+          font-size: 3em;
+          display: grid;
+          grid-gap: 10px;
+          grid-auto-flow: column;
+        "
+      >
+        <span
+          @click="openRegisterModal"
+          style="font-size: 1.3em; cursor: pointer"
+          >회원가입</span
+        >
+        <span
+          @click="openFindUsernameModal"
+          style="font-size: 1.3em; cursor: pointer"
+          >아이디 찾</span
+        >
+      </div>
     </form>
   </div>
 </template>
@@ -83,10 +105,12 @@
 <script>
 import axios from "axios";
 import Register from "./RegisterModal.vue";
+import FindUsername from "./findUsernameModal.vue";
 import { mapMutations } from "vuex";
 export default {
   components: {
     Register,
+    FindUsername,
   },
   data() {
     return {
@@ -109,14 +133,33 @@ export default {
       this.clearErrors();
 
       const errorMessage = error.response.data.message;
-      if (errorMessage) this.errorAlert = true;
-      this.errorMessage = "아이디 혹은 비밀번호를 확인해주세요.";
+      if (errorMessage.includes("필수")) {
+        this.errorAlert = true;
+        this.errorMessage = "아이디와 비밀번호를 입력해 주세요.";
+      } else if (errorMessage.includes("없는")) {
+        this.errorAlert = true;
+        this.errorMessage = "없는 사용자이거나 비밀번호가 일치하지 않습니다.";
+      } else if (errorMessage) {
+        this.errorAlert = true;
+        this.errorMessage = errorMessage;
+      }
 
       setTimeout(() => {
         this.isShaking = false;
         this.clearErrors();
       }, 3000);
     },
+    // async oauthLogin(provider) {
+    //   try {
+    //     // OAuth 로그인 처리 로직 구현
+    //     const response = await axios.post(`/api/oauth/${provider}`);
+    //     const accessToken = response.data.accessToken;
+
+    //     // 로그인 성공 후의 처리 (예: 토큰 저장 등)
+    //   } catch (error) {
+    //     // 오류 처리 로직
+    //   }
+    // },
 
     openRegisterModal() {
       this.$store.commit("toggleRegisterModal", true);
@@ -124,10 +167,10 @@ export default {
     hideRegisterModal() {
       this.$store.commit("toggleRegisterModal", false);
     },
+    openFindUsernameModal() {
+      this.$store.commit("toggleFindUsernameModal", true);
+    },
 
-    // openRegisterSuccessModal() {
-    //   this.$store.commit("toggleRegisterSuccessModal");
-    // },
     hideLoginModal() {
       this.$store.commit("toggleLoginModal", false);
     },
@@ -145,10 +188,8 @@ export default {
           },
           { withCredentials: true }
         );
-
-        // 로그인 성공 시 로그인 버튼 숨김
         this.showLoginButton = false;
-        // 백엔드에서 반환된 데이터 처리
+
         if (response.data.message === "로그인 성공") {
           this.setAuthenticated(true);
           this.$store.commit("setLoggedInUsername", response.data.user);
@@ -217,12 +258,15 @@ export default {
   width: 1500px !important;
   height: 2000px;
   max-width: 95%;
+  /* z-index: 9996; */
 }
 
 .input {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-top: 80px;
+  margin-bottom: 0px;
+  padding: 50px;
 }
 
 .input > label {
@@ -233,26 +277,28 @@ export default {
   margin-top: 100px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  height: 100px !important;
+  height: 150px !important;
 }
 
 .btn-pers {
   position: relative;
   left: 50%;
+  width: 93%;
   padding: 1em 2.5em;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 2.5px;
   font-weight: 700;
   color: #000;
-  background-color: #fff;
+  background-color: #cff7aa;
   border: none;
   border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease 0s;
   cursor: pointer;
   outline: none;
   transform: translateX(-50%);
+  margin-top: 100px;
 }
 
 .btn-pers:hover {
@@ -277,8 +323,6 @@ export default {
 }
 .login-error-alert {
   font-size: 0.9rem;
-
-  margin-bottom: -91px;
-  margin-top: 1rem;
+  margin-bottom: -92px;
 }
 </style>

@@ -9,7 +9,11 @@
     >
       중복확인
     </button>
-    <form @submit.prevent="register" style="margin-left: 10px">
+    <form
+      @submit.prevent="register"
+      style="margin-left: 10px"
+      autocomplete="off"
+    >
       <h2
         class="mb-3"
         style="font-size: 6em; margin-top: -90px; padding-bottom: 0px"
@@ -53,7 +57,6 @@
         v-if="usernameIsValid"
         style="font-size: 3em; text-align: center"
       >
-        <!-- :class="{ 'error-shake-animation': isShaking }" -->
         {{ usernameMessage }}
       </div>
 
@@ -305,8 +308,6 @@ export default {
         this.isShaking = true;
         console.error("Error checking username availability:", error);
 
-        // this.usernameIsValid = true;
-        // this.usernameMessage = error.response.data.message;
         this.usernameError = true;
         this.usernameErrorMessage = error.response.data.message;
         setTimeout(() => {
