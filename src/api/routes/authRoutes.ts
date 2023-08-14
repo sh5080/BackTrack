@@ -23,4 +23,7 @@ router.post(
 /** [인증] 로그아웃 */
 router.post("/logout", authController.logout);
 
+/** [사용자] 아이디 찾기 */
+router.get("/:email", authController.findUsernameByEmail);
+
 export default router;
