@@ -5,8 +5,7 @@ import config from "../config";
 import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
-import { AuthEntity } from "../models/entities/auth.entity";
-
+import * as nodemailer from "../config/nodeMailer";
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = config.jwt.REFRESH_TOKEN_SECRET;
@@ -45,40 +44,17 @@ export const signupUser = async (user: Type.User) => {
 /**
  * 회원가입시 아이디 중복검사
  */
-// export const getUsername = async (username: string) => {
-//   try {
-//     const user = await authModel.getUserByUsername(username);
-//     if (user) {
-//       throw new AppError(
-//         CommonError.DUPLICATE_ENTRY,
-//         "이미 사용중인 아이디입니다.",
-//         400
-//       );
-//     }
-//     return user;
-//   } catch (error) {
-//     if (error instanceof AppError) {
-//       throw error;
-//     } else {
-//       throw new AppError(
-//         CommonError.UNEXPECTED_ERROR,
-//         "아이디 중복검사에 실패했습니다.",
-//         500
-//       );
-//     }
-//   }
-// };
+
 export const getUsername = async (username: string): Promise<boolean> => {
   try {
     const existingUser = await AuthRepository.checkDuplicateUsername(username);
-    if (!existingUser) {
+    if (existingUser) {
       throw new AppError(
         CommonError.DUPLICATE_ENTRY,
         "이미 사용중인 아이디입니다.",
         400
       );
     }
-    console.log(existingUser);
     return existingUser;
   } catch (error) {
     if (error instanceof AppError) {
@@ -101,21 +77,13 @@ export const loginUser = async (
   password: string
 ): Promise<object> => {
   try {
-    const user = await authModel.getUserByUsername(username);
+    const user = await AuthRepository.login(username, password);
 
     if (!user) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
         "없는 사용자 입니다.",
         404
-      );
-    }
-
-    if (!user.activated) {
-      throw new AppError(
-        CommonError.UNAUTHORIZED_ACCESS,
-        "탈퇴한 회원입니다.",
-        400
       );
     }
 
@@ -126,8 +94,15 @@ export const loginUser = async (
     if (!isPasswordMatch) {
       throw new AppError(
         CommonError.AUTHENTICATION_ERROR,
-        "비밀번호가 일치하지 않습니다.",
+        "없는 사용자이거나 비밀번호가 일치하지 않습니다.",
         401
+      );
+    }
+    if (user.activated === 0 && isPasswordMatch) {
+      throw new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "탈퇴한 회원입니다.",
+        400
       );
     }
 
@@ -190,6 +165,82 @@ export const getUser = async (username?: string) => {
     }
   }
 };
+
+/**
+ * 사용자 아이디찾기 및 비밀번호 리셋
+ */
+export const findUsernameByEmail = async (email: string) => {
+  try {
+    const user = await AuthRepository.findUserByEmail(email);
+
+    if (!user) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "사용자를 찾을 수 없습니다.",
+        404
+      );
+    }
+    const username = user.username;
+    console.log(username);
+    return username;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    } else {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "회원정보 찾기에 실패했습니다.",
+        500
+      );
+    }
+  }
+};
+
+/**
+ * 사용자 비밀번호 초기화
+ */
+export const resetPasswordByEmail = async (email: string) => {
+  try {
+    const user = await AuthRepository.findUserByEmail(email);
+
+    if (!user) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "사용자를 찾을 수 없습니다.",
+        404
+      );
+    }
+
+    // 새로운 임시 비밀번호 생성
+    const newTemporaryPassword = generateTemporaryPassword();
+    const hashedPassword = await bcrypt.hash(newTemporaryPassword, 10);
+    user.password = hashedPassword;
+    await AuthRepository.save(user);
+    nodemailer.sendPasswordResetEmail(user.email, newTemporaryPassword);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    } else {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "회원정보 찾기에 실패했습니다.",
+        500
+      );
+    }
+  }
+};
+
+/**
+ * 임시 비밀번호 생성
+ */
+function generateTemporaryPassword(): string {
+  // 임시 비밀번호 생성 로직 구현 (예: 랜덤 문자열 생성)
+  return "temporaryPassword123";
+}
+
+/**
+ * 비밀번호 재설정 이메일 전송
+ */
 
 /**
  * 사용자 정보 업데이트

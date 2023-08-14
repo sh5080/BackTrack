@@ -12,6 +12,16 @@ export const signup = async (
     const { username, password, passwordConfirm, email } = req.body;
 
     const exceptPassword = { username, email };
+
+    const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+    if (!idRegex.test(username)) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "아이디는 영문과 숫자만 포함하여 사용할 수 있습니다.",
+        400
+      );
+    }
+    console.log(username);
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -37,7 +47,7 @@ export const signup = async (
         400
       );
     }
-    if (!email.includes("@")) {
+    if (!email.includes("@") || !email.includes(".")) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "이메일 형식에 맞추어 입력해주세요.",
@@ -45,13 +55,13 @@ export const signup = async (
       );
     }
 
-    // await authService.signupUser(userData);
+    const existingUser = await authService.getUsername(username);
+
     const newUser = await authService.signupUser({
       username,
       email,
       password,
     });
-    // console.log(newUser);
     res
       .status(201)
       .json({ message: "회원가입에 성공했습니다.", exceptPassword });
@@ -69,7 +79,14 @@ export const getUsername = async (
   try {
     const { username } = req.query;
     await authService.getUsername(username);
-
+    const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+    if (!idRegex.test(username)) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "아이디는 영문과 숫자만 포함하여 사용할 수 있습니다.",
+        400
+      );
+    }
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -92,15 +109,6 @@ export const login = async (
 ) => {
   try {
     const { username, password } = req.body;
-    // const userData = await authService.getUsername(username);
-
-    // if (!userData.activated) {
-    //   throw new AppError(
-    //     CommonError.UNAUTHORIZED_ACCESS,
-    //     "탈퇴한 회원입니다.",
-    //     400
-    //   );
-    // }
 
     const token = await authService.loginUser(username!, password!);
 
@@ -131,6 +139,37 @@ export const logout = async (
       .clearCookie("token")
       .status(200)
       .json({ message: "로그아웃 되었습니다." });
+  } catch (error) {
+    next(error);
+  }
+};
+/** 아이디 찾기 */
+export const findUsernameByEmail = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.params;
+    const username = await authService.findUsernameByEmail(email);
+
+    res.status(200).json({ message: `회원님의 아이디는 ${username}입니다.` });
+  } catch (error) {
+    next(error);
+  }
+};
+/** 비밀번호 찾기 */
+export const resetPasswordByEmail = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+    await authService.resetPasswordByEmail(email);
+    res
+      .status(200)
+      .json({ message: "이메일로 임시 비밀번호가 전송되었습니다." });
   } catch (error) {
     next(error);
   }
