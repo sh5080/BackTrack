@@ -12,9 +12,16 @@ export interface Config {
     DB_USER: string;
     DB_PASSWORD: string;
     DB_NAME: string;
+    DB_SYNCRONIZE: number;
   };
   bcrypt: {
     saltRounds: number;
+  };
+  nodemailer: {
+    SERVICE: string;
+    USERNAME: string;
+    ADDRESS: string;
+    PASSWORD: string;
   };
   google: {
     GOOGLE_CLIENT_ID: string;

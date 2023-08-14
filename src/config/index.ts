@@ -55,6 +55,12 @@ const config: Config = {
     /** [bcrypt] 솔트 라운드 */
     saltRounds: getEnvNumber("BCRYPT_SALT_ROUNDS", 10),
   },
+  nodemailer: {
+    SERVICE: getEnv("EMAIL_SERVICE"),
+    USERNAME: getEnv("EMAIL_USERNAME"),
+    ADDRESS: getEnv("EMAIL_ADDRESS"),
+    PASSWORD: getEnv("EMAIL_PASSWORD"),
+  },
 
   google: {
     /** [Google] 클라이언트 ID */
