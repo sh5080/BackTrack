@@ -12,12 +12,12 @@
     <form @submit.prevent="register" style="margin-left: 10px">
       <h2
         class="mb-3"
-        style="font-size: 6em; margin-top: -70px; padding-bottom: 0px"
+        style="font-size: 6em; margin-top: -90px; padding-bottom: 0px"
       >
         회원가입
       </h2>
       <div class="input-reg">
-        <label for="username" style="font-size: 4.5em; margin-top: 80px"
+        <label for="username" style="font-size: 4em; margin-top: 80px"
           >아이디</label
         >
 
@@ -37,7 +37,7 @@
       </div>
 
       <div
-        class="alert alert-warning alert-dismissible fade show error-shake-animation"
+        class="alert_username alert-warning alert-dismissible fade show error-shake-animation"
         role="alert"
         v-if="usernameError"
         :class="{ 'error-shake-animation': isShaking }"
@@ -48,17 +48,17 @@
         </div>
       </div>
       <div
-        class="alert alert-success alert-dismissible fade show"
+        class="alert_correct alert-success alert-dismissible fade show"
         role="alert"
         v-if="usernameIsValid"
-        :class="{ 'error-shake-animation': isShaking }"
         style="font-size: 3em; text-align: center"
       >
+        <!-- :class="{ 'error-shake-animation': isShaking }" -->
         {{ usernameMessage }}
       </div>
 
       <div class="input-reg">
-        <label for="password" style="font-size: 4.5em; margin-top: 130px"
+        <label for="password" style="font-size: 4em; margin-top: 140px"
           >비밀번호</label
         >
         <input
@@ -71,8 +71,8 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            margin-bottom: 0px;
           "
         />
         <input
@@ -85,13 +85,13 @@
             font-size: 4em;
             padding: 0.5em;
             height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 0px;
+            margin-bottom: 0px;
           "
         />
       </div>
       <div
-        class="alert alert-warning alert-dismissible fade show mt-5"
+        class="alert_password alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="passwordError"
         :class="{ 'error-shake-animation': isShaking }"
@@ -100,15 +100,15 @@
         {{ passwordErrorMessage }}
       </div>
 
-      <div class="input-reg">
-        <label for="email" style="font-size: 4.5em; margin-top: 130px"
+      <div class="input-reg3">
+        <label for="email" style="font-size: 4em; margin-top: 100px"
           >이메일</label
         >
         <input
           class="form-control"
           type="text"
           v-model="email"
-          placeholder="이메일"
+          placeholder="이메일   (비밀번호 찾기 등에 사용됩니다.)"
           @blur="validateEmail"
           style="
             font-size: 4em;
@@ -288,7 +288,6 @@ export default {
     },
 
     async checkUsername() {
-      // this.isShaking = true;
       try {
         const response = await axios.get(
           `http://localhost:4000/api/auth/check`,
@@ -302,14 +301,18 @@ export default {
 
         this.usernameMessage = response.data.message;
       } catch (error) {
+        this.usernameIsValid = false;
         this.isShaking = true;
         console.error("Error checking username availability:", error);
-        this.usernameIsValid = true;
-        this.usernameMessage = error.response.data.message;
 
+        // this.usernameIsValid = true;
+        // this.usernameMessage = error.response.data.message;
+        this.usernameError = true;
+        this.usernameErrorMessage = error.response.data.message;
         setTimeout(() => {
           this.isShaking = false;
-          this.usernameIsValid = false;
+          // this.usernameIsValid = false;
+          this.usernameError = false;
         }, 1000);
       }
     },
@@ -344,7 +347,6 @@ export default {
             //   this.$emit("closeRegister");
             //   this.$emit("closeLoginInRegister");
             // }
-            this.$router.push("/");
           }
         } catch (error) {
           console.error("Registration error:", error);
@@ -364,7 +366,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .error-shake-animation {
   animation: shake 0.5s;
 }
@@ -401,6 +403,7 @@ export default {
   max-width: 2000px;
   max-height: 80vh;
   width: 1500px;
+  /* z-index: 9997; */
 }
 
 .mt-3nt {
@@ -417,22 +420,31 @@ export default {
 .input-reg {
   display: flex;
   flex-direction: column;
-  margin-top: -30px;
-  margin-bottom: 15px;
+  margin-top: -80px;
+  margin-bottom: 0px;
+}
+.input-reg3 {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .input-reg > label {
+  /* display: flex; */
   text-align: start;
 }
 
+.input-reg3 > input,
 .input-reg > input {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  height: 100px !important;
+  height: 150px !important;
 }
 
 .btn-reg {
   position: relative;
+
   left: 50%;
   padding: 1em 2.5em;
   font-size: 12px;
@@ -451,7 +463,7 @@ export default {
 }
 .btn-check {
   position: relative;
-  top: 13%;
+  top: 8%;
   left: 85%;
   padding: 0.5em 2.5em;
   font-size: 8px;
@@ -486,19 +498,33 @@ export default {
   transform: translate(-50%, -1px);
 }
 
-/* .alternative-option {
+.alternative-option {
   text-align: center;
-  margin-top: 100px;
-} */
+  margin-top: 70px;
+}
 
-/* .alternative-option > span {
+.alternative-option > span {
   color: #0e9448;
   cursor: pointer;
-} */
+}
 
+.alert_username {
+  font-size: 0.9rem;
+  margin-bottom: -152px;
+}
+.alert_password {
+  font-size: 0.9rem;
+
+  margin-bottom: -20px;
+  max-height: 0px;
+}
 .alert {
   font-size: 0.9rem;
-  margin-bottom: -102px;
+  margin-bottom: -142px;
+}
+.alert_correct {
+  font-size: 0.9rem;
+  margin-bottom: -152px;
 }
 .alert-reg {
   font-size: 0.9rem;
