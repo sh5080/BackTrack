@@ -6,6 +6,7 @@ import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
 import * as nodemailer from "../config/nodeMailer";
+import { AppDataSource } from "../loaders/dbLoader";
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = config.jwt.REFRESH_TOKEN_SECRET;
@@ -167,11 +168,11 @@ export const getUser = async (username?: string) => {
 };
 
 /**
- * 사용자 아이디찾기 및 비밀번호 리셋
+ * 사용자 아이디찾기
  */
 export const findUsernameByEmail = async (email: string) => {
   try {
-    const user = await AuthRepository.findUserByEmail(email);
+    const user = await AuthRepository.findUser(email);
 
     if (!user) {
       throw new AppError(
@@ -199,9 +200,15 @@ export const findUsernameByEmail = async (email: string) => {
 /**
  * 사용자 비밀번호 초기화
  */
-export const resetPasswordByEmail = async (email: string) => {
+
+export const resetPasswordByEmail = async (username: string, email: string) => {
+  const queryRunner = AppDataSource.createQueryRunner();
+  let user: Type.User | null = null;
+  let newTemporaryPassword: string = "";
   try {
-    const user = await AuthRepository.findUserByEmail(email);
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    user = await AuthRepository.findUser(username, email);
 
     if (!user) {
       throw new AppError(
@@ -212,12 +219,15 @@ export const resetPasswordByEmail = async (email: string) => {
     }
 
     // 새로운 임시 비밀번호 생성
-    const newTemporaryPassword = generateTemporaryPassword();
+    newTemporaryPassword = generateTemporaryPassword();
     const hashedPassword = await bcrypt.hash(newTemporaryPassword, 10);
     user.password = hashedPassword;
+
     await AuthRepository.save(user);
-    nodemailer.sendPasswordResetEmail(user.email, newTemporaryPassword);
+    await queryRunner.commitTransaction();
+    return newTemporaryPassword;
   } catch (error) {
+    await queryRunner.rollbackTransaction();
     if (error instanceof AppError) {
       throw error;
     } else {
@@ -227,17 +237,33 @@ export const resetPasswordByEmail = async (email: string) => {
         500
       );
     }
+  } finally {
+    try {
+      await queryRunner.release();
+      if (user) {
+        nodemailer.sendPasswordResetEmail(user.email, newTemporaryPassword);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
 /**
  * 임시 비밀번호 생성
  */
-function generateTemporaryPassword(): string {
-  // 임시 비밀번호 생성 로직 구현 (예: 랜덤 문자열 생성)
-  return "temporaryPassword123";
-}
+function generateTemporaryPassword(length: number = 10): string {
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let temporaryPassword = "";
 
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    temporaryPassword += charset[randomIndex];
+  }
+
+  return temporaryPassword;
+}
 /**
  * 비밀번호 재설정 이메일 전송
  */
