@@ -165,8 +165,10 @@ export const resetPasswordByEmail = async (
   next: NextFunction
 ) => {
   try {
-    const { email } = req.body;
-    await authService.resetPasswordByEmail(email);
+    const { email } = req.params;
+    const { username } = req.body;
+
+    await authService.resetPasswordByEmail(username, email);
     res
       .status(200)
       .json({ message: "이메일로 임시 비밀번호가 전송되었습니다." });
