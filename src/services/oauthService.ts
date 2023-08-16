@@ -44,8 +44,8 @@ const generateUsername = async (username: string): Promise<string> => {
 /**
  * OAuth 사용자 로그인
  */
-export const OauthLoginUser = async (username: string): Promise<object> => {
-  const user = await AuthRepository.findUser(username);
+export const OauthLoginUser = async (email: string): Promise<object> => {
+  const user = await AuthRepository.findUser(email);
 
   if (!user) {
     throw new AppError(
@@ -87,42 +87,44 @@ export const OauthLoginUser = async (username: string): Promise<object> => {
  */
 export const getUserForOauth = async (email: string) => {
   const user = await AuthRepository.findUser(email);
+  console.log("확인: ", user);
   return user;
 };
 
 /**
  * OAuth 로그인 URL 생성
  */
-export const generateLoginUrl = (oauthProvider: string): string => {
-  const clientId = process.env[`${oauthProvider}_CLIENT_ID`] as string;
-  const redirectUri = process.env[`${oauthProvider}_REDIRECT_URI`] as string;
-  let params: Record<string, string> = {};
+// 프론트에서 검증하므로 주석처리함. 삭제예정
+// export const generateLoginUrl = (oauthProvider: string): string => {
+//   const clientId = process.env[`${oauthProvider}_CLIENT_ID`] as string;
+//   const redirectUri = process.env[`${oauthProvider}_REDIRECT_URI`] as string;
+//   let params: Record<string, string> = {};
 
-  if (oauthProvider === "KAKAO") {
-    const responseType = "code";
-    params = {
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: responseType,
-    };
-  } else if (oauthProvider === "GOOGLE") {
-    const scope =
-      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
-    const responseType = "code";
-    params = {
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      scope: scope,
-      response_type: responseType,
-    };
-  } else {
-    throw new Error(`Unsupported OAuth provider: ${oauthProvider}`);
-  }
+//   if (oauthProvider === "KAKAO") {
+//     const responseType = "code";
+//     params = {
+//       client_id: clientId,
+//       redirect_uri: redirectUri,
+//       response_type: responseType,
+//     };
+//   } else if (oauthProvider === "GOOGLE") {
+//     const scope =
+//       "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+//     const responseType = "code";
+//     params = {
+//       client_id: clientId,
+//       redirect_uri: redirectUri,
+//       scope: scope,
+//       response_type: responseType,
+//     };
+//   } else {
+//     throw new Error(`Unsupported OAuth provider: ${oauthProvider}`);
+//   }
 
-  const queryString = qs.stringify(params);
-  const result = `https://${
-    oauthProvider === "KAKAO" ? "kauth.kakao.com" : "accounts.google.com"
-  }/o/oauth2/auth?${queryString}`;
-  console.log(result);
-  return result;
-};
+//   const queryString = qs.stringify(params);
+//   const result = `https://${
+//     oauthProvider === "KAKAO" ? "kauth.kakao.com" : "accounts.google.com"
+//   }/o/oauth2/auth?${queryString}`;
+//   console.log(result);
+//   return result;
+// };

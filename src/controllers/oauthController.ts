@@ -10,17 +10,17 @@ const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
 const { KAKAO_CLIENT_ID, KAKAO_REDIRECT_URI } = config.kakao;
 const SERVER_URL = config.server.URL;
 
-/** 카카오 로그인 */
-export const kakaoLogin = (req: CustomRequest, res: Response) => {
-  const loginUrl = oauthService.generateLoginUrl("KAKAO");
-  res.redirect(loginUrl);
-};
+// /** 카카오 로그인 */
+// export const kakaoLogin = (req: CustomRequest, res: Response) => {
+//   const loginUrl = oauthService.generateLoginUrl("KAKAO");
+//   res.redirect(loginUrl);
+// };
 
-// /** 구글 로그인 */
-export const googleLogin = (req: CustomRequest, res: Response) => {
-  const loginUrl = oauthService.generateLoginUrl("GOOGLE");
-  res.redirect(loginUrl);
-};
+// // /** 구글 로그인 */
+// export const googleLogin = (req: CustomRequest, res: Response) => {
+//   const loginUrl = oauthService.generateLoginUrl("GOOGLE");
+//   res.redirect(loginUrl);
+// };
 
 /** 카카오 로그인 콜백 */
 export const kakaoCallback = async (
@@ -74,18 +74,18 @@ export const kakaoCallback = async (
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: true,
+          //   secure: true,
           maxAge: 7200000,
         })
         .redirect(`${SERVER_URL}`);
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
-        // const newInfo = await oauthService.OauthSignupUser({
-        //   username: kakaoEmail,
-        //   email: kakaoEmail,
-        //   oauthProvider: 'KAKAO',
-        // });
+        const newInfo = await oauthService.OauthSignupUser({
+          username: kakaoEmail,
+          email: kakaoEmail,
+          oauthProvider: "KAKAO",
+        });
         res.redirect(`${SERVER_URL}`);
       } catch (error) {
         console.error(error);
@@ -107,7 +107,6 @@ export const googleCallback = async (
   const code = req.query.code;
   // oauth 위임을 위한 절차
   try {
-    console.log("1");
     const response = await axios.post("https://oauth2.googleapis.com/token", {
       code: code,
       client_id: GOOGLE_CLIENT_ID,
@@ -135,9 +134,7 @@ export const googleCallback = async (
     // 회원가입 및 로그인 처리 등 필요한 로직 수행
     if (existingInfo) {
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
-      const token = await oauthService.OauthLoginUser(
-        existingInfo.username || ""
-      );
+      const token = await oauthService.OauthLoginUser(existingInfo.email || "");
 
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
@@ -145,7 +142,7 @@ export const googleCallback = async (
           maxAge: 7200000,
           httpOnly: true,
         })
-        .redirect(`${SERVER_URL}`);
+        .redirect(`${SERVER_URL}?username=${existingInfo.username}`);
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
@@ -154,6 +151,7 @@ export const googleCallback = async (
           email: googleEmail,
           oauthProvider: "GOOGLE",
         });
+
         res.redirect(`${SERVER_URL}`);
       } catch (error) {
         console.error(error);
