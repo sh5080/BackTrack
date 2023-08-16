@@ -19,7 +19,10 @@ export const sendPasswordResetEmail = async (
     from: ADDRESS,
     to: email,
     subject: "임시 비밀번호 보내드립니다.",
-    text: `임시 비밀번호: ${newPassword}`,
+    text: `임시 비밀번호: ${newPassword} 
+    임시비밀번호로 초기화되어 기존 비밀번호로는 로그인이 불가능합니다. 
+    임시비밀번호로 로그인 후 꼭 비밀번호를 변경해주세요.
+    `,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
