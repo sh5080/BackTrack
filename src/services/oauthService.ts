@@ -1,5 +1,6 @@
 import qs from "qs";
-import * as oauthModel from "../models/oauthModel";
+// import * as oauthModel from "../models/oauthModel";
+import { AuthRepository } from "../models/repositories/auth.repository";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import * as Type from "../types/type";
@@ -20,11 +21,10 @@ export const OauthSignupUser = async (user: Type.OauthUser) => {
       username: await generateUsername(user.username),
       email: user.email,
       oauthProvider: user.oauthProvider,
-      password: null,
     };
 
     // 생성된 사용자를 저장하고 반환
-    const createdUser = await oauthModel.saveOauthUser(newUser);
+    const createdUser = await AuthRepository.saveOauthUser(newUser);
 
     return createdUser;
   } catch (error) {
@@ -45,7 +45,7 @@ const generateUsername = async (username: string): Promise<string> => {
  * OAuth 사용자 로그인
  */
 export const OauthLoginUser = async (username: string): Promise<object> => {
-  const user = await oauthModel.getUserByUsername(username);
+  const user = await AuthRepository.findUser(username);
 
   if (!user) {
     throw new AppError(
@@ -86,7 +86,7 @@ export const OauthLoginUser = async (username: string): Promise<object> => {
  * 이메일로 OAuth 사용자 정보 조회
  */
 export const getUserForOauth = async (email: string) => {
-  const user = await oauthModel.getUserByEmail(email);
+  const user = await AuthRepository.findUser(email);
   return user;
 };
 
@@ -112,7 +112,7 @@ export const generateLoginUrl = (oauthProvider: string): string => {
     params = {
       client_id: clientId,
       redirect_uri: redirectUri,
-      scope,
+      scope: scope,
       response_type: responseType,
     };
   } else {
@@ -120,7 +120,9 @@ export const generateLoginUrl = (oauthProvider: string): string => {
   }
 
   const queryString = qs.stringify(params);
-  return `https://${
+  const result = `https://${
     oauthProvider === "KAKAO" ? "kauth.kakao.com" : "accounts.google.com"
-  }/oauth/authorize?${queryString}`;
+  }/o/oauth2/auth?${queryString}`;
+  console.log(result);
+  return result;
 };

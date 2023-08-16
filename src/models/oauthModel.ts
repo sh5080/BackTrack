@@ -20,23 +20,23 @@ import * as Type from "../types/type";
 //   return createdUser;
 // };
 
-import { getConnectionManager, Repository } from "typeorm";
-import { User } from "./models/entities/User";
+// import { getConnectionManager, Repository } from "typeorm";
+// import { Auth } from "./entities/";
 
-export const saveOauthUser = async (
-  user: Type.OauthUser
-): Promise<Type.OauthUser> => {
-  const connectionManager = getConnectionManager();
-  const connection = connectionManager.get(); // 기본 커넥션 가져오기
+// export const saveOauthUser = async (
+//   user: Type.OauthUser
+// ): Promise<Type.OauthUser> => {
+//   const connectionManager = getConnectionManager();
+//   const connection = connectionManager.get(); // 기본 커넥션 가져오기
 
-  const userRepository: Repository<User> = connection.getRepository(User);
+//   const userRepository: Repository<Auth> = connection.getRepository(Auth);
 
-  const newUser = new User();
-  newUser.username = user.username;
-  newUser.email = user.email;
-  newUser.oauthProvider = user.oauthProvider;
+//   const newUser = new Auth();
+//   newUser.username = user.username;
+//   newUser.email = user.email;
+//   newUser.oauthProvider = user.oauthProvider;
 
-  await userRepository.save(newUser);
+//   await userRepository.save(newUser);
 
-  return newUser;
-};
+//   return newUser;
+// };

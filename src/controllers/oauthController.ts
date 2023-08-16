@@ -11,16 +11,16 @@ const { KAKAO_CLIENT_ID, KAKAO_REDIRECT_URI } = config.kakao;
 const SERVER_URL = config.server.URL;
 
 /** 카카오 로그인 */
-// export const kakaoLogin = (req: CustomRequest, res: Response) => {
-//   const loginUrl = oauthService.generateLoginUrl('KAKAO');
-//   res.redirect(loginUrl);
-// };
+export const kakaoLogin = (req: CustomRequest, res: Response) => {
+  const loginUrl = oauthService.generateLoginUrl("KAKAO");
+  res.redirect(loginUrl);
+};
 
 // /** 구글 로그인 */
-// export const googleLogin = (req: CustomRequest, res: Response) => {
-//   const loginUrl = oauthService.generateLoginUrl('GOOGLE');
-//   res.redirect(loginUrl);
-// };
+export const googleLogin = (req: CustomRequest, res: Response) => {
+  const loginUrl = oauthService.generateLoginUrl("GOOGLE");
+  res.redirect(loginUrl);
+};
 
 /** 카카오 로그인 콜백 */
 export const kakaoCallback = async (
@@ -105,9 +105,9 @@ export const googleCallback = async (
   next: NextFunction
 ) => {
   const code = req.query.code;
-
   // oauth 위임을 위한 절차
   try {
+    console.log("1");
     const response = await axios.post("https://oauth2.googleapis.com/token", {
       code: code,
       client_id: GOOGLE_CLIENT_ID,
@@ -149,11 +149,11 @@ export const googleCallback = async (
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
-        // const newInfo = await oauthService.OauthSignupUser({
-        //   username: googleEmail,
-        //   email: googleEmail,
-        //   oauthProvider: 'GOOGLE',
-        // });
+        const newInfo = await oauthService.OauthSignupUser({
+          username: googleEmail,
+          email: googleEmail,
+          oauthProvider: "GOOGLE",
+        });
         res.redirect(`${SERVER_URL}`);
       } catch (error) {
         console.error(error);

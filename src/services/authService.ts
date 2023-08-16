@@ -78,7 +78,7 @@ export const loginUser = async (
   password: string
 ): Promise<object> => {
   try {
-    const user = await AuthRepository.login(username, password);
+    const user = await AuthRepository.login(username);
 
     if (!user) {
       throw new AppError(
@@ -128,6 +128,7 @@ export const loginUser = async (
     if (error instanceof AppError) {
       throw error;
     } else {
+      console.error(error);
       throw new AppError(
         CommonError.UNEXPECTED_ERROR,
         "로그인에 실패했습니다.",
@@ -198,7 +199,7 @@ export const findUsernameByEmail = async (email: string) => {
 };
 
 /**
- * 사용자 비밀번호 초기화
+ * 사용자 비밀번호 재설정 및 트랜잭션 후 이메일전송
  */
 
 export const resetPasswordByEmail = async (username: string, email: string) => {
@@ -210,20 +211,12 @@ export const resetPasswordByEmail = async (username: string, email: string) => {
     await queryRunner.startTransaction();
     user = await AuthRepository.findUser(username, email);
 
-    if (!user) {
-      throw new AppError(
-        CommonError.RESOURCE_NOT_FOUND,
-        "사용자를 찾을 수 없습니다.",
-        404
-      );
-    }
-
     // 새로운 임시 비밀번호 생성
     newTemporaryPassword = generateTemporaryPassword();
     const hashedPassword = await bcrypt.hash(newTemporaryPassword, 10);
-    user.password = hashedPassword;
+    user!.password = hashedPassword;
 
-    await AuthRepository.save(user);
+    await AuthRepository.save(user!);
     await queryRunner.commitTransaction();
     return newTemporaryPassword;
   } catch (error) {
@@ -264,9 +257,6 @@ function generateTemporaryPassword(length: number = 10): string {
 
   return temporaryPassword;
 }
-/**
- * 비밀번호 재설정 이메일 전송
- */
 
 /**
  * 사용자 정보 업데이트
