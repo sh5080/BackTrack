@@ -5,23 +5,23 @@ export class AuthEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column()
   username: string;
 
-  @Column({ nullable: true })
+  @Column()
   email: string;
 
   @Column({ nullable: true })
   password: string = "";
 
   @Column({ default: "ORIGIN" })
-  oauth_provide: string;
+  oauth_provider: string;
 
-  @Column({ nullable: true })
+  @Column({ default: "USER" })
   role?: string;
 
   @Column({ nullable: true })
-  accessToken?: string;
+  access_token?: string;
 
   @Column({ default: 1 })
   activated?: number;
@@ -31,12 +31,12 @@ export class AuthEntity {
     username: string,
     password: string,
     email: string,
-    oauth_provide: string
+    oauth_provider: string
   ) {
     this.id = id;
     this.username = username;
     this.password = password;
     this.email = email;
-    this.oauth_provide = oauth_provide;
+    this.oauth_provider = oauth_provider;
   }
 }
