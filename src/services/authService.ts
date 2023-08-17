@@ -143,18 +143,12 @@ export const loginUser = async (
  */
 export const getUser = async (username?: string) => {
   try {
-    const user = await authModel.getUserByUsername(username);
-
-    if (!user) {
-      throw new AppError(
-        CommonError.RESOURCE_NOT_FOUND,
-        "로그인 후 이용가능합니다.",
-        404
-      );
+    const user = await AuthRepository.findUser(username);
+    if (user !== null) {
+      const { password, ...userData } = user;
+      return userData;
     }
-    const { password, ...userData } = user;
-
-    return userData;
+    return null;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

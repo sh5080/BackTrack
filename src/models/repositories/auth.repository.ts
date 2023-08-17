@@ -43,10 +43,11 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
           );
         }
       } else if (username) {
-        const user = await this.findOne({ where: { email: username } });
+        const user = await this.findOne({ where: { username } });
         return user;
       } else if (email) {
         const user = await this.findOne({ where: { email } });
+
         return user;
       } else {
         throw new AppError(
