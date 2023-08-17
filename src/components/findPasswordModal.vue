@@ -1,12 +1,12 @@
 <template>
   <div id="content" class="container">
     <form
-      @submit.prevent="findUsername"
+      @submit.prevent="findPassword"
       style="margin-left: 10px"
       autocomplete="off"
     >
       <h2 class="mb-3" style="position: relative; top: 50px; font-size: 6em">
-        아이디 찾기
+        비밀번호 재설정
       </h2>
       <p
         style="
@@ -14,11 +14,24 @@
           padding: 0.5em;
           height: 1em;
           margin-top: 100px;
+          margin-bottom: 200px;
           text-align: center;
         "
       >
-        가입할 때 입력한 이메일로 아이디를 찾을 수 있습니다.
+        가입할 때 입력한 아이디, 이메일로 비밀번호를 초기화하고,
+        <br />임시비밀번호를 이메일로 받을 수 있습니다.<br />
+        임시비밀번호로 로그인한 뒤 바로 비밀번호를 변경해주세요.
       </p>
+      <div class="input">
+        <input
+          class="form-control"
+          type="text"
+          name="username"
+          placeholder="아이디"
+          v-model="username"
+          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: 100px"
+        />
+      </div>
       <div class="input">
         <input
           class="form-control"
@@ -26,21 +39,27 @@
           name="email"
           placeholder="이메일"
           v-model="email"
-          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: 100px"
+          style="
+            font-size: 4em;
+            padding: 0.5em;
+            height: 1em;
+            margin-top: -100px;
+          "
         />
       </div>
 
       <div
         class="alert_correct alert-success alert-dismissible fade show"
         role="alert"
-        v-if="emailIsValid"
+        v-if="isValid"
         style="font-size: 3em; text-align: center"
       >
-        {{ usernameMessage }}
+        <!-- {{ alertMessage }} -->
+        <span v-html="alertMessage"></span>
       </div>
 
       <div
-        class="findUsername-error-alert alert-warning alert-dismissible fade show mt-5"
+        class="findPassword-error-alert alert-warning alert-dismissible fade show mt-5"
         role="alert"
         v-if="errorAlert"
         :class="{ 'error-shake-animation': isShaking }"
@@ -53,26 +72,30 @@
         type="submit"
         class="btn-pers"
         id="login_button"
+        style="font-size: 3.5em"
+      >
+        비밀번호 초기화
+      </button>
+      <div
+        class="alternative-option"
         style="
-          font-size: 3.5em;
+          font-size: 3em;
           display: grid;
           grid-gap: 10px;
           grid-auto-flow: column;
         "
       >
-        아이디 찾기
-      </button>
-      <div class="alternative-option" style="font-size: 3em">
         <span
-          @click="hideFindUsernameModal"
-          style="font-size: 1.3em; cursor: pointer"
-          >로그인</span
+          @click="OpenFindUsernameModal"
+          style="font-size: 1.3em; margin-right: 00px; cursor: pointer"
+          >아이디 찾기</span
         >
 
         <span
-          @click="openFindPasswordModal"
-          style="font-size: 1.3em; margin-left: 100px; cursor: pointer"
-          >비밀번호 재설정</span
+          @click="hideFindPasswordModal"
+          style="font-size: 1.3em; margin-left: -300px; cursor: pointer"
+        >
+          로그인</span
         >
       </div>
     </form>
@@ -81,21 +104,19 @@
 
 <script>
 import axios from "axios";
-// import Register from "./RegisterModal.vue";
 
 export default {
-  components: {
-    // Register,
-  },
+  components: {},
   data() {
     return {
+      username: "",
       email: "",
       errorAlert: false,
       isShaking: false,
 
       errorMessage: "",
-      usernameMessage: "",
-      emailIsValid: false,
+      alertMessage: "",
+      isValid: false,
     };
   },
   methods: {
@@ -109,7 +130,10 @@ export default {
 
       const errorMessage = error.response.data.message;
 
-      if (errorMessage) {
+      if (errorMessage.includes("필수")) {
+        this.errorAlert = true;
+        this.errorMessage = "빈 칸을 모두 입력해주세요.";
+      } else if (errorMessage) {
         this.errorAlert = true;
         this.errorMessage = errorMessage;
       }
@@ -119,36 +143,38 @@ export default {
         this.clearErrors();
       }, 3000);
     },
-
-    hideFindUsernameModal() {
-      this.$store.commit("toggleFindUsernameModal", false);
+    OpenFindUsernameModal() {
+      this.$store.commit("toggleFindUsernameModal", true);
       this.$store.commit("toggleFindPasswordModal", false);
     },
-    openFindPasswordModal() {
-      this.$store.commit("toggleFindPasswordModal", true);
-      this.$store.commit("toggleFindUsernameModal", false);
+
+    hideFindPasswordModal() {
+      this.$store.commit("toggleFindPasswordModal", false);
     },
 
-    async findUsername(submitEvent) {
-      this.emailIsValid = false;
+    async findPassword(submitEvent) {
+      this.isValid = false;
       this.errorAlert = false;
+      this.username = submitEvent.target.elements.username.value;
       this.email = submitEvent.target.elements.email.value;
-
+      if (!this.username) {
+        this.username = undefined;
+      }
       if (!this.email) {
         this.email = undefined;
       }
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/auth/Id/${this.email}`,
-
+        const response = await axios.post(
+          `http://localhost:4000/api/auth/Pw/${this.email}`,
+          { username: this.username },
           { withCredentials: true }
         );
         const message = response.data.message;
 
-        this.emailIsValid = true;
-        this.usernameMessage = message;
+        this.isValid = true;
+        this.alertMessage = message + "</br>새로운 비밀번호로 로그인해주세요.";
       } catch (error) {
-        console.error("아이디 찾기 중 오류:", error);
+        console.error("비밀번호 재설정 중 오류:", error);
         this.handleErrors(error);
       }
     },
@@ -214,9 +240,6 @@ export default {
 .input {
   display: flex;
   flex-direction: column;
-  margin-top: 80px;
-  margin-bottom: 0px;
-  padding: 50px;
 }
 
 .input > label {
@@ -248,7 +271,7 @@ export default {
   cursor: pointer;
   outline: none;
   transform: translateX(-50%);
-  margin-top: 100px;
+  margin-top: 150px;
 }
 
 .btn-pers:hover {
@@ -264,7 +287,7 @@ export default {
 
 .alternative-option {
   text-align: center;
-  margin-top: 500px;
+  margin-top: 200px;
 }
 
 .alternative-option > span {
@@ -272,8 +295,8 @@ export default {
   cursor: pointer;
 }
 .alert_correct,
-.findUsername-error-alert {
+.findPassword-error-alert {
   font-size: 0.9rem;
-  margin-bottom: -92px;
+  margin-bottom: -100px;
 }
 </style>

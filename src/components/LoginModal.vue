@@ -61,14 +61,18 @@
       </div> -->
 
       <v-dialog v-model="$store.state.showRegisterModal">
-        <Register
-          @closeRegister="hideRegisterModal"
-          @closeLoginInRegister="hideLoginModal"
-        />
+        <Register />
       </v-dialog>
       <v-dialog v-model="$store.state.showFindUsernameModal">
         <FindUsername />
       </v-dialog>
+      <v-dialog v-model="$store.state.showFindPasswordModal">
+        <FindPassword />
+      </v-dialog>
+      <!-- <v-dialog v-model="$store.state.showGoogleLoginModal">
+        <OauthLogin />
+      </v-dialog> -->
+
       <button
         v-if="showLoginButton"
         type="submit"
@@ -78,6 +82,24 @@
       >
         Login
       </button>
+
+      <div class="image-button">
+        <button type="button" @click="oauthLogin('GOOGLE')">
+          <img src="../assets/google2.png" alt="Google 로그인" />
+        </button>
+      </div>
+
+      <div class="image-button">
+        <button type="button" @click="oauthLogin('KAKAO')">
+          <img
+            src="../assets/kakao123.png"
+            style="width: -40px"
+            alt="카카오 로그인"
+            class="image-button-img"
+          />
+        </button>
+      </div>
+
       <div
         class="alternative-option"
         style="
@@ -95,7 +117,12 @@
         <span
           @click="openFindUsernameModal"
           style="font-size: 1.3em; cursor: pointer"
-          >아이디 찾</span
+          >아이디 찾기 /</span
+        >
+        <span
+          @click="openFindPasswordModal"
+          style="font-size: 1.3em; margin-left: -200px; cursor: pointer"
+          >비밀번호 재설정</span
         >
       </div>
     </form>
@@ -106,11 +133,26 @@
 import axios from "axios";
 import Register from "./RegisterModal.vue";
 import FindUsername from "./findUsernameModal.vue";
+import FindPassword from "./findPasswordModal.vue";
+// import OauthLogin from "./OauthLoginModal.vue";
 import { mapMutations } from "vuex";
+import qs from "qs";
 export default {
   components: {
     Register,
     FindUsername,
+    FindPassword,
+    // OauthLogin,
+  },
+  created() {
+    const params = new URLSearchParams(window.location.search);
+    this.username = params.get("username");
+
+    if (this.username) {
+      this.setAuthenticated(true);
+      this.$store.commit("setLoggedInUsername", this.username);
+      this.$router.push("/");
+    }
   },
   data() {
     return {
@@ -139,7 +181,8 @@ export default {
       } else if (errorMessage.includes("없는")) {
         this.errorAlert = true;
         this.errorMessage = "없는 사용자이거나 비밀번호가 일치하지 않습니다.";
-      } else if (errorMessage) {
+      } else {
+        errorMessage;
         this.errorAlert = true;
         this.errorMessage = errorMessage;
       }
@@ -149,17 +192,79 @@ export default {
         this.clearErrors();
       }, 3000);
     },
-    // async oauthLogin(provider) {
+    // async fetchUserInfo() {
     //   try {
-    //     // OAuth 로그인 처리 로직 구현
-    //     const response = await axios.post(`/api/oauth/${provider}`);
-    //     const accessToken = response.data.accessToken;
-
-    //     // 로그인 성공 후의 처리 (예: 토큰 저장 등)
+    //     const response = await axios.get("/api/userInfo");
+    //     this.username = response.data.username;
     //   } catch (error) {
-    //     // 오류 처리 로직
+    //     console.error(error);
     //   }
     // },
+
+    async oauthLogin(provider) {
+      try {
+        const loginUrl = this.generateLoginUrl(provider);
+        console.log(loginUrl);
+
+        // if (loginUrl) {
+        //   this.handleOAuthCallback(provider);
+        // }
+        window.location.href = loginUrl;
+        this.$router.push("/");
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    // async handleOAuthCallback() {
+    //   try {
+    //     const response = await axios.get("/api/oauth/google/callback");
+    //     console.log(response);
+    //     // 사용자 정보를 저장하고 인증 상태를 설정
+
+    //     // 로그인이 완료된 후의 처리를 수행
+    //     // ...
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
+
+    generateLoginUrl(oauthProvider) {
+      const clientId = process.env[`VUE_APP_${oauthProvider}_CLIENT_ID`];
+      const redirectUri = process.env[`VUE_APP_${oauthProvider}_REDIRECT_URI`];
+      let params = {};
+      console.log("1: ", process.env.VUE_APP_GOOGLE_CLIENT_ID);
+      console.log("2: ", process.env.VUE_APP_GOOGLE_REDIRECT_URI);
+
+      if (oauthProvider === "KAKAO") {
+        const responseType = "code";
+        params = {
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          response_type: responseType,
+        };
+      } else if (oauthProvider === "GOOGLE") {
+        const scope =
+          "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+        const responseType = "code";
+        params = {
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          scope: scope,
+          response_type: responseType,
+        };
+      } else {
+        throw new Error(`Unsupported OAuth provider: ${oauthProvider}`);
+      }
+
+      const queryString = qs.stringify(params);
+      const baseUrl =
+        oauthProvider === "KAKAO"
+          ? "https://kauth.kakao.com"
+          : "https://accounts.google.com";
+      const loginUrl = `${baseUrl}/o/oauth2/auth?${queryString}`;
+      return loginUrl;
+    },
 
     openRegisterModal() {
       this.$store.commit("toggleRegisterModal", true);
@@ -170,6 +275,13 @@ export default {
     openFindUsernameModal() {
       this.$store.commit("toggleFindUsernameModal", true);
     },
+    openFindPasswordModal() {
+      this.$store.commit("toggleFindPasswordModal", true);
+    },
+    // openGoogleLoginModal() {
+    //   this.$store.commit("toggleGoogleLoginModal", true);
+    //   this.oauthLogin("google");
+    // },
 
     hideLoginModal() {
       this.$store.commit("toggleLoginModal", false);
@@ -179,6 +291,7 @@ export default {
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
       this.password = submitEvent.target.elements.password.value;
+
       try {
         const response = await axios.post(
           "http://localhost:4000/api/auth/login",
@@ -278,6 +391,35 @@ export default {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: 150px !important;
+}
+
+.image-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.image-button img {
+  /* width: 250%;
+  max-width: 700px; */
+  width: 700px; /* 예시로 이미지의 가로 크기 조정 */
+  height: auto;
+  margin-right: auto; /* 이미지의 오른쪽 여백을 자동으로 채워줌 */
+  margin-left: auto; /* 이미지의 왼쪽 여백을 자동으로 채워줌 */
+
+  /* height: 208px; */
+}
+.image-button-img {
+  width: 100%; /* 이미지의 가로 크기를 100%로 설정하여 부모 요소에 맞게 조정 */
+  max-width: 680px; /* 이미지의 최대 가로 크기를 설정 */
+  height: 200px;
+  object-fit: cover; /* 이미지를 부모 요소에 맞춰 자르기 */
 }
 
 .btn-pers {

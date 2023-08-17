@@ -134,7 +134,9 @@
 
       <div class="alternative-option" style="font-size: 3em">
         이미 가입되어 있으신가요?
-        <span @click="openLoginModal" style="font-size: 1.3em; cursor: pointer"
+        <span
+          @click="hideRegisterModal"
+          style="font-size: 1.3em; cursor: pointer"
           >로그인</span
         >
       </div>
@@ -277,14 +279,11 @@ export default {
         this.clearErrors();
       }, 1000);
     },
-    openLoginModal() {
-      this.$emit("closeRegister");
-      this.$emit("restoreLoginButton");
+    hideRegisterModal() {
+      this.$store.commit("toggleRegisterModal", false);
     },
     openRegisterSuccessModal() {
       this.$store.commit("toggleRegisterSuccessModal", true);
-      // this.$emit("closeRegister");
-      // this.$emit("closeLoginInRegister");
     },
     closeRegisterSuccessModal() {
       this.$store.commit("toggleRegisterSuccessModal", false);
