@@ -1,7 +1,11 @@
 <template>
   <v-app>
     <v-main>
-      <Backtrack />
+      <header>
+        <HeaderSection />
+      </header>
+      <!-- <Backtrack /> -->
+      <router-view></router-view>
     </v-main>
     <footer class="footer">
       <p>문의 prpn97@gmail.com</p>
@@ -10,7 +14,8 @@
 </template>
 
 <script>
-import Backtrack from "./components/BacktrackGenerator.vue";
+// import Backtrack from "./components/BacktrackGenerator.vue";
+import HeaderSection from "./components/HeaderSection.vue";
 import { defineComponent } from "vue";
 import { createToast } from "@/libs/mosha-vue-toastify";
 import "../src/plugins/style.css";
@@ -19,7 +24,7 @@ export default defineComponent({
   name: "App",
 
   components: {
-    Backtrack,
+    HeaderSection,
   },
   setup() {
     const toast = () => {
