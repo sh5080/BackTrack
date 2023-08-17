@@ -22,12 +22,13 @@ export function errorMessage(error) {
   }
 }
 export function customError(error) {
-  createToast({
+  createToast(error, {
     title: "Warning",
     description: error,
-    type: "warning",
-    position: "top-center",
+    type: "info",
+    position: "top-right",
     timeout: 5000,
+    showIcon: true,
   });
 }
 export function alertMessage(res) {
