@@ -10,7 +10,7 @@ export const getUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { username } = req.body;
+    const { username } = req.query;
     const userData = await authService.getUser(username);
     if (!userData) {
       throw new AppError(
@@ -19,7 +19,9 @@ export const getUserInfo = async (
         404
       );
     }
-    res.status(200).json({ userData });
+    const resultData = { username: userData.username, email: userData.email };
+
+    res.status(200).json(resultData);
   } catch (error) {
     next(error);
   }
