@@ -19,6 +19,11 @@ export interface UserRepository {
   findOne(user: User): Promise<boolean>;
 }
 
+export interface Category {
+  name: string;
+  image: string;
+}
+
 export interface Backtrack {
   chordPattern: string;
   measures: number;
