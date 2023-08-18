@@ -158,7 +158,7 @@
 <script>
 import axios from "axios";
 import { mapMutations } from "vuex";
-import RegisterSuccess from "@/components/RegisterSuccessModal.vue";
+import RegisterSuccess from "./RegisterSuccessModal.vue";
 export default {
   components: { RegisterSuccess },
   data() {

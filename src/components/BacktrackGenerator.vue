@@ -668,7 +668,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin-top: 50px; */
+  margin-top: 50px;
   overflow: hidden;
   font-size: 70px;
 }

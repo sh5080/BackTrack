@@ -58,7 +58,6 @@
       </v-dialog>
 
       <button
-        v-if="showLoginButton"
         type="submit"
         class="btn-pers"
         id="login_button"
@@ -128,6 +127,11 @@ export default {
     FindPassword,
     // OauthLogin,
   },
+  // created() {
+  //   if (this.$route.name === "login") {
+  //     this.$store.commit("toggleLoginModal", true);
+  //   }
+  // },
 
   data() {
     return {
@@ -136,7 +140,6 @@ export default {
 
       errorAlert: false,
       isShaking: false,
-      showLoginButton: true,
       errorMessage: "",
     };
   },
@@ -167,14 +170,6 @@ export default {
         this.clearErrors();
       }, 3000);
     },
-    // async fetchUserInfo() {
-    //   try {
-    //     const response = await axios.get("/api/userInfo");
-    //     this.username = response.data.username;
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // },
 
     async oauthLogin(provider) {
       try {
@@ -188,19 +183,6 @@ export default {
         console.error(error);
       }
     },
-
-    // async handleOAuthCallback() {
-    //   try {
-    //     const response = await axios.get("/api/oauth/google/callback");
-    //     console.log(response);
-    //     // 사용자 정보를 저장하고 인증 상태를 설정
-
-    //     // 로그인이 완료된 후의 처리를 수행
-    //     // ...
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // },
 
     generateLoginUrl(oauthProvider) {
       const clientId = process.env[`VUE_APP_${oauthProvider}_CLIENT_ID`];
@@ -273,7 +255,7 @@ export default {
         if (response.data.message === "로그인 성공") {
           this.setAuthenticated(true);
           this.$store.commit("setLoggedInUsername", response.data.user);
-
+          this.$store.commit("setLoginProvider", "Backtrack");
           this.$emit("closeLogin");
           this.$router.push("/");
         }
