@@ -143,7 +143,6 @@
       <button
         v-if="showRegisterButton"
         type="submit"
-        @click="register"
         class="mt-4 btn-reg"
         style="font-size: 3.5em"
       >
