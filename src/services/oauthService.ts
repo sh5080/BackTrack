@@ -45,7 +45,7 @@ const generateUsername = async (username: string): Promise<string> => {
  * OAuth 사용자 로그인
  */
 export const OauthLoginUser = async (email: string): Promise<object> => {
-  const user = await AuthRepository.findUser(email);
+  const user = await AuthRepository.findUser(undefined, email);
 
   if (!user) {
     throw new AppError(
@@ -86,7 +86,7 @@ export const OauthLoginUser = async (email: string): Promise<object> => {
  * 이메일로 OAuth 사용자 정보 조회
  */
 export const getUserForOauth = async (email: string) => {
-  const user = await AuthRepository.findUser(email);
+  const user = await AuthRepository.findUser(undefined, email);
   console.log("확인: ", user);
   return user;
 };
