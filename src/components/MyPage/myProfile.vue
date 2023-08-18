@@ -7,6 +7,7 @@
         <ul>
           <div>아이디: {{ $store.state.loggedInUsername }}</div>
           <div>이메일: {{ userEmail }}</div>
+          <div>현재 로그인방식: {{ $store.state.provider }}</div>
         </ul>
       </div>
       <div class="category-content">
