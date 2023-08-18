@@ -6,8 +6,8 @@
       /* border: 1px solid #ccc; */
       font-size: 80px;
       padding: 0px;
-      margin-top: 50px;
-      margin-bottom: 50px;
+      margin-top: 120px;
+      margin-bottom: 0px;
     "
   >
     <v-row style="align-items: center">
@@ -17,7 +17,7 @@
             src="../assets/mainlogo1.png"
             alt="Backtrack"
             style="
-              margin-left: 100px;
+              margin-left: 50px;
               width: 400%;
               height: auto;
               max-width: 800px;
@@ -62,6 +62,28 @@
     <v-dialog v-model="$store.state.showLoginModal">
       <Login @closeLogin="closeLoginModal" />
     </v-dialog>
+    <v-row style="align-items: center">
+      <!-- 로고 부분 -->
+      <!-- ... -->
+
+      <!-- 카테고리 부분 -->
+      <v-col cols="12" style="display: flex; margin-top: 80px">
+        <!-- ... -->
+        <div class="categories">
+          <router-link
+            v-for="category in categories"
+            :key="category.id"
+            :to="`/category/${category.name}`"
+            class="category-item"
+          >
+            <div class="category-content">
+              <img :src="category.image" alt="Category Image" />
+              <span>{{ category.name }}</span>
+            </div>
+          </router-link>
+        </div>
+      </v-col>
+    </v-row>
   </header>
 </template>
 
@@ -72,6 +94,20 @@ import { mapMutations } from "vuex";
 export default {
   components: {
     Login,
+  },
+  data() {
+    return {
+      currentCategory: "main",
+      categories: [
+        {
+          id: 1,
+          name: "backtrack",
+          image: "../assets/category_icon1.png",
+        },
+        { id: 2, name: "카테고리1" },
+        { id: 3, name: "카테고리2" },
+      ],
+    };
   },
   async created() {
     const params = new URLSearchParams(window.location.search);
@@ -118,6 +154,35 @@ export default {
 </script>
 
 <style scoped>
+.categories {
+  display: flex;
+  gap: 0px;
+  width: 100%;
+  padding: 0px 400px;
+  margin-bottom: 40px;
+  justify-content: space-between;
+  /* background: linear-gradient(to top, #00b869, #03c75a); */
+}
+.category-item {
+  /* flex-grow: 1; */
+  display: inline-block;
+  border: 8px solid #ebe9e9;
+  border-radius: 120px;
+  padding: 20px 30px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+  font-size: 60px;
+}
+.category-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.category-item img {
+  margin-top: 30px;
+}
 .auth-container {
   display: flex;
   justify-content: space-between;
@@ -127,7 +192,7 @@ export default {
   display: flex;
   margin-top: 10px;
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 40px;
   border-radius: 10px;
   cursor: pointer;
   border: none;
