@@ -1,10 +1,15 @@
 import { Router } from "express";
 import * as adminController from "../../controllers/adminController";
 import { validateToken } from "../middlewares/jwt";
-
+import { ensureAdmin } from "../middlewares/admin";
 const router = Router();
 
-// /** [마이페이지] 회원정보 조회 */
-router.get("/categories", validateToken, adminController.createCategory);
+// /** [어드민] 카테고리 생성 */
+router.get(
+  "/categories",
+  ensureAdmin,
+  validateToken,
+  adminController.createCategory
+);
 
 export default router;

@@ -103,7 +103,7 @@ export const getUsername = async (
 
 /** 로그인 */
 export const login = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -111,18 +111,34 @@ export const login = async (
     const { username, password } = req.body;
 
     const token = await authService.loginUser(username!, password!);
-
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        // secure: true,
-        maxAge: 3600000,
-      })
-      .status(200)
-      .json({
-        message: "로그인 성공",
-        user: username,
-      });
+    const isAdmin = await authService.getUser(username);
+    console.log(isAdmin!.role);
+    if (isAdmin!.role === "ADMIN") {
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          // secure: true,
+          maxAge: 3600000,
+        })
+        .status(200)
+        .json({
+          message: "로그인 성공",
+          user: username,
+          role: isAdmin!.role,
+        });
+    } else {
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          // secure: true,
+          maxAge: 3600000,
+        })
+        .status(200)
+        .json({
+          message: "로그인 성공",
+          user: username,
+        });
+    }
   } catch (error) {
     next(error);
   }
