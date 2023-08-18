@@ -259,6 +259,14 @@ export default {
           this.$emit("closeLogin");
           this.$router.push("/");
         }
+
+        if (response && response.data) {
+          const { message, user, role } = response.data;
+
+          if (role === "ADMIN") {
+            this.$store.commit("setIsAdmin", true);
+          }
+        }
       } catch (error) {
         console.error("Error logging in:", error);
         this.handleErrors(error);

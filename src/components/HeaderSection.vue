@@ -144,6 +144,7 @@ export default {
           this.setAuthenticated(false);
           this.$store.commit("setLoggedInUsername", null);
           this.$router.push("/");
+          delete this.$store.state.isAdmin;
         }
       } catch (error) {
         console.error("Error during logout:", error);
