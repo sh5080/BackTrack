@@ -25,6 +25,12 @@ export const store = createStore({
     setAuthenticated(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated;
     },
+
+    setIsAdmin(state, isAdmin) {
+      if (isAdmin) {
+        state.isAdmin = true;
+      }
+    },
     setLoggedInUsername(state, username) {
       state.loggedInUsername = username;
     },
