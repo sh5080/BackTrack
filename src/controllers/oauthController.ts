@@ -77,7 +77,9 @@ export const kakaoCallback = async (
           //   secure: true,
           maxAge: 7200000,
         })
-        .redirect(`${SERVER_URL}`);
+        .redirect(
+          `${SERVER_URL}?username=${existingInfo.username}&provider=kakao`
+        );
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
@@ -142,7 +144,9 @@ export const googleCallback = async (
           maxAge: 7200000,
           httpOnly: true,
         })
-        .redirect(`${SERVER_URL}?username=${existingInfo.username}`);
+        .redirect(
+          `${SERVER_URL}?username=${existingInfo.username}&provider=google`
+        );
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
