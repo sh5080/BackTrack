@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 const responseTime = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
 
-  res.on('finish', () => {
+  res.on("finish", () => {
     const elapsedTime = Date.now() - start;
-    console.log(`Request took ${elapsedTime}ms`);
+    console.log(
+      `[${req.method}]  ${req.originalUrl}  Request took ${elapsedTime}ms`
+    );
   });
 
   next();
