@@ -47,19 +47,6 @@
         {{ errorMessage }}
       </div>
 
-      <!-- <div class="oauth-login-buttons">
-        <button @click="oauthLogin('kakao')" class="oauth-button">
-          Kakao 로그인
-        </button>
-        <button @click="oauthLogin('google')" class="oauth-button">
-          Google 로그인
-        </button>
-        <button @click="oauthLogin('naver')" class="oauth-button">
-          Naver 로그인
-        </button>
-     
-      </div> -->
-
       <v-dialog v-model="$store.state.showRegisterModal">
         <Register />
       </v-dialog>
@@ -69,9 +56,6 @@
       <v-dialog v-model="$store.state.showFindPasswordModal">
         <FindPassword />
       </v-dialog>
-      <!-- <v-dialog v-model="$store.state.showGoogleLoginModal">
-        <OauthLogin />
-      </v-dialog> -->
 
       <button
         v-if="showLoginButton"
@@ -144,16 +128,7 @@ export default {
     FindPassword,
     // OauthLogin,
   },
-  created() {
-    const params = new URLSearchParams(window.location.search);
-    this.username = params.get("username");
 
-    if (this.username) {
-      this.setAuthenticated(true);
-      this.$store.commit("setLoggedInUsername", this.username);
-      this.$router.push("/");
-    }
-  },
   data() {
     return {
       username: "",
@@ -206,10 +181,8 @@ export default {
         const loginUrl = this.generateLoginUrl(provider);
         console.log(loginUrl);
 
-        // if (loginUrl) {
-        //   this.handleOAuthCallback(provider);
-        // }
         window.location.href = loginUrl;
+
         this.$router.push("/");
       } catch (error) {
         console.error(error);
@@ -233,8 +206,6 @@ export default {
       const clientId = process.env[`VUE_APP_${oauthProvider}_CLIENT_ID`];
       const redirectUri = process.env[`VUE_APP_${oauthProvider}_REDIRECT_URI`];
       let params = {};
-      console.log("1: ", process.env.VUE_APP_GOOGLE_CLIENT_ID);
-      console.log("2: ", process.env.VUE_APP_GOOGLE_REDIRECT_URI);
 
       if (oauthProvider === "KAKAO") {
         const responseType = "code";
@@ -278,16 +249,13 @@ export default {
     openFindPasswordModal() {
       this.$store.commit("toggleFindPasswordModal", true);
     },
-    // openGoogleLoginModal() {
-    //   this.$store.commit("toggleGoogleLoginModal", true);
-    //   this.oauthLogin("google");
-    // },
 
     hideLoginModal() {
       this.$store.commit("toggleLoginModal", false);
     },
 
     ...mapMutations(["setAuthenticated"]),
+
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
       this.password = submitEvent.target.elements.password.value;
@@ -301,7 +269,6 @@ export default {
           },
           { withCredentials: true }
         );
-        this.showLoginButton = false;
 
         if (response.data.message === "로그인 성공") {
           this.setAuthenticated(true);
