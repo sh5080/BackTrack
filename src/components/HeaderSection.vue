@@ -14,7 +14,7 @@
       <v-col cols="1" style="display: flex; justify-content: flex-start">
         <div class="logo-button-container" @click="goToBacktrack">
           <img
-            src="../assets/mainlogo.png"
+            src="../assets/mainlogo1.png"
             alt="Backtrack"
             style="
               margin-left: 100px;
@@ -71,7 +71,19 @@ import axios from "axios";
 import { mapMutations } from "vuex";
 export default {
   components: {
-    Login, // 로그인 컴포넌트 등록
+    Login,
+  },
+  async created() {
+    const params = new URLSearchParams(window.location.search);
+    const loggedInUsername = params.get("username");
+    const provider = params.get("provider");
+    if (loggedInUsername) {
+      this.setAuthenticated(true);
+      this.$store.commit("setLoggedInUsername", loggedInUsername);
+      this.$store.commit("setLoginProvider", provider);
+
+      this.$router.push("/");
+    }
   },
   methods: {
     goToBacktrack() {
