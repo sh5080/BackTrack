@@ -1,19 +1,19 @@
 <template>
   <div class="mypage">
     <div class="sidebar">
-      <div class="category-menu">
-        <div @click="selectedCategory = 'main'">메인</div>
+      <div class="category-menu" @click="selectedCategory('main')">
+        회원 정보
       </div>
-
-      <div class="category-menu">
-        <div @click="selectedCategory = 'profile'">프로필 수정</div>
+      <div class="category-menu" @click="selectedCategory('profile')">
+        프로필 수정
       </div>
-      <div class="category-menu">
-        <div @click="selectedCategory = 'account'">계정 설정</div>
+      <div class="category-menu" @click="selectedCategory('backingtrack')">
+        백킹 트랙
       </div>
+      <div class="category-menu" @click="selectedCategory('env')">환경설정</div>
     </div>
     <div class="content">
-      <router-view></router-view>
+      <router-view :selectedCategory="currentCategory" />
     </div>
   </div>
 </template>
@@ -22,14 +22,13 @@
 export default {
   data() {
     return {
-      selectedCategory: "main", // 초기 선택된 카테고리
+      currentCategory: "main", // 초기 선택된 카테고리
     };
   },
   methods: {
-    closeAllModals() {
-      this.$store.commit("toggleLoginModal", false);
-      //   this.$store.commit("toggleRegisterModal", false);
-      //   this.$store.commit("toggleRegisterSuccessModal", false);
+    selectedCategory(category) {
+      this.currentCategory = category;
+      this.$router.push(`/${category}`); // 해당 카테고리에 따라 URL 변경
     },
   },
 };
@@ -63,9 +62,11 @@ export default {
 .category-menu {
   font-size: 80px;
   padding: 50px;
-  border: 10px solid rgb(223, 202, 125);
+  /* border: 10px solid rgb(223, 202, 125); */
+  cursor: pointer;
   /* border-radius: 50px; */
-  /* background: #fbe577; */
+  background: linear-gradient(to top, #00b869, #03c75a);
+
   /* margin-top: 20px; */
   /* margin-bottom: 20px; */
 }
