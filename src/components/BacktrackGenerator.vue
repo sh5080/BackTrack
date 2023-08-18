@@ -2,56 +2,9 @@
   <div class="backtrack-generator">
     <form @submit.prevent>
       <v-row>
-        <v-col cols="12">
-          <div
-            class="input-group"
-            style="
-              background-color: #f0f0f0;
-              border: 1px solid #ccc;
-              font-size: 70px;
-              padding: 10px;
-            "
-          >
-            <v-col cols="12" style="display: flex; justify-content: flex-end">
-              <div class="auth-container">
-                <div class="button-container">
-                  <button
-                    class="auth-button"
-                    v-show="!$store.state.isAuthenticated"
-                    @click="openLoginModal"
-                  >
-                    로그인
-                  </button>
-                  <div
-                    class="welcome-message"
-                    v-if="$store.state.isAuthenticated"
-                  >
-                    {{ $store.state.loggedInUsername }}님 환영합니다.
-                  </div>
-                  <button v-show="$store.state.isAuthenticated" @click="logout">
-                    로그아웃
-                  </button>
-                </div>
-              </div>
-            </v-col>
-            <v-dialog v-model="$store.state.showLoginModal">
-              <Login @closeLogin="closeLoginModal" />
-            </v-dialog>
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12">
-          <div
-            class="input-group"
-            style="
-              background-color: #302d2d;
-              border: 1px solid #ccc;
-              font-size: 70px;
-            "
-          >
-            <div class="bpm-container">
+        <v-row>
+          <v-col cols="6">
+            <div class="input-group bpm-container">
               <div class="bpm-input-container">
                 <div class="bpm-label-container">
                   <label class="bpm-label">BPM:</label>
@@ -68,7 +21,6 @@
                   />
                 </div>
               </div>
-
               <div class="toggle-container">
                 <button class="dropdown-toggle" @click="toggleBpmDropdown">
                   BPM 선택
@@ -90,7 +42,9 @@
                 </ul>
               </div>
             </div>
-            <div class="measure-container">
+          </v-col>
+          <v-col cols="6">
+            <div class="input-group measure-container">
               <div class="measure-input-container">
                 <div class="measure-label-container">
                   <label class="measure-label">마디수:</label>
@@ -112,7 +66,6 @@
               <div class="toggle-container">
                 <button class="dropdown-toggle" @click="toggleMeasureDropdown">
                   마디 수 선택
-
                   <i :class="['arrow-icon', { open: measureDropdownOpen }]"></i>
                 </button>
                 <ul
@@ -131,8 +84,8 @@
                 </ul>
               </div>
             </div>
-          </div>
-        </v-col>
+          </v-col>
+        </v-row>
       </v-row>
 
       <v-row>
@@ -344,12 +297,14 @@
 <script>
 import axios from "axios";
 import * as Toast from "../plugins/toast";
-import Login from "@/components/LoginModal.vue";
+// import HeaderSection from "@/components/HeaderSection.vue";
+// import Login from "@/components/LoginModal.vue";
+
 import { mapMutations } from "vuex";
 export default {
   components: {
-    Login,
-    // Register,
+    // Login,
+    // HeaderSection,
   },
 
   data() {
@@ -391,6 +346,9 @@ export default {
   },
   methods: {
     errorMessage() {},
+    openMyPage() {
+      this.$router.push("/myPage");
+    },
     toggleBpmDropdown(event) {
       this.bpmDropdownOpen = !this.bpmDropdownOpen;
       if (this.bpmDropdownOpen) {
@@ -660,11 +618,9 @@ export default {
         }
       } catch (error) {
         console.error("Error during logout:", error);
-        // 에러 처리
       }
     },
     async generateBacktrack() {
-      // e.preventDefault();
       try {
         const response = await axios.post(
           "http://localhost:4000/api/backtrack",
@@ -712,8 +668,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 100px;
+  /* margin-top: 50px; */
   overflow: hidden;
+  font-size: 70px;
 }
 
 .input-group-label {
@@ -726,7 +683,7 @@ export default {
   display: flex;
   align-items: center;
   margin-right: 40px;
-  padding: 80px;
+  /* padding: 80px; */
 }
 .toggle-container,
 .bpm-container,
