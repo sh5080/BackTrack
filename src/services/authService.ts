@@ -5,7 +5,7 @@ import config from "../config";
 import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
-import * as nodemailer from "../config/nodeMailer";
+import * as nodemailer from "../config/nodemailer";
 import { AppDataSource } from "../loaders/dbLoader";
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
@@ -26,7 +26,7 @@ export const signupUser = async (user: Type.User) => {
       email: user.email,
       password: hashedPassword,
     });
-    console.log(newUser);
+
     return newUser;
   } catch (error) {
     if (error instanceof AppError) {

@@ -32,6 +32,6 @@ router.post(
   validateRequestBody(["username"]),
   authController.resetPasswordByEmail
 );
-/**[사용자] 로그인시 세션 조회 */
+/**[인증] 세션 조회 */
 router.get("/getSessionData", authController.getSessionData);
 export default router;
