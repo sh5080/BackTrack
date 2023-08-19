@@ -1,5 +1,6 @@
 import Redis from "ioredis";
 import { promisify } from "util";
+import { AppError, CommonError } from "../types/AppError";
 
 const redisClient = Redis.createClient();
 
@@ -8,8 +9,11 @@ const getAsync = promisify(redisClient.get).bind(redisClient);
 
 export const saveSessionToRedis = async (userId: number, maxAge: number) => {
   const currentTime = new Date();
-  const sessionStart = currentTime.toISOString();
-  const sessionExpire = new Date(currentTime.getTime() + maxAge).toISOString();
+  const koreanTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+  const koreanTime = new Date(currentTime.getTime() + koreanTimeOffset);
+
+  const sessionStart = koreanTime.toISOString();
+  const sessionExpire = new Date(koreanTime.getTime() + maxAge);
 
   const sessionData = JSON.stringify({
     user_id: userId,
@@ -17,8 +21,7 @@ export const saveSessionToRedis = async (userId: number, maxAge: number) => {
     session_expire_time: sessionExpire,
   });
 
-  await setAsync(`session:${userId}`, sessionData);
-  // 여기서 `session:${userId}`는 각 사용자의 세션 키입니다.
+  await redisClient.set(`session:${userId}`, sessionData, "EX", maxAge);
 };
 
 export const getSessionFromRedis = async (userId: number) => {
@@ -27,6 +30,10 @@ export const getSessionFromRedis = async (userId: number) => {
   if (sessionData) {
     return JSON.parse(sessionData);
   } else {
-    return null;
+    throw new AppError(
+      CommonError.TOKEN_EXPIRED_ERROR,
+      "세션이 만료되었거나 유효하지 않은 세션입니다. 다시 로그인해주세요.",
+      401
+    );
   }
 };
