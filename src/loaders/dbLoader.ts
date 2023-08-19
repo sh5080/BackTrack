@@ -7,7 +7,7 @@ const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_SYNCRONIZE } =
   config.database;
 
 export let db: Pool;
-let redisClient: Redis;
+export let redisClient: Redis;
 export const redisLoader = async () => {
   try {
     db = await createPool({

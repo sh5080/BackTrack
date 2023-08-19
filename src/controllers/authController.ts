@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/authService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
+import { getSessionFromRedis, saveSessionToRedis } from "../config/session";
 
 export const signup = async (
   req: Request,
@@ -11,8 +12,6 @@ export const signup = async (
   try {
     const { username, password, passwordConfirm, email } = req.body;
 
-    const exceptPassword = { username, email };
-
     const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
     if (!idRegex.test(username)) {
       throw new AppError(
@@ -21,7 +20,7 @@ export const signup = async (
         400
       );
     }
-    console.log(username);
+
     if (username.length < 6 || username.length > 20) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -62,9 +61,13 @@ export const signup = async (
       email,
       password,
     });
-    res
-      .status(201)
-      .json({ message: "회원가입에 성공했습니다.", exceptPassword });
+
+    const newUserData = {
+      username: newUser.username,
+      email: newUser.email,
+    };
+
+    res.status(201).json({ message: "회원가입에 성공했습니다.", newUserData });
   } catch (error) {
     next(error);
   }
@@ -111,35 +114,53 @@ export const login = async (
     const { username, password } = req.body;
 
     const token = await authService.loginUser(username!, password!);
-    const isAdmin = await authService.getUser(username);
-    console.log(isAdmin!.role);
-    if (isAdmin!.role === "ADMIN") {
+    const userData = await authService.getUser(username);
+    const maxAge = 3600000; //1시간
+    await saveSessionToRedis(userData!.id, maxAge);
+
+    if (userData!.role === "ADMIN") {
       res
         .cookie("token", token, {
           httpOnly: true,
           // secure: true,
-          maxAge: 3600000,
+          maxAge: maxAge,
         })
         .status(200)
         .json({
           message: "로그인 성공",
-          user: username,
-          role: isAdmin!.role,
+          userId: userData!.id,
+          role: userData!.role,
         });
     } else {
       res
         .cookie("token", token, {
           httpOnly: true,
           // secure: true,
-          maxAge: 3600000,
+          maxAge: maxAge,
         })
         .status(200)
         .json({
           message: "로그인 성공",
-          user: username,
+          userId: userData!.id,
         });
     }
   } catch (error) {
+    next(error);
+  }
+};
+
+export const getSessionData = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = Number(req.query.userId);
+    const sessionData = await getSessionFromRedis(userId);
+
+    res.status(200).json(sessionData);
+  } catch (error) {
+    console.error("세션 데이터 조회 에러:", error);
     next(error);
   }
 };

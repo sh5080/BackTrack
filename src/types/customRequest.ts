@@ -15,5 +15,6 @@ export interface CustomRequest extends Request {
   query: {
     username: string;
     code: string;
+    userId: string;
   };
 }
