@@ -300,7 +300,6 @@ import * as Toast from "../plugins/toast";
 // import HeaderSection from "@/components/HeaderSection.vue";
 // import Login from "@/components/LoginModal.vue";
 
-import { mapMutations } from "vuex";
 export default {
   components: {
     // Login,
@@ -605,21 +604,7 @@ export default {
     closeLoginModal() {
       this.$store.commit("toggleLoginModal", false);
     },
-    ...mapMutations(["setAuthenticated"]),
-    async logout() {
-      try {
-        const response = await axios.post(
-          "http://localhost:4000/api/auth/logout"
-        );
-        if (response.data.message === "로그아웃 되었습니다.") {
-          this.setAuthenticated(false);
-          this.$store.commit("setLoggedInUsername", null);
-          this.$router.push("/");
-        }
-      } catch (error) {
-        console.error("Error during logout:", error);
-      }
-    },
+
     async generateBacktrack() {
       try {
         const response = await axios.post(

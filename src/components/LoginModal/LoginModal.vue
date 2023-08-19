@@ -127,11 +127,6 @@ export default {
     FindPassword,
     // OauthLogin,
   },
-  // created() {
-  //   if (this.$route.name === "login") {
-  //     this.$store.commit("toggleLoginModal", true);
-  //   }
-  // },
 
   data() {
     return {
@@ -174,11 +169,11 @@ export default {
     async oauthLogin(provider) {
       try {
         const loginUrl = this.generateLoginUrl(provider);
-        console.log(loginUrl);
+        // this.$store.commit("setLoginProvider", provider);
 
         window.location.href = loginUrl;
 
-        this.$router.push("/");
+        // this.$router.push("/");
       } catch (error) {
         console.error(error);
       }
@@ -236,7 +231,7 @@ export default {
       this.$store.commit("toggleLoginModal", false);
     },
 
-    ...mapMutations(["setAuthenticated"]),
+    ...mapMutations(["setAuthenticated", "setSessionData"]),
 
     async login(submitEvent) {
       this.username = submitEvent.target.elements.username.value;
@@ -253,8 +248,8 @@ export default {
         );
 
         if (response.data.message === "로그인 성공") {
-          this.setAuthenticated(true);
-          this.$store.commit("setLoggedInUsername", response.data.user);
+          this.$store.commit("setUserId", response.data.userId);
+          this.$store.commit("setLoggedInUsername", this.username);
           this.$store.commit("setLoginProvider", "Backtrack");
           this.$emit("closeLogin");
           this.$router.push("/");

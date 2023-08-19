@@ -111,11 +111,15 @@ export default {
   },
   async created() {
     const params = new URLSearchParams(window.location.search);
-    const loggedInUsername = params.get("username");
+    const userId = params.get("id");
+    const username = params.get("username");
     const provider = params.get("provider");
-    if (loggedInUsername) {
-      this.setAuthenticated(true);
-      this.$store.commit("setLoggedInUsername", loggedInUsername);
+
+    if (userId) {
+      // this.setAuthenticated(true);
+      this.$store.commit("setUserId", userId);
+      this.$store.commit("setLoggedInUsername", username);
+
       this.$store.commit("setLoginProvider", provider);
 
       this.$router.push("/");
@@ -141,8 +145,7 @@ export default {
           "http://localhost:4000/api/auth/logout"
         );
         if (response.data.message === "로그아웃 되었습니다.") {
-          this.setAuthenticated(false);
-          this.$store.commit("setLoggedInUsername", null);
+          await this.$store.dispatch("resetState");
           this.$router.push("/");
           delete this.$store.state.isAdmin;
         }
