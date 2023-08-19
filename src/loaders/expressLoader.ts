@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import { AppDataSource } from "../loaders/dbLoader";
 import cors from "cors";
-// import { dbLoader } from "../loaders/dbLoader";
+import { redisLoader } from "../loaders/dbLoader";
 import routeLoader from "./routeLoader";
 import { errorHandler } from "../api/middlewares/errorHandler";
 import responseTime from "../api/middlewares/responseTime";
@@ -10,9 +10,13 @@ export default async function expressLoader(
   app: Application
 ): Promise<Application> {
   try {
-    // const db = await dbLoader();
+    const redisClient = await redisLoader();
     const corsOptions = {
-      origin: ["http://localhost:8080"],
+      origin: [
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:8080/api/oauth/google/login",
+      ],
       credentials: true,
     };
     app.use(responseTime);
@@ -21,7 +25,7 @@ export default async function expressLoader(
 
     app.use(cors(corsOptions));
 
-    // app.set("db", db);
+    app.locals.redisClient = redisClient;
     app.set("connection", AppDataSource);
 
     routeLoader(app);

@@ -1,14 +1,16 @@
-import mysql, { Pool } from "mysql2/promise";
+import mysql, { Pool, createPool } from "mysql2/promise";
 import config from "../config";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import Redis from "ioredis";
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_SYNCRONIZE } =
   config.database;
-export let db: Pool;
 
-export const dbLoader = async () => {
+export let db: Pool;
+let redisClient: Redis;
+export const redisLoader = async () => {
   try {
-    db = await mysql.createPool({
+    db = await createPool({
       host: DB_HOST,
       user: DB_USER,
       password: DB_PASSWORD,
@@ -17,12 +19,13 @@ export const dbLoader = async () => {
       connectionLimit: 10,
     });
     console.log("Cloud SQL server connection successful");
-    return db;
+
+    redisClient = new Redis();
+    console.log("Redis connection successful");
+
+    return { db, redisClient };
   } catch (error) {
-    console.error(
-      "Failed to establish connection to the Cloud SQL server:",
-      error
-    );
+    console.error("Failed to establish connection:", error);
     throw error;
   }
 };
