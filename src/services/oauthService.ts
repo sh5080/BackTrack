@@ -87,7 +87,7 @@ export const OauthLoginUser = async (email: string): Promise<object> => {
  */
 export const getUserForOauth = async (email: string) => {
   const user = await AuthRepository.findUser(undefined, email);
-  console.log("확인: ", user);
+
   return user;
 };
 

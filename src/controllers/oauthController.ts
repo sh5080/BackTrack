@@ -4,11 +4,13 @@ import config from "../config/index";
 import qs from "qs";
 import { CustomRequest } from "../types/customRequest";
 import axios from "axios";
+import { saveSessionToRedis } from "../config/session";
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
   config.google;
 const { KAKAO_CLIENT_ID, KAKAO_REDIRECT_URI } = config.kakao;
 const SERVER_URL = config.server.URL;
+const maxAge = 3600000; //1시간
 
 // /** 카카오 로그인 */
 // export const kakaoLogin = (req: CustomRequest, res: Response) => {
@@ -54,6 +56,7 @@ export const kakaoCallback = async (
     const kakaoInfo = await axios.get("https://kapi.kakao.com/v2/user/me", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
       },
     });
     const kakaoUserInfo = kakaoInfo.data;
@@ -66,20 +69,24 @@ export const kakaoCallback = async (
 
     if (existingInfo !== null) {
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
-      const token = await oauthService.OauthLoginUser(
-        existingInfo.username || ""
-      );
+      const token = await oauthService.OauthLoginUser(existingInfo.email);
 
+      await saveSessionToRedis(existingInfo.id, maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
           httpOnly: true,
           //   secure: true,
-          maxAge: 7200000,
+          maxAge: maxAge,
         })
         .redirect(
-          `${SERVER_URL}?username=${existingInfo.username}&provider=kakao`
+          `${SERVER_URL}?id=${
+            existingInfo.id
+          }&provider=kakao&username=${encodeURIComponent(
+            existingInfo.username
+          )}`
         );
+      // .redirect(`${SERVER_URL}`);
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
       try {
@@ -138,14 +145,19 @@ export const googleCallback = async (
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email || "");
 
+      await saveSessionToRedis(existingInfo.id, maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
-          maxAge: 7200000,
+          maxAge: maxAge,
           httpOnly: true,
         })
         .redirect(
-          `${SERVER_URL}?username=${existingInfo.username}&provider=google`
+          `${SERVER_URL}?id=${
+            existingInfo.id
+          }&provider=google&username=${encodeURIComponent(
+            existingInfo.username
+          )}`
         );
     } else {
       // 기존에 회원 가입되어 있지 않은 경우, 회원 가입 처리 또는 에러 처리를 수행
