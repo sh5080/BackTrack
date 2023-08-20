@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LoginModal from "../components/LoginModal/LoginModal.vue";
+import Admin from "../components/MyPage/admin.vue";
 import RegisterModal from "../components/LoginModal/RegisterModal.vue";
 import RegisterSuccessModal from "../components/LoginModal/RegisterSuccessModal.vue";
 import Backtrack from "../components/BacktrackGenerator.vue";
@@ -11,8 +11,10 @@ import { createStore } from "vuex";
 export const store = createStore({
   state: {
     isAuthenticated: false,
+    sessionData: null,
+    userId: null,
     loggedInUsername: null,
-    provider: "Backtrack",
+    provider: null,
     showLoginModal: false,
     showRegisterModal: false,
     showRegisterSuccessModal: false,
@@ -24,6 +26,15 @@ export const store = createStore({
   mutations: {
     setAuthenticated(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated;
+    },
+    setSessionData(state, sessionData) {
+      state.sessionData = sessionData;
+      if (sessionData) {
+        state.isAuthenticated = true;
+      }
+    },
+    setUserId(state, userId) {
+      state.userId = userId;
     },
 
     setIsAdmin(state, isAdmin) {
@@ -57,6 +68,47 @@ export const store = createStore({
     },
     toggleKakaoLoginModal(state, value) {
       state.showKakaoLoginModal = value;
+    },
+  },
+
+  actions: {
+    async fetchSessionData({ commit, state }) {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/auth/getSessionData?userId=${state.userId}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        const sessionData = response.data;
+
+        if (sessionData) {
+          commit("setAuthenticated", true);
+          commit("setSessionData", sessionData);
+        }
+
+        return sessionData;
+      } catch (error) {
+        console.error("Error fetching session data:", error);
+        return null;
+      }
+    },
+    async resetState({ commit }) {
+      commit("setAuthenticated", false);
+      commit("setSessionData", null);
+      commit("setUserId", null);
+      commit("setIsAdmin", false);
+      commit("setLoggedInUsername", null);
+      commit("setLoginProvider", null);
+      commit("toggleLoginModal", false);
+      commit("toggleRegisterModal", false);
+      commit("toggleRegisterSuccessModal", false);
+      commit("toggleFindUsernameModal", false);
+      commit("toggleFindPasswordModal", false);
+      commit("toggleGoogleLoginModal", false);
+      commit("toggleKakaoLoginModal", false);
+      // 다른 상태도 초기화하는 코드 추가
     },
   },
 });
@@ -102,9 +154,9 @@ const routes = [
     meta: { authRequired: true },
     children: [
       { path: "", redirect: "main" },
-      { path: "/main", component: MyMain }, // 메인 페이지 카테고리
-      { path: "/profile", component: MyProfile }, // 프로필 수정 카테고리
-      // 다른 카테고리에 대한 라우터 추가
+      { path: "/main", component: MyMain },
+      { path: "/profile", component: MyProfile },
+      { path: "/admin", component: Admin },
     ],
   },
 ];
@@ -114,19 +166,23 @@ export const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some((record) => record.meta.authRequired)) {
-//     const isAuthenticated = store.state.isAuthenticated;
-//     if (isAuthenticated) {
-//       next();
-//     } else {
-//       alert("로그인 후 접근 가능합니다.");
-//       router.push("/");
-//     }
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  const userId = store.state.userId;
+
+  if (userId) {
+    store.dispatch("fetchSessionData", userId).then((sessionData) => {
+      if (sessionData) {
+        store.commit("setAuthenticated", true);
+      } else {
+        store.commit("setAuthenticated", false);
+      }
+      next();
+    });
+  } else {
+    store.commit("setAuthenticated", false);
+    next();
+  }
+});
 
 import axios from "axios";
 axios.interceptors.response.use(
@@ -136,14 +192,10 @@ axios.interceptors.response.use(
       error.response.data.message.includes("접근 거부") ||
       error.response.data.message.includes("사용자")
     ) {
-      store.commit("setAuthenticated", false);
-      store.commit("setLoggedInUsername", false);
-      store.commit("setLoginProvider", false);
+      store.dispatch("resetState");
 
       alert("로그인이 필요합니다.");
       router.push("/login");
-
-      // store.commit("toggleLoginModal", true);
     }
     return Promise.reject(error);
   }

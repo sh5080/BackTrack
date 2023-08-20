@@ -208,9 +208,9 @@ export default {
       const queryString = qs.stringify(params);
       const baseUrl =
         oauthProvider === "KAKAO"
-          ? "https://kauth.kakao.com"
-          : "https://accounts.google.com";
-      const loginUrl = `${baseUrl}/o/oauth2/auth?${queryString}`;
+          ? "https://kauth.kakao.com/oauth/authorize"
+          : "https://accounts.google.com/o/oauth2/auth";
+      const loginUrl = `${baseUrl}?${queryString}`;
       return loginUrl;
     },
 
