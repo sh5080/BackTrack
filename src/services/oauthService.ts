@@ -1,5 +1,3 @@
-import qs from "qs";
-// import * as oauthModel from "../models/oauthModel";
 import { AuthRepository } from "../models/repositories/auth.repository";
 import jwt from "jsonwebtoken";
 import config from "../config";
@@ -90,41 +88,3 @@ export const getUserForOauth = async (email: string) => {
 
   return user;
 };
-
-/**
- * OAuth 로그인 URL 생성
- */
-// 프론트에서 검증하므로 주석처리함. 삭제예정
-// export const generateLoginUrl = (oauthProvider: string): string => {
-//   const clientId = process.env[`${oauthProvider}_CLIENT_ID`] as string;
-//   const redirectUri = process.env[`${oauthProvider}_REDIRECT_URI`] as string;
-//   let params: Record<string, string> = {};
-
-//   if (oauthProvider === "KAKAO") {
-//     const responseType = "code";
-//     params = {
-//       client_id: clientId,
-//       redirect_uri: redirectUri,
-//       response_type: responseType,
-//     };
-//   } else if (oauthProvider === "GOOGLE") {
-//     const scope =
-//       "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
-//     const responseType = "code";
-//     params = {
-//       client_id: clientId,
-//       redirect_uri: redirectUri,
-//       scope: scope,
-//       response_type: responseType,
-//     };
-//   } else {
-//     throw new Error(`Unsupported OAuth provider: ${oauthProvider}`);
-//   }
-
-//   const queryString = qs.stringify(params);
-//   const result = `https://${
-//     oauthProvider === "KAKAO" ? "kauth.kakao.com" : "accounts.google.com"
-//   }/o/oauth2/auth?${queryString}`;
-//   console.log(result);
-//   return result;
-// };

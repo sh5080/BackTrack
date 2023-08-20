@@ -66,8 +66,27 @@ export const kakaoCallback = async (
 
     // 이메일을 기준으로 기존에 회원 가입되어 있는지 확인
     const existingInfo = await oauthService.getUserForOauth(kakaoEmail);
+    if (existingInfo !== null && existingInfo.role === "ADMIN") {
+      // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
+      const token = await oauthService.OauthLoginUser(existingInfo.email);
 
-    if (existingInfo !== null) {
+      await saveSessionToRedis(existingInfo.id, maxAge);
+      // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          //   secure: true,
+          maxAge: maxAge,
+        })
+        .redirect(
+          `${SERVER_URL}?id=${
+            existingInfo.id
+          }&provider=kakao&username=${encodeURIComponent(
+            existingInfo.username
+          )}&admin=1`
+        );
+      // .redirect(`${SERVER_URL}`);
+    } else if (existingInfo !== null && existingInfo.role !== "ADMIN") {
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
@@ -141,9 +160,9 @@ export const googleCallback = async (
     const existingInfo = await oauthService.getUserForOauth(googleEmail);
 
     // 회원가입 및 로그인 처리 등 필요한 로직 수행
-    if (existingInfo) {
+    if (existingInfo !== null && existingInfo.role === "ADMIN") {
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
-      const token = await oauthService.OauthLoginUser(existingInfo.email || "");
+      const token = await oauthService.OauthLoginUser(existingInfo.email);
 
       await saveSessionToRedis(existingInfo.id, maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
@@ -151,6 +170,25 @@ export const googleCallback = async (
         .cookie("token", token, {
           maxAge: maxAge,
           httpOnly: true,
+        })
+        .redirect(
+          `${SERVER_URL}?id=${
+            existingInfo.id
+          }&provider=google&username=${encodeURIComponent(
+            existingInfo.username
+          )}&admin=1`
+        );
+    } else if (existingInfo !== null && existingInfo.role !== "ADMIN") {
+      // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
+      const token = await oauthService.OauthLoginUser(existingInfo.email);
+
+      await saveSessionToRedis(existingInfo.id, maxAge);
+      // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          //   secure: true,
+          maxAge: maxAge,
         })
         .redirect(
           `${SERVER_URL}?id=${
