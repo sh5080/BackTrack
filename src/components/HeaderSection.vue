@@ -114,9 +114,11 @@ export default {
     const userId = params.get("id");
     const username = params.get("username");
     const provider = params.get("provider");
+    const isAdmin = params.get("admin");
 
     if (userId) {
       // this.setAuthenticated(true);
+      this.$store.commit("setIsAdmin", true);
       this.$store.commit("setUserId", userId);
       this.$store.commit("setLoggedInUsername", username);
 
