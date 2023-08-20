@@ -1,81 +1,87 @@
 <template>
-  <div class="mypage">
-    <div class="content">
-      <div>
-        <h1>마이페이지</h1>
-        <p>{{ $store.state.loggedInUsername }}님의 정보:</p>
-        <ul>
-          <div>아이디: {{ $store.state.loggedInUsername }}</div>
-          <div>이메일: {{ userEmail }}</div>
-          <div>현재 로그인방식: {{ $store.state.provider }}</div>
-        </ul>
-      </div>
-      <div class="category-content">
-        <div v-if="selectedCategory === 'profile'">프로필 수정 내용...</div>
-        <div v-if="selectedCategory === 'account'">계정 설정 내용...</div>
-        <!-- 다른 카테고리 컨텐츠들을 추가해주세요 -->
-      </div>
-      <button
-        type="button"
-        @click="closeAllModals"
-        class="btn-success"
-        style="font-size: 3.5em"
-      >
-        확인
-      </button>
-    </div>
+  <div class="my-main">
+    <h2 style="margin-bottom: 90px">프로필 수정</h2>
+    <table v-if="fetchedUserInfo" class="user-info-table">
+      <tr>
+        <th>아이디</th>
+        <td>{{ fetchedUserInfo.username }}</td>
+      </tr>
+      <tr>
+        <th>이메일</th>
+        <td>{{ fetchedUserInfo.email }}</td>
+      </tr>
+      <tr>
+        <th>현재 로그인방식</th>
+        <td>{{ $store.state.provider }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
+  props: ["userInfo"],
+
   data() {
     return {
-      selectedCategory: "profile", // 초기 선택된 카테고리
+      username: this.$store.state.loggedInUsername,
+      fetchedUserInfo: null,
     };
   },
+  created() {
+    this.fetchUserInfo();
+  },
+  // watch: {
+  //   "$store.state.isAuthenticated"(newValue) {
+  //     if (!newValue) {
+  //       // 인증되지 않은 경우 로그아웃 처리
+  //       console.log(newValue);
+  //       this.$router.push("/login"); // 로그아웃 후 리다이렉트할 경로
+  //     }
+  //   },
+  // },
   methods: {
-    closeAllModals() {
-      this.$store.commit("toggleLoginModal", false);
-      //   this.$store.commit("toggleRegisterModal", false);
-      //   this.$store.commit("toggleRegisterSuccessModal", false);
+    async fetchUserInfo() {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/mypage/userInfo?username=${this.username}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.fetchedUserInfo = response.data;
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-.mypage {
-  display: flex;
-  height: 100vh;
-}
-
-.sidebar {
-  width: 800px;
-  background-color: #f0f0f0;
-  padding: 20px;
-  border: 1px solid lightgray;
-  border-radius: 50px;
+.my-main {
   margin-top: 100px;
   margin-left: 30px;
 }
-
-.content {
-  font-size: 80px;
-  padding: 20px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  background: #fefefe;
-  margin-top: 100px;
-  /* margin-left: 100px; */
+.user-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  font-size: 70px;
+  margin-top: 30px;
 }
-.category-menu {
-  font-size: 80px;
-  padding: 50px;
-  /* border: 1px solid rgb(223, 202, 125); */
-  border-radius: 50px;
-  background: #fbe577;
-  margin-top: 20px;
-  margin-bottom: 20px;
+
+.user-info-table th,
+.user-info-table td {
+  padding: 15px 50px;
+  text-align: left;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+}
+
+.user-info-table th {
+  background-color: #f0f0f0;
 }
 </style>
