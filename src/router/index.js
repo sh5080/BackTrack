@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Admin from "../components/MyPage/admin.vue";
+import Admin from "../components/MyPage/myAdmin.vue";
 import RegisterModal from "../components/LoginModal/RegisterModal.vue";
 import RegisterSuccessModal from "../components/LoginModal/RegisterSuccessModal.vue";
 import Backtrack from "../components/BacktrackGenerator.vue";
