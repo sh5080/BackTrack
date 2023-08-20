@@ -333,19 +333,32 @@ export default {
             { withCredentials: true }
           );
           if (response.data.message.includes("회원가입에 성공했습니다.")) {
-            this.setAuthenticated(true);
+            const loginResponse = await axios.post(
+              "http://localhost:4000/api/auth/login",
+              {
+                username: this.username,
+                password: this.password,
+              },
+              { withCredentials: true }
+            );
+
+            const sessionDataResponse = await axios.get(
+              "http://localhost:4000/api/auth/getSessionData",
+              {
+                params: { userId: loginResponse.data.userId },
+                withCredentials: true,
+              }
+            );
+            const sessionData = sessionDataResponse.data;
 
             this.$store.commit(
               "setLoggedInUsername",
-              response.data.exceptPassword.username
+              response.data.newUserData.username
             );
 
+            this.$store.commit("setSessionData", sessionData);
+            this.$store.commit("setLoginProvider", "Backtrack");
             this.$store.commit("toggleRegisterSuccessModal", true);
-
-            // if (this.$store.commit("toggleRegisterSuccessModal", true)) {
-            //   this.$emit("closeRegister");
-            //   this.$emit("closeLoginInRegister");
-            // }
           }
         } catch (error) {
           console.error("Registration error:", error);
