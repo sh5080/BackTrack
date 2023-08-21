@@ -282,6 +282,7 @@
           >
             <button
               class="generate-button"
+              style="margin-top: 1000px"
               type="button"
               @click="generateBacktrack"
             >
@@ -387,6 +388,7 @@ export default {
     },
     selectMeasure(measure) {
       if (this.measureDirectInput) {
+        this.measure = measure;
         this.selectedMeasure = measure;
         this.measureDropdownOpen = false;
         this.measureDirectInput = false;
@@ -398,6 +400,7 @@ export default {
     },
     selectBpm(bpm) {
       if (this.bpmDirectInput) {
+        this.bpm = bpm; //직접입력 이후 bpm선택시 바로 입력 안되는 부분 해결
         this.selectedBpm = bpm;
         this.bpmDropdownOpen = false;
         this.bpmDirectInput = false;
@@ -789,7 +792,8 @@ export default {
   /* max-width: 3000px; */
   width: 100%;
   height: 100%;
-  margin: 0 auto;
+  /* margin: 0 auto; */
+  margin-top: 300px;
   padding: 20px;
   border: 1px solid #ccc;
   background-color: #fff;
