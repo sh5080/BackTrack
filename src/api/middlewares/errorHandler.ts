@@ -24,7 +24,7 @@ const errorHandler = (
         status: 500,
       },
     });
-    console.error(err);
+    console.error("non catched in error Handler: ", err);
   }
 };
 

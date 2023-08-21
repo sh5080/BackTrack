@@ -177,7 +177,6 @@ export const findUsernameByEmail = async (email: string) => {
       );
     }
     const username = user.username;
-    console.log(username);
     return username;
   } catch (error) {
     if (error instanceof AppError) {

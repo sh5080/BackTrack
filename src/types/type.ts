@@ -21,11 +21,15 @@ export interface UserRepository {
 
 export interface Category {
   name: string;
-  image: string;
 }
 
 export interface Backtrack {
   chordPattern: string;
   measures: number;
   bpm: number;
+}
+export interface SessionData {
+  user_id: number;
+  session_start_time: string;
+  session_expire_time: string;
 }
