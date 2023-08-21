@@ -5,10 +5,10 @@ import { ensureAdmin } from "../middlewares/admin";
 const router = Router();
 
 // /** [어드민] 카테고리 생성 */
-router.get(
+router.post(
   "/categories",
-  ensureAdmin,
   validateToken,
+  ensureAdmin,
   adminController.createCategory
 );
 
