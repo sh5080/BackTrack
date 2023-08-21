@@ -4,22 +4,21 @@ import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 
 export const createCategory = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { name, image } = req.body;
+    const { name } = req.body;
     const newCategory = await adminService.createCategory({
       name,
-      image,
     });
-
     res.status(201).json({
       message: "카테고리가 생성되었습니다.",
       category: newCategory,
     });
   } catch (error) {
-    throw error;
+    console.error(error);
+    next(error);
   }
 };
