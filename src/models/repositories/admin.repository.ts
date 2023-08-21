@@ -2,17 +2,19 @@ import * as Type from "../../types/type";
 import { AdminEntity } from "../entities/admin.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
-export const AuthRepository = AppDataSource.getRepository(AdminEntity).extend({
+export const AdminRepository = AppDataSource.getRepository(AdminEntity).extend({
   async createCategory(category: Type.Category) {
-    const { name, image } = category;
+    try {
+      const { name } = category;
 
-    const categoryData = this.create({
-      name,
+      const categoryData = this.create({
+        name,
+      });
 
-      image,
-    });
-
-    await this.save(categoryData);
-    return categoryData;
+      await this.save(categoryData);
+      return categoryData;
+    } catch (error) {
+      throw error;
+    }
   },
 });
