@@ -39,22 +39,16 @@ export const AppDataSource = new DataSource({
   database: DB_NAME,
   synchronize: Boolean(DB_SYNCRONIZE),
   logging: false,
-  // entities: [AuthEntity],
-  // entities: [__dirname + "/../models/entities/*.entity.{js,ts}"],
-  entities: [
-    "/Users/seunghwankim/myproject/intro-me/intro-me/jamTrack/src/models/entities/auth.entity.ts",
-  ],
-
+  entities: [__dirname + "/../models/entities/*.entity.{js,ts}"],
   migrations: [],
   subscribers: [],
 });
-// console.log(AppDataSource.options);
 
 AppDataSource.initialize()
   .then(async () => {
     console.log("Connection initialized with database...");
   })
-  .catch((error) => console.log(error));
+  .catch((error) => console.log("catched in DBLoader", error));
 
 export const getDataSource = (delay = 3000): Promise<DataSource> => {
   if (AppDataSource.isInitialized) return Promise.resolve(AppDataSource);
