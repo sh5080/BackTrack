@@ -21,7 +21,7 @@
     <div class="main-panel">
       <header-section></header-section>
 
-      <dashboard-content @click="goMain"> </dashboard-content>
+      <dashboard-content> </dashboard-content>
 
       <content-footer></content-footer>
     </div>
@@ -45,11 +45,7 @@ export default defineComponent({
     sideBar,
     sidebarLink,
   },
-  methods: {
-    goMain() {
-      this.$router.push("/");
-    },
-  },
+  methods: {},
   computed: {
     shouldShowUserInfoLink() {
       return this.$store.state.isAuthenticated;

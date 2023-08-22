@@ -6,8 +6,8 @@
     :data-image="backgroundImage"
   >
     <div class="sidebar-wrapper">
-      <div class="logo" v-show="sidebarExpanded">
-        <a href="#" class="simple-text logo__container">
+      <div class="logo" @click="goMain" v-show="sidebarExpanded">
+        <a class="simple-text logo__container">
           <div class="logo-img">
             <img src="img/vue-logo.png" alt="" />
           </div>
@@ -124,10 +124,16 @@ export default {
     toggleSidebar() {
       this.sidebarExpanded = !this.sidebarExpanded;
     },
+    goMain() {
+      this.$router.push("/");
+    },
   },
 };
 </script>
 <style>
+.logo {
+  cursor: pointer;
+}
 .sidebar .sidebar-wrapper {
   display: flex;
   flex-direction: column;
