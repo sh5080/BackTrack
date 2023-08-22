@@ -172,7 +172,7 @@ export const findUsernameByEmail = async (email: string) => {
     if (!user) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
-        "사용자를 찾을 수 없습니다.",
+        "없는 이메일입니다.",
         404
       );
     }
