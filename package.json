@@ -1,0 +1,47 @@
+{
+  "name": "backtrack",
+  "version": "2.1.0",
+  "private": true,
+  "description": "make backtrack for practice music",
+  "author": "sh5080 <prpn97@gmail.com>",
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service serve --open",
+    "e2e": "node test/e2e/runner.js",
+    "lint-fix": "vue-cli-service lint --fix"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.2.96",
+    "axios": "^1.4.0",
+    "bootstrap": "4.6.0",
+    "cache-loader": "^4.1.0",
+    "chartist": "0.11.0",
+    "core-js-compat": "^3.32.1",
+    "register-service-worker": "1.7.2",
+    "roboto-fontface": "*",
+    "v-tooltip": "2.0.0-rc.33",
+    "vue": "^3.2.36",
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.3.13",
+    "vuex": "^4.1.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-pwa": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "sass": "1.56.2",
+    "sass-loader": "10.1.1",
+    "vue-cli-plugin-vuetify": "~2.5.8",
+    "vue-template-compiler": "2.7.14",
+    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 11"
+  ]
+}
