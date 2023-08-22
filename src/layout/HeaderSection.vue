@@ -1,13 +1,19 @@
 <template>
   <header
     class="input-group"
-    style="font-size: 80px; padding: 0px; margin-top: 20px; margin-bottom: 0px"
+    style="
+      font-size: 80px;
+      padding: 30px;
+      /* margin-top: 20px; */
+      /* margin-bottom: 20px; */
+      /* background-color: aqua; */
+    "
   >
     <v-row style="align-items: center; justify-content: flex-end">
       <v-col cols="1" style="display: flex; justify-content: flex-start">
         <div class="logo-button-container" @click="goToBacktrack">
           <img
-            src="../../public/img/mainlogo1.png"
+            src="/img/mainlogo1.png"
             alt="Backtrack"
             style="
               margin-left: 50px;
@@ -34,13 +40,13 @@
             로그인
           </button>
 
-          <div v-if="$store.state.isAuthenticated">
+          <div v-if="$store.state.isAdmin">
             <button
               style="margin-right: 15px"
-              @click="openMyPage"
+              @click="openAdmin"
               class="button-container"
             >
-              마이페이지
+              어드민
             </button>
           </div>
           <div v-if="$store.state.isAuthenticated">
@@ -94,8 +100,8 @@ export default {
     closeLoginModal() {
       this.$store.commit("toggleLoginModal", false);
     },
-    openMyPage() {
-      this.$router.push("/myPage");
+    openAdmin() {
+      this.$router.push("/admin");
     },
     ...mapMutations(["setAuthenticated"]),
     async logout() {
@@ -117,6 +123,10 @@ export default {
 </script>
 
 <style scoped>
+.input-group {
+  background-color: #fff;
+  border: none;
+}
 .categories {
   display: flex;
   gap: 0px;
