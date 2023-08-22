@@ -82,9 +82,9 @@ export const loginUser = async (
 
     if (!user) {
       throw new AppError(
-        CommonError.RESOURCE_NOT_FOUND,
-        "없는 사용자 입니다.",
-        404
+        CommonError.AUTHENTICATION_ERROR,
+        "없는 사용자이거나 비밀번호가 일치하지 않습니다.",
+        401
       );
     }
 
