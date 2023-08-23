@@ -167,7 +167,7 @@ export const getUser = async (username?: string) => {
  */
 export const findUsernameByEmail = async (email: string) => {
   try {
-    const user = await AuthRepository.findUser(email);
+    const user = await AuthRepository.findUser(undefined, email);
 
     if (!user) {
       throw new AppError(
