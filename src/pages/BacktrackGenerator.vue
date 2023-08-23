@@ -4,7 +4,7 @@
       <v-row>
         <v-row>
           <v-col cols="6">
-            <div class="input-group bpm-container">
+            <div class="input-group1 bpm-container">
               <div class="bpm-input-container">
                 <div class="bpm-label-container">
                   <label class="bpm-label">BPM:</label>
@@ -21,30 +21,29 @@
                   />
                 </div>
               </div>
-              <div class="toggle-container">
-                <button class="dropdown-toggle" @click="toggleBpmDropdown">
+              <div class="toggle-container1" @click="toggleBpmDropdown">
+                <button class="dropdown-toggle1">
                   BPM 선택
                   <i :class="['arrow-icon', { open: bpmDropdownOpen }]"></i>
                 </button>
-                <ul
-                  v-if="bpmDropdownOpen"
-                  class="dropdown-menu"
-                  :style="bpmDropdownStyle"
-                >
-                  <li
-                    v-for="bpm in bpmOptions"
-                    :key="bpm"
-                    @click="selectBpm(bpm)"
-                  >
-                    {{ bpm }}
-                  </li>
-                  <li @click="selectBpmDirectInput">직접입력</li>
-                </ul>
+
+                <div class="menu-container" v-if="bpmDropdownOpen">
+                  <ul class="dropdown-menu1">
+                    <li
+                      v-for="bpm in bpmOptions"
+                      :key="bpm"
+                      @click="selectBpm(bpm)"
+                    >
+                      {{ bpm }}
+                    </li>
+                    <li @click="selectBpmDirectInput">직접입력</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </v-col>
           <v-col cols="6">
-            <div class="input-group measure-container">
+            <div class="input-group1 measure-container">
               <div class="measure-input-container">
                 <div class="measure-label-container">
                   <label class="measure-label">마디수:</label>
@@ -63,25 +62,23 @@
                   />
                 </div>
               </div>
-              <div class="toggle-container">
-                <button class="dropdown-toggle" @click="toggleMeasureDropdown">
+              <div class="toggle-container1">
+                <button class="dropdown-toggle1" @click="toggleMeasureDropdown">
                   마디 수 선택
                   <i :class="['arrow-icon', { open: measureDropdownOpen }]"></i>
                 </button>
-                <ul
-                  v-if="measureDropdownOpen"
-                  class="dropdown-menu"
-                  :style="measureDropdownStyle"
-                >
-                  <li
-                    v-for="measure in measureOptions"
-                    :key="measure"
-                    @click="selectMeasure(measure)"
-                  >
-                    {{ measure }} 마디
-                  </li>
-                  <li @click="selectMeasureDirectInput">직접입력</li>
-                </ul>
+                <div class="menu-container" v-if="measureDropdownOpen">
+                  <ul class="dropdown-menu2">
+                    <li
+                      v-for="measure in measureOptions"
+                      :key="measure"
+                      @click="selectMeasure(measure)"
+                    >
+                      {{ measure }}
+                    </li>
+                    <li @click="selectMeasureDirectInput">직접입력</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </v-col>
@@ -91,7 +88,7 @@
       <v-row>
         <v-col cols="12">
           <div
-            class="input-group"
+            class="input-group1"
             style="
               background-color: #f0f0f0;
               padding: 10px;
@@ -195,7 +192,7 @@
       <v-row>
         <v-col cols="12">
           <div
-            class="input-group"
+            class="input-group1"
             style="
               background-color: #f0f0f0;
               padding: 100px;
@@ -233,7 +230,7 @@
       <v-row>
         <v-col cols="12">
           <div
-            class="input-group"
+            class="input-group1"
             style="
               background-color: #f0f0f0;
               padding: 10px;
@@ -272,7 +269,7 @@
       <v-row>
         <v-col cols="12">
           <div
-            class="input-group"
+            class="input-group1"
             style="
               background-color: #f0f0f0;
               padding: 10px;
@@ -652,7 +649,7 @@ export default {
   overflow: hidden;
 }
 
-.input-group {
+.input-group1 {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -661,7 +658,7 @@ export default {
   font-size: 70px;
 }
 
-.input-group-label {
+.input-group1-label {
   display: flex;
 }
 .measure-label-container,
@@ -673,7 +670,7 @@ export default {
   margin-right: 40px;
   /* padding: 80px; */
 }
-.toggle-container,
+.toggle-container1,
 .bpm-container,
 .measure-container,
 .measure-input-container,
@@ -681,6 +678,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .ext-label,
 .key-label,
 .bpm-label {
@@ -734,39 +732,51 @@ export default {
   margin-right: 25px;
   align-items: center;
 }
-
-.dropdown {
+/* .toggle-container1 {
   position: relative;
   display: inline-block;
+} */
+.menu-container {
+  position: fixed;
+  display: inline-block;
+  z-index: 1;
 }
-
-.dropdown-toggle {
-  /* 드롭다운 토글 버튼 스타일링 */
-  background-color: #0c63e4;
-  color: white;
-  border: #0c63e4;
-  padding: 8px 12px;
-  cursor: pointer;
+.dropdown-toggle1 {
   width: 400px;
-  height: 130px;
 }
-.dropdown-menu {
-  /* 드롭다운 메뉴 스타일링 */
+.dropdown-menu1 {
   position: absolute;
+
+  width: 400px;
   background-color: white;
   border: 1px solid #ccc;
   list-style-type: none;
-  padding: 0;
-  margin: 0;
+  display: block;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.dropdown-menu2 {
+  position: absolute;
+
+  width: 400px;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  display: block;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
-.dropdown-menu li {
+.dropdown-menu2 ul,
+.dropdown-menu1 ul {
   padding: 8px;
   cursor: pointer;
 }
 
-.dropdown-menu li:hover {
+.dropdown-menu2 li,
+.dropdown-menu1 li {
+  padding: 0 25px;
+}
+.dropdown-menu2 ul:hover,
+.dropdown-menu1 li:hover {
   background-color: #f2f2f2;
 }
 .result {
