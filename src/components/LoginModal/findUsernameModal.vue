@@ -14,6 +14,7 @@
           padding: 0.5em;
           height: 1em;
           margin-top: 100px;
+          margin-left: 0px;
           text-align: center;
         "
       >
@@ -169,7 +170,9 @@ export default {
   max-width: 2000px;
   max-height: 80vh;
 }
-
+.mb-3 {
+  font-weight: 600;
+}
 .v-dialog > .v-overlay__content {
   max-height: calc(100% - 48px);
   width: calc(100% - 48px);

@@ -15,11 +15,12 @@
           height: 1em;
           margin-top: 100px;
           margin-bottom: 200px;
+          margin-left: 0px;
           text-align: center;
         "
       >
         가입할 때 입력한 아이디, 이메일로 비밀번호를 초기화하고,
-        <br />임시비밀번호를 이메일로 받을 수 있습니다.<br />
+        <br />임시비밀번호를 이메일로 보내드립니다.<br />
         임시비밀번호로 로그인한 뒤 바로 비밀번호를 변경해주세요.
       </p>
       <div class="input">
@@ -39,12 +40,7 @@
           name="email"
           placeholder="이메일"
           v-model="email"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: -100px;
-          "
+          style="font-size: 4em; padding: 0.5em; height: 1em"
         />
       </div>
 
@@ -194,6 +190,9 @@ export default {
   background: #fefefe;
   max-width: 2000px;
   max-height: 80vh;
+}
+.mb-3 {
+  font-weight: 600;
 }
 
 .v-dialog > .v-overlay__content {
