@@ -1,11 +1,10 @@
 <template>
-  <div
-    class="sidebar"
-    :style="sidebarStyle"
-    :data-color="backgroundColor"
-    :data-image="backgroundImage"
-  >
-    <div class="sidebar-wrapper">
+  <div class="sidebar" :style="sidebarStyle" :data-color="backgroundColor">
+    <div
+      class="sidebar-wrapper"
+      :style="sidebarStyle"
+      :data-color="backgroundColor"
+    >
       <div class="logo" @click="goMain" v-show="sidebarExpanded">
         <a class="simple-text logo__container">
           <div class="logo-img">
@@ -110,7 +109,7 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        backgroundImage: `url(${this.backgroundImage})`,
+        // backgroundImage: `url(${this.backgroundImage})`,
         width: this.sidebarExpanded ? "1000px" : "280px",
       };
     },
