@@ -12,6 +12,7 @@ export interface CustomRequest extends Request {
     bpm: number;
     backtrack: string;
     name: string;
+    nickname: string;
   };
   query: {
     username: string;

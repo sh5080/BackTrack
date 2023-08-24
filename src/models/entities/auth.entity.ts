@@ -7,6 +7,8 @@ export class AuthEntity {
 
   @Column()
   username: string;
+  @Column({ nullable: true })
+  nickname?: string;
 
   @Column()
   email: string;

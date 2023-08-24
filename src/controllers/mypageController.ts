@@ -12,6 +12,7 @@ export const getUserInfo = async (
   try {
     const { username } = req.query;
     const userData = await authService.getUser(username);
+
     if (!userData) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
@@ -19,7 +20,11 @@ export const getUserInfo = async (
         404
       );
     }
-    const resultData = { username: userData.username, email: userData.email };
+    const resultData = {
+      username: userData.username,
+      nickname: userData.nickname,
+      email: userData.email,
+    };
 
     res.status(200).json(resultData);
   } catch (error) {
@@ -35,7 +40,7 @@ export const updateUserInfo = async (
 ) => {
   try {
     const { username } = req.user!;
-    const { email, password } = req.body;
+    const { email, nickname, password } = req.body;
     const passwordRegex =
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{10,20}$/;
     if (!passwordRegex.test(password)) {
@@ -46,6 +51,7 @@ export const updateUserInfo = async (
       );
     }
     const updatedUserData = await authService.updateUser(username, {
+      nickname,
       email,
       password,
     });
