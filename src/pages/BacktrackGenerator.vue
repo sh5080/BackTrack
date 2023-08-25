@@ -312,53 +312,6 @@ export default {
     // HeaderSection,
   },
 
-  // setup() {
-  //   const selectedChords = ref([]);
-  //   const currentTableIndex = ref(0);
-
-  //   function registerBacktrack() {
-  //     if (this.resultChords.length === 0) {
-  //       Toast.customError("코드를 먼저 만들어주세요.");
-  //       return;
-  //     }
-  //     const chord = this.resultChords.join("");
-
-  //     // 첫 번째 테이블의 첫 번째 칸에만 등록
-  //     if (currentTableIndex.value === 0) {
-  //       selectedChords.value[0] = chord;
-  //     }
-
-  //     this.resultChords = [];
-  //     this.selectedExtend = "";
-  //     this.selectedKey = "";
-  //     this.selectedModifier_fs = "";
-  //     this.selectedModifier_67 = "";
-  //     this.selectedModifier_b5 = "";
-  //     this.selectedModifier_tension = "";
-
-  //     // 다음 테이블로 넘어가기
-  //     currentTableIndex.value++;
-  //     if (currentTableIndex.value >= this.tableRows) {
-  //       currentTableIndex.value = 0;
-  //     }
-  //   }
-
-  //   function getChordAt(index) {
-  //     if (index >= selectedChords.value.length) {
-  //       return "";
-  //     }
-  //     return selectedChords.value[index];
-  //   }
-
-  //   return {
-  //     // ...,
-  //     selectedChords,
-  //     registerBacktrack,
-  //     getChordAt,
-  //     currentTableIndex,
-  //   };
-  // },
-
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
@@ -623,23 +576,7 @@ export default {
           }
         }
     },
-    // registerBacktrack() {
-    //   if (this.resultChords.length === 0) {
-    //     Toast.customError("코드를 먼저 만들어주세요.");
-    //     return;
-    //   }
-    //   const chord = this.resultChords.join("");
-    //   this.selectedChords.push(chord);
-    //   this.resultChords = [];
-    //   (this.selectedExtend = ""),
-    //     (this.selectedKey = ""),
-    //     (this.selectedModifier_fs = ""),
-    //     (this.selectedModifier_67 = ""),
-    //     (this.selectedModifier_b5 = ""),
-    //     (this.selectedModifier_tension = "");
 
-    //   return this.selectedChords;
-    // },
     registerBacktrack() {
       if (this.resultChords.length === 0) {
         Toast.customError("코드를 먼저 만들어주세요.");
@@ -649,7 +586,7 @@ export default {
 
       // 현재 테이블의 첫 번째 칸에만 등록
       const currentTable = this.tables[this.currentTableIndex];
-      if (!currentTable) {
+      if (!currentTable || currentTable.length === 0) {
         this.tables[this.currentTableIndex] = [chord];
       } else if (currentTable.length < this.tableCols) {
         currentTable.push(chord);
@@ -659,6 +596,7 @@ export default {
           (this.currentTableIndex + 1) % this.selectedMeasure;
         this.tables[this.currentTableIndex] = [chord];
       }
+
       this.resultChords = [];
       this.selectedExtend = "";
       this.selectedKey = "";
@@ -690,29 +628,7 @@ export default {
         this.selectedChords.push("|");
       }
     },
-    // removeSelections() {
-    //   if (this.selectedChords.length === 0) {
-    //     Toast.customError("코드를 먼저 등록해주세요.");
-    //   } else this.selectedChords.pop();
-    // },
-    // resetSelections() {
-    //   if (this.selectedChords.length === 0) {
-    //     Toast.customError("코드를 먼저 등록해주세요.");
-    //   } else this.selectedChords = [];
-    // },
-    // removeSelections() {
-    //   if (this.tables[0] === undefined || this.tables[0] === null) {
-    //     Toast.customError("테이블이 생성되지 않았습니다.");
-    //     return;
-    //   }
 
-    //   if (this.tables[0].length === 0) {
-    //     Toast.customError("테이블이 비어있습니다.");
-    //     return;
-    //   }
-
-    //   this.tables[0].pop();
-    // },
     removeSelections() {
       if (!this.tables[0]) {
         Toast.customError("코드를 먼저 등록해주세요.");
@@ -721,11 +637,11 @@ export default {
 
       let removed = false;
 
-      // 가장 마지막 테이블부터 역순으로 검사하여 코드 지우기 시도
       for (let i = this.tables.length - 1; i >= 0; i--) {
         if (this.tables[i].length > 0) {
           this.tables[i].pop();
           removed = true;
+          this.currentTableIndex = i;
           break;
         }
       }
@@ -740,7 +656,8 @@ export default {
         Toast.customError("악보에 초기화할 코드가 없습니다.");
       }
 
-      this.tables = [];
+      this.tables = [0];
+      this.currentTableIndex = 0;
     },
 
     openLoginModal() {
