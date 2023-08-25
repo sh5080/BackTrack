@@ -48,7 +48,7 @@ export const createBacktrack = async (
     // 백킹트랙 생성
     const backingTrack = generateBacktrack(chordPattern, measures);
 
-    return res.json({ backingTrack });
+    return res.status(200).json({ backingTrack });
   } catch (error) {
     next(error);
   }
@@ -64,7 +64,7 @@ export const saveBacktrack = async (
 
     const backtrackData = { chordPattern, bpm, measures };
     await backtrackService.saveBacktrack(backtrackData);
-    return res.json({ message: "백킹트랙 저장에 성공했습니다." });
+    return res.status(200).json({ message: "백킹트랙 저장에 성공했습니다." });
   } catch (error) {
     next(error);
   }
