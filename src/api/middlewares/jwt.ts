@@ -1,19 +1,24 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Response, NextFunction } from 'express';
-import config from '../../config/index';
-import { AppError, CommonError } from '../../types/AppError';
-import { CustomRequest } from '../../types/customRequest';
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { Response, NextFunction } from "express";
+import config from "../../config/index";
+import { AppError, CommonError } from "../../types/AppError";
+import { CustomRequest } from "../../types/customRequest";
 
-const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES_IN } = config.jwt;
+const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES_IN } =
+  config.jwt;
 
-export const validateToken = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const validateToken = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   let accessToken;
   let refreshToken;
 
   if (req.headers?.cookie) {
-    const cookies = req.headers.cookie.split('; ');
+    const cookies = req.headers.cookie.split("; ");
     for (let i = 0; i < cookies.length; i++) {
-      if (cookies[i].startsWith('token=')) {
+      if (cookies[i].startsWith("token=")) {
         const cookieValue = cookies[i].substring(6);
         const decodedValue = decodeURIComponent(cookieValue);
         const jsonStr = decodedValue.substring(2);
@@ -26,23 +31,39 @@ export const validateToken = async (req: CustomRequest, res: Response, next: Nex
   }
 
   if (!accessToken) {
-    return next(new AppError(CommonError.UNAUTHORIZED_ACCESS, '접근 거부. 유효한 토큰을 제공해주세요.', 401));
+    return next(
+      new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "접근 거부. 유효한 토큰을 제공해주세요.",
+        401
+      )
+    );
   }
 
   try {
-    req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & { username: string; role: string };
+    req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & {
+      username: string;
+      role: string;
+    };
     next();
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
       if (!refreshToken) {
         console.error(err);
         return next(
-          new AppError(CommonError.TOKEN_EXPIRED_ERROR, '토큰이 유효하지 않습니다. 토큰을 확인해주세요.', 401)
+          new AppError(
+            CommonError.TOKEN_EXPIRED_ERROR,
+            "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
+            401
+          )
         );
       }
 
       try {
-        const decodedRefreshToken = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as JwtPayload & {
+        const decodedRefreshToken = jwt.verify(
+          refreshToken,
+          REFRESH_TOKEN_SECRET
+        ) as JwtPayload & {
           username: string;
           role: string;
         };
@@ -64,22 +85,67 @@ export const validateToken = async (req: CustomRequest, res: Response, next: Nex
         };
 
         res
-          .cookie('accessToken', newAccessToken, { httpOnly: true, secure: true })
+          .cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: true,
+          })
           .status(200)
-          .json({ message: '새로운 엑세스 토큰이 발급되었습니다.' });
+          .json({ message: "새로운 엑세스 토큰이 발급되었습니다." });
       } catch (err) {
         if (err instanceof jwt.TokenExpiredError) {
-          res.clearCookie('refreshToken');
+          res.clearCookie("refreshToken");
           return next(
-            new AppError(CommonError.TOKEN_EXPIRED_ERROR, '리프레쉬 토큰이 만료되었습니다. 다시 로그인 해주세요.', 401)
+            new AppError(
+              CommonError.TOKEN_EXPIRED_ERROR,
+              "리프레쉬 토큰이 만료되었습니다. 다시 로그인 해주세요.",
+              401
+            )
           );
         }
         return next(
-          new AppError(CommonError.TOKEN_EXPIRED_ERROR, '토큰이 유효하지 않습니다. 토큰을 확인해주세요.', 401)
+          new AppError(
+            CommonError.TOKEN_EXPIRED_ERROR,
+            "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
+            401
+          )
         );
       }
     } else {
-      return next(new AppError(CommonError.UNAUTHORIZED_ACCESS, '토큰이 유효하지 않습니다. 토큰을 확인해주세요.', 401));
+      return next(
+        new AppError(
+          CommonError.UNAUTHORIZED_ACCESS,
+          "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
+          401
+        )
+      );
     }
+  }
+};
+
+export const isLoggedIn = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("로그인 유지 검증");
+  if (req.headers.cookie) {
+    const cookies = req.headers.cookie.split("; ");
+    let token = null;
+
+    for (let i = 0; i < cookies.length; i++) {
+      if (cookies[i].startsWith("token=")) {
+        token = cookies[i].substring(6);
+        break;
+      }
+    }
+
+    if (token) {
+      validateToken(req, res, next);
+      // res.status(200).send({ message: "유효한 토큰으로 인증됨" });
+    } else {
+      next();
+    }
+  } else {
+    next();
   }
 };
