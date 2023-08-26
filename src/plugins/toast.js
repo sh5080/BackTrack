@@ -1,5 +1,5 @@
 import { createToast } from "@/libs/mosha-vue-toastify";
-
+import "./style.css";
 export function errorMessage(error) {
   if (error.response) {
     const errorMessage = error.response.data.message;
@@ -8,7 +8,7 @@ export function errorMessage(error) {
 
       {
         type: "warning",
-        position: "top-center",
+        position: "top-right",
         timeout: 5000,
         showIcon: true,
       }
@@ -16,7 +16,7 @@ export function errorMessage(error) {
   } else {
     createToast("An unexpected error occurred. Please try again later.", {
       type: "warning",
-      position: "top-center",
+      position: "top-right",
       timeout: 5000,
     });
   }
