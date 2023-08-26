@@ -161,8 +161,7 @@ export const isLoggedIn = async (
 
     console.log(req.user);
 
-    // res.status(200).json(req.user.username);
-    res.status(200).json({ message: "검증완료" });
+    res.status(200).json({ username: req.user.username, role: req.user.role });
     next();
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
