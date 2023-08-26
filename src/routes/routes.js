@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import DashboardLayout from "../layout/DashboardLayout.vue";
 import NotFound from "../pages/NotFoundPage.vue";
-import Overview from "src/pages/Overview.vue";
+import LoginModal from "src/components/LoginModal/LoginModal.vue";
 import UserProfile from "src/pages/UserProfile.vue";
 import TableList from "src/pages/TableList.vue";
 import Typography from "src/pages/Typography.vue";
@@ -59,6 +59,12 @@ export const routes = [
     component: DashboardLayout,
     redirect: "",
   },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginModal,
+    redirect: "",
+  },
   // { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 
@@ -77,17 +83,20 @@ export const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userId = store.state.userId;
+
+  //로그인할 때 세션 조회
   if (userId) {
     store.dispatch("fetchSessionData", userId).then((sessionData) => {
       if (sessionData) {
         store.commit("setAuthenticated", true);
+        localStorage.setItem("isLogin", true);
       } else {
         store.commit("setAuthenticated", false);
+        localStorage.removeItem("isLogin");
       }
       next();
     });
   } else {
-    store.commit("setAuthenticated", false);
     next();
   }
 });
@@ -96,14 +105,32 @@ import axios from "axios";
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response.data.message.includes("접근 거부")
-      //  ||error.response.data.message.includes("사용자")
-    ) {
-      store.dispatch("resetState");
+    if (error.config.noAlert) {
+      return Promise.reject(error);
+    }
 
-      alert("로그인이 필요합니다.");
-      router.push("/login");
+    if (error.response && error.response.data) {
+      console.log("Error response:", error.response);
+      if (
+        error.response.data.message.includes("접근 거부") ||
+        error.response.data.message.includes("사용자 정보")
+      ) {
+        store.dispatch("resetState");
+        localStorage.removeItem("isLogin");
+
+        router.push("/login");
+        alert("로그아웃 되었습니다.");
+      } else if (
+        error.response.data.message.includes("필수 입력값") ||
+        error.response.data.message.includes("비밀번호가 일치하지 않습니다.")
+      ) {
+      } else {
+        store.dispatch("resetState");
+        localStorage.removeItem("isLogin");
+
+        router.push("/login");
+        alert("비정상적인 접근입니다.");
+      }
     }
     return Promise.reject(error);
   }
