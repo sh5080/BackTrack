@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import createPersistedState from "vuex-persistedstate";
 import axios from "axios";
 export const store = createStore({
   state: {
@@ -62,6 +63,11 @@ export const store = createStore({
       state.showKakaoLoginModal = value;
     },
   },
+  plugins: [
+    createPersistedState({
+      paths: ["isAuthenticated", "loggedInUsername", "isAdmin"],
+    }),
+  ],
 
   actions: {
     async fetchSessionData({ commit, state }) {
@@ -86,6 +92,22 @@ export const store = createStore({
         return null;
       }
     },
+    async fetchTokenData({ commit }) {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/auth/isAuth`,
+          {
+            withCredentials: true,
+          }
+        );
+        // const username = response.data;
+        commit("setAuthenticated", true);
+        // commit("setLoggedInUsername", username);
+      } catch (error) {
+        console.error("Error fetching token data:", error);
+        return null;
+      }
+    },
     async resetState({ commit }) {
       commit("setAuthenticated", false);
       commit("setSessionData", null);
@@ -100,6 +122,7 @@ export const store = createStore({
       commit("toggleFindPasswordModal", false);
       commit("toggleGoogleLoginModal", false);
       commit("toggleKakaoLoginModal", false);
+      localStorage.removeItem("isLogin");
       // 다른 상태도 초기화하는 코드 추가
     },
   },
