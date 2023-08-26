@@ -1,19 +1,38 @@
 <template>
-  <!-- <div :class="{ 'nav-open': sidebarStore && sidebarStore.showSidebar }"> -->
   <router-view></router-view>
-  <!-- </div> -->
 </template>
 
 <script>
-import { inject } from "vue";
+import { mapState } from "vuex";
 
+// export default {
+//   computed: {
+//     ...mapState(["isLoggedIn"]),
+//   },
+//   created() {
+//     const isLogin = localStorage.getItem("isLogin");
+//     if (isLogin === "true") {
+//       this.$store.dispatch("fetchTokenData");
+//     }
+//   },
+// };
 export default {
-  setup() {
-    // const sidebarStore = inject("sidebarStore");
-
-    return {
-      // sidebarStore,
-    };
+  created() {
+    this.checkAuthentication();
+  },
+  methods: {
+    async checkAuthentication() {
+      const isLogin = localStorage.getItem("isLogin");
+      if (isLogin === "true") {
+        try {
+          await this.$store.dispatch("fetchTokenData");
+          // 이 시점에서 fetchTokenData가 완료됐으므로 가져온 데이터를 사용할 수 있음
+          // 예: this.$store.state.loggedInUsername
+        } catch (error) {
+          console.error("Error checking authentication:", error);
+        }
+      }
+    },
   },
 };
 </script>
