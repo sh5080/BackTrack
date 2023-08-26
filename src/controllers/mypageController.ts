@@ -47,20 +47,11 @@ export const updateUserInfo = async (
 ) => {
   try {
     const { username } = req.user!;
-    const { email, nickname, password } = req.body;
-    const passwordRegex =
-      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{10,20}$/;
-    if (!passwordRegex.test(password)) {
-      throw new AppError(
-        CommonError.INVALID_INPUT,
-        "비밀번호는 영문, 숫자, 특수문자를 포함하여 10자 이상 20자 이내여야 합니다.",
-        400
-      );
-    }
+    const { email, nickname } = req.body;
+
     const updatedUserData = await authService.updateUser(username, {
       nickname,
       email,
-      password,
     });
 
     res.status(200).json(updatedUserData);
