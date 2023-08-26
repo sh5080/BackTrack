@@ -8,6 +8,10 @@
           <span class="info-value">{{ fetchedUserInfo.username }}</span>
         </div>
         <div class="info-item">
+          <span class="info-label">닉네임</span>
+          <span class="info-value">{{ fetchedUserInfo.nickname }}</span>
+        </div>
+        <div class="info-item">
           <span class="info-label">이메일</span>
           <span class="info-value">{{ fetchedUserInfo.email }}</span>
         </div>
@@ -61,8 +65,9 @@ export default {
     },
     async fetchUserInfo() {
       try {
+        await this.$store.dispatch("fetchTokenData");
         const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo?username=${this.username}`,
+          `http://localhost:4000/api/mypage/userInfo?username=${this.$store.state.loggedInUsername}`,
           {
             withCredentials: true,
           }
