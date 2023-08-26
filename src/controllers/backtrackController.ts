@@ -28,9 +28,9 @@ export const createBacktrack = async (
     const { chordPattern, bpm, measures } = req.body;
     console.log("bpm: ", bpm);
     console.log("chord: ", chordPattern);
-
+    console.log("measures: ", measures);
     const numChords = chordPattern.length;
-    console.log("num: ", numChords);
+    console.log("chordsCount: ", numChords);
     if (numChords > measures) {
       throw new AppError(
         CommonError.INVALID_INPUT,

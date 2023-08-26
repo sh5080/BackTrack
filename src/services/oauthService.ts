@@ -48,7 +48,7 @@ export const OauthLoginUser = async (email: string): Promise<object> => {
   if (!user) {
     throw new AppError(
       CommonError.RESOURCE_NOT_FOUND,
-      "없는 사용자입니다.",
+      "없는 사용자 정보입니다.",
       404
     );
   }
