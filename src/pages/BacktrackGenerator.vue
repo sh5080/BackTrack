@@ -675,11 +675,12 @@ export default {
           {
             bpm: this.selectedBpm,
             measures: this.selectedMeasure,
-            chordPattern: this.selectedChords,
+            // chordPattern: this.selectedChords,
+            chordPattern: this.tables.flat(),
           },
           { withCredential: true }
         );
-
+        console.log(this.tables);
         Toast.alertMessage(
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
