@@ -1,5 +1,4 @@
 import { createStore } from "vuex";
-import createPersistedState from "vuex-persistedstate";
 import axios from "axios";
 export const store = createStore({
   state: {
@@ -63,11 +62,6 @@ export const store = createStore({
       state.showKakaoLoginModal = value;
     },
   },
-  plugins: [
-    createPersistedState({
-      paths: ["isAuthenticated", "loggedInUsername", "isAdmin"],
-    }),
-  ],
 
   actions: {
     async fetchSessionData({ commit, state }) {
@@ -100,14 +94,19 @@ export const store = createStore({
             withCredentials: true,
           }
         );
-        // const username = response.data;
+        const username = response.data.username;
+        const role = response.data.role;
+        if (role === "ADMIN") {
+          commit("setIsAdmin", true);
+        }
         commit("setAuthenticated", true);
-        // commit("setLoggedInUsername", username);
+        commit("setLoggedInUsername", username);
       } catch (error) {
         console.error("Error fetching token data:", error);
         return null;
       }
     },
+
     async resetState({ commit }) {
       commit("setAuthenticated", false);
       commit("setSessionData", null);
