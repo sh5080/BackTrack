@@ -3,74 +3,6 @@
     <form @submit.prevent>
       <v-row>
         <v-col cols="4">
-          <div class="input-group1 bpm-container">
-            <div class="bpm-input-container">
-              <div class="bpm-label-container">
-                <label class="bpm-label">BPM:</label>
-              </div>
-              <div class="bpm-input">
-                <input
-                  class="input-field"
-                  v-model.number="bpm"
-                  :readonly="!bpmDirectInput"
-                  :style="{
-                    backgroundColor: bpmDirectInput ? 'white' : 'lightgray',
-                  }"
-                />
-              </div>
-
-              <button class="dropdown-toggle1" @click="toggleBpmDropdown">
-                BPM 선택
-              </button>
-
-              <div class="menu-container" v-if="bpmDropdownOpen">
-                <ul class="dropdown-menu1">
-                  <li
-                    v-for="bpm in bpmOptions"
-                    :key="bpm"
-                    @click="selectBpm(bpm)"
-                  >
-                    {{ bpm }}
-                  </li>
-                  <li @click="selectBpmDirectInput">직접입력</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="measure-input-container">
-              <div class="measure-label-container">
-                <label class="measure-label" style="margin-left: -32px"
-                  >마디수:</label
-                >
-              </div>
-              <div class="measure-input">
-                <input
-                  class="input-field"
-                  v-model.number="measure"
-                  :readonly="!measureDirectInput"
-                  :style="{
-                    backgroundColor: measureDirectInput ? 'white' : 'lightgray',
-                  }"
-                />
-              </div>
-
-              <button class="dropdown-toggle1" @click="toggleMeasureDropdown">
-                마디 수 선택
-              </button>
-              <div class="menu-container" v-if="measureDropdownOpen">
-                <ul class="dropdown-menu2">
-                  <li
-                    v-for="measure in measureOptions"
-                    :key="measure"
-                    @click="selectMeasure(measure)"
-                  >
-                    {{ measure }}
-                  </li>
-                  <li @click="selectMeasureDirectInput">직접입력</li>
-                </ul>
-              </div>
-            </div>
-          </div>
           <v-col>
             <div class="input-group2">
               <v-col cols="6">
@@ -199,49 +131,81 @@
               </div>
             </v-col>
           </div>
+          <div class="input-group1 bpm-container">
+            <div class="bpm-input-container">
+              <div class="bpm-label-container">
+                <label class="bpm-label">BPM:</label>
+              </div>
+              <div class="bpm-input">
+                <input
+                  class="input-field"
+                  v-model.number="bpm"
+                  :readonly="!bpmDirectInput"
+                  :style="{
+                    backgroundColor: bpmDirectInput ? 'white' : 'lightgray',
+                  }"
+                />
+              </div>
+
+              <button class="dropdown-toggle1" @click="toggleBpmDropdown">
+                BPM 선택
+              </button>
+
+              <div class="menu-container" v-if="bpmDropdownOpen">
+                <ul class="dropdown-menu1">
+                  <li
+                    v-for="bpm in bpmOptions"
+                    :key="bpm"
+                    @click="selectBpm(bpm)"
+                  >
+                    {{ bpm }}
+                  </li>
+                  <li @click="selectBpmDirectInput">직접입력</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- <div class="measure-input-container">
+              <div class="measure-label-container">
+                <label class="measure-label" style="margin-left: -32px"
+                  >마디수:</label
+                >
+              </div>
+              <div class="measure-input">
+                <input
+                  class="input-field"
+                  v-model.number="measure"
+                  :readonly="!measureDirectInput"
+                  :style="{
+                    backgroundColor: measureDirectInput ? 'white' : 'lightgray',
+                  }"
+                />
+              </div>
+
+              <button class="dropdown-toggle1" @click="toggleMeasureDropdown">
+                마디 수 선택
+              </button>
+              <div class="menu-container" v-if="measureDropdownOpen">
+                <ul class="dropdown-menu2">
+                  <li
+                    v-for="measure in measureOptions"
+                    :key="measure"
+                    @click="selectMeasure(measure)"
+                  >
+                    {{ measure }}
+                  </li>
+                  <li @click="selectMeasureDirectInput">직접입력</li>
+                </ul>
+              </div>
+            </div> -->
+          </div>
         </v-col>
 
         <v-col cols="6">
           <div class="input-group3">
             <!-- dd -->
-            <label class="key-label">Preview:</label>
+            <label class="key-label">Preview</label>
             <v-col cols="11">
-              <!-- <div class="chord-list2">
-                <span
-                  class="chords"
-                  v-for="chord in selectedChords"
-                  :key="chord"
-                >
-                  {{ chord }}
-                  <br v-if="(index + 1) % 3 === 0 && chord === '|'" />
-                </span>
-              </div> -->
-              <!-- <div class="table-container">
-                <div
-                  v-for="(tableIndex) in tableRows"
-                  :key="tableIndex"
-                  class="table-container"
-                >
-                  <table class="chord-table">
-                    <tr>
-                      <td
-                        v-for="(col, colIndex) in tableCols"
-                        :key="col"
-                        class="chord-cell"
-                        contenteditable
-                      >
-                        <div class="chord-content">
-                   
-                          {{
-                            getChordAt(currentTableIndex * tableCols + colIndex)
-                          }}
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div> -->
-
               <div class="table-container">
                 <div
                   v-for="(table, tableIndex) in tables"
@@ -249,12 +213,14 @@
                   class="table-container"
                 >
                   <table class="chord-table">
+                    <div class="table">
+                      <img src="img/table.drawio.png" alt="마디" />
+                    </div>
                     <tr>
                       <td
                         v-for="(col, colIndex) in tableCols"
                         :key="colIndex"
                         class="chord-cell"
-                        contenteditable
                       >
                         <div class="chord-content">
                           {{ getChordAt(tableIndex, colIndex) }}
@@ -268,14 +234,17 @@
             <v-col cols="12">
               <div class="preview-container">
                 <div class="fix-container">
-                  <button class="reset-button" @click="addSelections">
+                  <button class="reset-button" @click="addMeasureSelections">
                     마디 추가
                   </button>
-                  <button class="reset-button" @click="removeSelections">
-                    지우기
+                  <button class="reset-button" @click="removeMeasureSelections">
+                    마디 지우기
+                  </button>
+                  <button class="reset-button" @click="removeChordSelections">
+                    코드 지우기
                   </button>
                   <button class="reset-button" @click="resetSelections">
-                    초기화
+                    전체 초기화
                   </button>
                 </div>
                 <div class="generate-container">
@@ -341,6 +310,7 @@ export default {
       tableCols: 4,
       currentTableIndex: 0,
       tables: [0],
+      isEditable: true,
     };
   },
   computed: {
@@ -358,6 +328,12 @@ export default {
   },
   methods: {
     errorMessage() {},
+    handleKeyDown(event) {
+      if (!this.isEditable) {
+        event.preventDefault();
+        return false;
+      }
+    },
     closeDropdown() {
       this.bpmDropdownOpen = false;
       this.measureDropdownOpen = false;
@@ -613,23 +589,24 @@ export default {
       return "";
     },
 
-    addSelections() {
-      const pipeCount = this.selectedChords.filter(
-        (chord) => chord === "|"
-      ).length;
-
-      if (this.selectedChords.length === 0) {
-        Toast.customError("코드를 먼저 등록해주세요.");
-      } else if (this.selectedChords[this.selectedChords.length - 1] === "|") {
-        Toast.customError("마디를 추가한 이후에는 코드를 등록해주세요.");
-      } else if (pipeCount > this.selectedMeasure - 2) {
-        Toast.customError("선택한 마디보다 많이 추가할 수 없습니다.");
-      } else {
-        this.selectedChords.push("|");
+    addMeasureSelections() {
+      if (this.tables.length === 8) {
+        Toast.customError("최대 32마디의 악보 생성이 가능합니다.");
+        return;
       }
+      this.tables.push([]);
+    },
+    removeMeasureSelections() {
+      if (this.tables.length === 1) {
+        Toast.customError(
+          "코드를 등록하기 위해서 최소 4마디의 악보가 필요합니다."
+        );
+        return;
+      }
+      this.tables.pop();
     },
 
-    removeSelections() {
+    removeChordSelections() {
       if (!this.tables[0]) {
         Toast.customError("코드를 먼저 등록해주세요.");
         return;
@@ -1015,34 +992,22 @@ export default {
 .chord-table {
   width: 3500px;
   margin-top: 100px;
-  /* border-collapse: collapse;  */
+}
+.table {
+  width: 750px;
 }
 .chord-cell {
   width: 25%;
   height: 0;
-
   font-size: 90px;
   text-align: center;
   position: relative;
-
-  border: 1px solid #000;
-
-  border-top: none;
-  border-bottom: none;
 }
-.chord-cell::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 30px;
 
-  border-top: none;
-  border-bottom: 2px solid #000;
-}
 .chord-content {
   position: absolute;
-  height: 110%;
+  /* height: 110%; */
+  height: 450px;
   padding: 20px;
   transform: translateY(-50%);
 }
