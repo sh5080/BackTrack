@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as authController from "../../controllers/authController";
 import { validateRequestBody } from "../middlewares/validateRequest";
+import { isLoggedIn } from "../middlewares/jwt";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ router.post(
   validateRequestBody(["username"]),
   authController.resetPasswordByEmail
 );
+
+/**[인증] 로그인 유지시 jwt조회 */
+router.get("/isAuth", isLoggedIn);
+
 /**[인증] 세션 조회 */
 router.get("/getSessionData", authController.getSessionData);
 export default router;
