@@ -259,7 +259,7 @@ export const updateUser = async (
   updateData: Partial<Type.User>
 ) => {
   try {
-    const existingUser = await authModel.getUserByUsername(username);
+    const existingUser = await AuthRepository.findUser(username);
 
     if (!existingUser) {
       throw new AppError(
@@ -269,31 +269,22 @@ export const updateUser = async (
       );
     }
 
-    if (!updateData.email && !updateData.password) {
+    if (updateData.email === existingUser.email) {
       throw new AppError(
         CommonError.INVALID_INPUT,
-        "새로운 이메일 또는 비밀번호를 입력해주세요.",
+        "새로운 이메일을 입력해주세요.",
+        400
+      );
+    }
+    if (updateData.nickname === existingUser.nickname) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "새로운 닉네임을 입력해주세요.",
         400
       );
     }
 
-    if (updateData.email && updateData.password) {
-      const isSamePassword = await bcrypt.compare(
-        updateData.password,
-        existingUser.password ?? ""
-      );
-      if (isSamePassword && updateData.email === existingUser.email) {
-        throw new AppError(
-          CommonError.INVALID_INPUT,
-          "새로운 이메일 또는 비밀번호를 입력해주세요.",
-          400
-        );
-      }
-
-      const salt = await bcrypt.genSalt();
-      updateData.password = await bcrypt.hash(updateData.password, salt);
-    }
-
+    // 여기까지 완료
     const updatedUser = await authModel.updateUserByUsername(
       username,
       updateData
