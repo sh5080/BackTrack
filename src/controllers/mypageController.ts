@@ -20,6 +20,13 @@ export const getUserInfo = async (
         404
       );
     }
+    if (username !== req.user!.username) {
+      throw new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "비정상적인 접근입니다.",
+        403
+      );
+    }
     const resultData = {
       username: userData.username,
       nickname: userData.nickname,
