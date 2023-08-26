@@ -666,10 +666,13 @@ export default {
           },
           { withCredential: true }
         );
-        console.log(this.tables);
+
         Toast.alertMessage(
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
+        if (response) {
+          this.tables = [0];
+        }
         this.backtrack = response.data.backtrack;
       } catch (error) {
         console.error("Error generating backtrack:", error);
