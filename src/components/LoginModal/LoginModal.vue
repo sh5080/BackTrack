@@ -118,8 +118,8 @@ import Register from "./RegisterModal.vue";
 import FindUsername from "./findUsernameModal.vue";
 import FindPassword from "./findPasswordModal.vue";
 // import OauthLogin from "./OauthLoginModal.vue";
-import { mapMutations } from "vuex";
 import qs from "qs";
+import { mapMutations } from "vuex";
 export default {
   components: {
     Register,
@@ -170,7 +170,7 @@ export default {
       try {
         const loginUrl = this.generateLoginUrl(provider);
         // this.$store.commit("setLoginProvider", provider);
-
+        localStorage.setItem("oauth", provider);
         window.location.href = loginUrl;
 
         // this.$router.push("/");
@@ -421,8 +421,5 @@ export default {
 .login-error-alert {
   font-size: 0.9rem;
   margin-bottom: -92px;
-  color: black;
-  background-color: none !important;
-  background: none !important;
 }
 </style>
