@@ -328,11 +328,11 @@ export default {
   },
   methods: {
     errorMessage() {},
-    handleKeyDown(event) {
-      if (!this.isEditable) {
-        event.preventDefault();
-        return false;
-      }
+    async confirmAction() {
+      const shouldContinue = window.confirm(
+        "비어있는 마디가 있습니다. 백킹트랙을 생성하시겠습니까? \n(그대로 생성하실 경우 비어있는 마디는 처음 등록한 코드부터 채워집니다.)"
+      );
+      return shouldContinue;
     },
     closeDropdown() {
       this.bpmDropdownOpen = false;
@@ -646,7 +646,16 @@ export default {
     },
 
     async generateBacktrack() {
+      this.selectedMeasure = this.tables.length * 4;
       try {
+        if (this.tables[0] === 0) {
+          Toast.customError("최소 하나의 코드를 등록해주세요.");
+          return;
+        }
+        const shouldContinue = await this.confirmAction();
+        if (!shouldContinue) {
+          return;
+        }
         const response = await axios.post(
           "http://localhost:4000/api/backtrack",
           {
