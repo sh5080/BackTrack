@@ -63,7 +63,12 @@ export const updateUserInfo = async (
       email
     );
 
-    res.status(200).json(updatedUserData);
+    if (email === undefined) {
+      res.status(200).json(updatedUserData.nickname);
+    }
+    if (nickname === undefined) {
+      res.status(200).json(updatedUserData.email);
+    }
   } catch (error) {
     next(error);
   }
