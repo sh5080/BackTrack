@@ -49,10 +49,11 @@ export const updateUserInfo = async (
     const { username } = req.user!;
     const { email, nickname } = req.body;
 
-    const updatedUserData = await authService.updateUser(username, {
+    const updatedUserData = await authService.updateUser(
+      username,
       nickname,
-      email,
-    });
+      email
+    );
 
     res.status(200).json(updatedUserData);
   } catch (error) {

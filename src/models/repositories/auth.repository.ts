@@ -22,6 +22,15 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
 
     return !!existingUser;
   },
+  async updateUserByUsername(
+    username: string,
+    nickname: string,
+    email: string
+  ) {
+    await this.update({ username }, { nickname, email });
+    const newUser = this.findOne({ where: { username } });
+    return newUser;
+  },
   async login(username: string) {
     const existingUser = await this.findOne({
       where: { username },

@@ -256,7 +256,8 @@ function generateTemporaryPassword(length: number = 10): string {
  */
 export const updateUser = async (
   username: string,
-  updateData: Partial<Type.User>
+  nickname: string,
+  email: string
 ) => {
   try {
     const existingUser = await AuthRepository.findUser(username);
@@ -269,14 +270,14 @@ export const updateUser = async (
       );
     }
 
-    if (updateData.email === existingUser.email) {
+    if (email === existingUser.email) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "새로운 이메일을 입력해주세요.",
         400
       );
     }
-    if (updateData.nickname === existingUser.nickname) {
+    if (nickname === existingUser.nickname) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "새로운 닉네임을 입력해주세요.",
@@ -284,10 +285,10 @@ export const updateUser = async (
       );
     }
 
-    // 여기까지 완료
-    const updatedUser = await authModel.updateUserByUsername(
+    const updatedUser = await AuthRepository.updateUserByUsername(
       username,
-      updateData
+      nickname,
+      email
     );
 
     if (!updatedUser) {
