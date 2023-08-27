@@ -12,11 +12,7 @@ export default async function expressLoader(
   try {
     const redisClient = await redisLoader();
     const corsOptions = {
-      origin: [
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "http://localhost:8080/api/oauth/google/login",
-      ],
+      origin: ["http://localhost:8080", "http://127.0.0.1:8080"],
       credentials: true,
     };
     app.use(responseTime);
