@@ -251,7 +251,7 @@ export default {
           this.$store.commit("setUserId", response.data.userId);
           localStorage.setItem("n_id", response.data.nickname);
           this.$store.commit("setLoggedInNickname", response.data.nickname);
-          this.$store.commit("setLoginProvider", "Backtrack");
+          localStorage.setItem("oauth", "Backtrack");
           this.$emit("closeLogin");
           this.$router.push("/main");
         }
