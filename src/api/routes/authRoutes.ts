@@ -22,7 +22,7 @@ router.post(
 );
 
 /** [인증] 로그아웃 */
-router.post("/logout", authController.logout);
+router.delete("/logout", authController.logout);
 
 /** [사용자] 아이디 찾기 */
 router.get("/Id/:email", authController.findUsernameByEmail);
