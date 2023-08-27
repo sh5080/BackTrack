@@ -136,6 +136,7 @@ export default {
 .sidebar .sidebar-wrapper {
   display: flex;
   flex-direction: column;
+  z-index: 9998 !important;
 }
 .sidebar .nav-main__links {
   flex: 1;
@@ -149,7 +150,7 @@ export default {
   right: 0; /* 사이드바 오른쪽에 위치하도록 설정 */
   height: 10000px;
   width: 95px;
-  z-index: 100;
+  z-index: 9999 !important;
   cursor: pointer;
   /* background-color: #3f3c3c; */
   padding: 8px;

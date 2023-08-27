@@ -664,7 +664,7 @@ export default {
             // chordPattern: this.selectedChords,
             chordPattern: this.tables.flat(),
           },
-          { withCredential: true }
+          { withCredentials: true }
         );
 
         Toast.alertMessage(
@@ -706,11 +706,11 @@ export default {
   width: 100%;
   height: 100%;
   padding: 20px 0px;
-  border: 1px solid #ccc;
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   margin-left: -20px;
+  margin-top: 20px;
   /*  */
   display: flex;
   flex-direction: column;

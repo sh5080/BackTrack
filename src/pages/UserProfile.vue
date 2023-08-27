@@ -2,10 +2,10 @@
   <div class="content">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col">
           <user-card> </user-card>
         </div>
-        <div class="col-md-6">
+        <div class="col">
           <edit-profile-form> </edit-profile-form>
         </div>
       </div>

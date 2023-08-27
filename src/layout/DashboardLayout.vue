@@ -5,6 +5,10 @@
         <i class="nc-icon nc-circle-09"></i>
         <p>회원정보</p>
       </sidebar-link>
+      <sidebar-link to="/list">
+        <i class="nc-icon nc-grid-45"></i>
+        <p>게시판</p>
+      </sidebar-link>
       <sidebar-link to="/backtrack">
         <i class="nc-icon nc-note-03"></i>
         <p>백킹트랙</p>
@@ -18,9 +22,8 @@
         <p>문의사항</p>
       </sidebar-link>
     </side-bar>
+    <header-section></header-section>
     <div class="main-panel">
-      <header-section></header-section>
-
       <dashboard-content> </dashboard-content>
 
       <content-footer></content-footer>

@@ -417,7 +417,9 @@ export default {
   width: 1500px;
   /* z-index: 9997; */
 }
-
+.mb-3 {
+  font-weight: 600;
+}
 .mt-3nt {
   max-height: calc(100% - 48px);
   width: calc(100% - 48px);

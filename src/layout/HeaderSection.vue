@@ -1,14 +1,5 @@
 <template>
-  <header
-    class="input-group"
-    style="
-      font-size: 80px;
-      padding: 30px;
-      /* margin-top: 20px; */
-      /* margin-bottom: 20px; */
-      /* background-color: aqua; */
-    "
-  >
+  <header class="input-group">
     <v-row style="align-items: center; justify-content: flex-end">
       <v-col cols="1" style="display: flex; justify-content: flex-start">
         <div class="logo-button-container" @click="goToBacktrack">
@@ -106,8 +97,9 @@ export default {
     ...mapMutations(["setAuthenticated"]),
     async logout() {
       try {
-        const response = await axios.post(
-          "http://localhost:4000/api/auth/logout"
+        const response = await axios.delete(
+          "http://localhost:4000/api/auth/logout",
+          { withCredentials: true }
         );
         if (response.data.message === "로그아웃 되었습니다.") {
           await this.$store.dispatch("resetState");
@@ -125,7 +117,13 @@ export default {
 <style scoped>
 .input-group {
   background-color: #fff;
-  border: none;
+  font-size: 80px;
+  padding: 30px;
+  margin-left: 325px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+
+  box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
 }
 .categories {
   display: flex;
