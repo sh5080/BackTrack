@@ -19,7 +19,7 @@
       <v-col cols="11" style="display: flex; justify-content: flex-end">
         <div class="auth-container">
           <div class="welcome-message" v-if="$store.state.isAuthenticated">
-            {{ $store.state.loggedInUsername }}님 환영합니다.
+            {{ $store.state.loggedInNickname }}님 환영합니다.
           </div>
 
           <button
@@ -61,14 +61,15 @@ export default {
     Login,
   },
   data() {
-    return {};
+    return {
+      nickname: null,
+    };
   },
   async created() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("id");
     const username = params.get("username");
     const provider = params.get("provider");
-    const isAdmin = params.get("admin");
 
     if (userId) {
       // this.setAuthenticated(true);

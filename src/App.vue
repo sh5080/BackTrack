@@ -23,11 +23,11 @@ export default {
   methods: {
     async checkAuthentication() {
       const isLogin = localStorage.getItem("isLogin");
+      const nickname = localStorage.getItem("n_id");
       if (isLogin === "true") {
         try {
           await this.$store.dispatch("fetchTokenData");
-          // 이 시점에서 fetchTokenData가 완료됐으므로 가져온 데이터를 사용할 수 있음
-          // 예: this.$store.state.loggedInUsername
+          this.$store.commit("setLoggedInNickname", nickname);
         } catch (error) {
           console.error("Error checking authentication:", error);
         }

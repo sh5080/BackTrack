@@ -6,6 +6,7 @@ export const store = createStore({
     sessionData: null,
     userId: null,
     loggedInUsername: null,
+    loggedInNickname: null,
     provider: null,
     showLoginModal: false,
     showRegisterModal: false,
@@ -14,6 +15,7 @@ export const store = createStore({
     showFindPasswordModal: false,
     showGoogleLoginModal: false,
     showKakaoLoginModal: false,
+    showEditProfile: false,
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -36,6 +38,9 @@ export const store = createStore({
     },
     setLoggedInUsername(state, username) {
       state.loggedInUsername = username;
+    },
+    setLoggedInNickname(state, nickname) {
+      state.loggedInNickname = nickname;
     },
     setLoginProvider(state, value) {
       state.provider = value;
@@ -60,6 +65,9 @@ export const store = createStore({
     },
     toggleKakaoLoginModal(state, value) {
       state.showKakaoLoginModal = value;
+    },
+    toggleEditProfile(state, value) {
+      state.showEditProfile = value;
     },
   },
 
@@ -94,13 +102,11 @@ export const store = createStore({
             withCredentials: true,
           }
         );
-        const username = response.data.username;
         const role = response.data.role;
         if (role === "ADMIN") {
           commit("setIsAdmin", true);
         }
         commit("setAuthenticated", true);
-        commit("setLoggedInUsername", username);
       } catch (error) {
         console.error("Error fetching token data:", error);
         return null;
@@ -122,6 +128,8 @@ export const store = createStore({
       commit("toggleGoogleLoginModal", false);
       commit("toggleKakaoLoginModal", false);
       localStorage.removeItem("isLogin");
+      localStorage.removeItem("n_id");
+      localStorage.removeItem("oauth");
       // 다른 상태도 초기화하는 코드 추가
     },
   },

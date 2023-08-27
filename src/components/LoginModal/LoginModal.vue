@@ -249,7 +249,8 @@ export default {
 
         if (response.data.message === "로그인 성공") {
           this.$store.commit("setUserId", response.data.userId);
-          this.$store.commit("setLoggedInUsername", this.username);
+          localStorage.setItem("n_id", response.data.nickname);
+          this.$store.commit("setLoggedInNickname", response.data.nickname);
           this.$store.commit("setLoginProvider", "Backtrack");
           this.$emit("closeLogin");
           this.$router.push("/main");
