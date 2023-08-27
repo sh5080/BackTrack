@@ -111,6 +111,7 @@ export const kakaoCallback = async (
       try {
         const newInfo = await oauthService.OauthSignupUser({
           username: kakaoEmail,
+          nickname: kakaoEmail,
           email: kakaoEmail,
           oauthProvider: "KAKAO",
         });
@@ -202,6 +203,7 @@ export const googleCallback = async (
       try {
         const newInfo = await oauthService.OauthSignupUser({
           username: googleEmail,
+          nickname: googleEmail,
           email: googleEmail,
           oauthProvider: "GOOGLE",
         });

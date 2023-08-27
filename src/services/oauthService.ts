@@ -17,6 +17,7 @@ export const OauthSignupUser = async (user: Type.OauthUser) => {
     // 이메일과 이름을 기반으로 사용자를 생성하고, 필요한 추가 정보를 설정합니다.
     const newUser: Type.OauthUser = {
       username: await generateUsername(user.username),
+      nickname: await generateUsername(user.username),
       email: user.email,
       oauthProvider: user.oauthProvider,
     };
