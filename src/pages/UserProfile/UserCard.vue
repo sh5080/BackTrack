@@ -57,7 +57,7 @@
           <input
             class="change-input"
             type="text"
-            v-model="newNickname"
+            v-model="nickname"
             v-show="nicknameExpanded"
             placeholder="닉네임 입력 (최대 15자)"
           />
@@ -70,6 +70,27 @@
           >
             변경하기
           </button>
+          <div
+            class="alert_username alert-warning alert-dismissible fade show error-shake-animation"
+            role="alert"
+            v-if="nicknameError"
+            v-show="nicknameExpanded"
+            :class="{ 'error-shake-animation': isShaking }"
+            style="font-size: 3em; text-align: center"
+          >
+            <div class="error-message">
+              {{ nicknameErrorMessage }}
+            </div>
+          </div>
+          <div
+            class="alert_correct alert-success alert-dismissible fade show"
+            role="alert"
+            v-if="nicknameIsValid"
+            v-show="nicknameExpanded"
+            style="font-size: 3em; text-align: center"
+          >
+            {{ nicknameMessage }} 으로 닉네임 변경이 완료되었습니다.
+          </div>
         </div>
         <div class="info-item">
           <span class="info-label">이메일</span>
@@ -110,6 +131,11 @@ export default {
       fetchedUserInfo: null,
       provider: "Backtrack",
       nicknameExpanded: false,
+      nickname: null,
+      nicknameMessage: null,
+      nicknameIsValid: false,
+      nicknameError: false,
+      isShaking: false,
     };
   },
   created() {
@@ -123,18 +149,42 @@ export default {
       this.nicknameExpanded = !this.nicknameExpanded;
     },
     async changeNickname() {
-      this.nicknameExpanded = !this.nicknameExpanded;
       try {
+        if (this.nickname.length > 15) {
+          throw Error("길이는 최대 15자 이내로 작성해주세요.");
+        }
+
+        if (
+          /[&<>()'/"]/.test(this.nickname) ||
+          /[\uD800-\uDBFF][\uDC00-\uDFFF]/.test(this.nickname)
+        ) {
+          throw new Error("이모티콘 및 일부 특수문자 사용 불가합니다.");
+        }
         const response = await axios.put(
-          `http://localhost:4000/api/mypage/userInfo`,
+          `http://localhost:4000/api/mypage/userInfo/nickname`,
+          {
+            nickname: this.nickname,
+          },
           {
             withCredentials: true,
           }
         );
-
-        this.fetchedUserInfo = response.data;
+        this.nicknameIsValid = true;
+        this.nicknameMessage = response.data;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
+        this.isShaking = true;
+        this.nicknameIsValid = false;
+        this.nicknameError = true;
+        if (error instanceof Error) {
+          this.nicknameErrorMessage = error;
+        } else {
+          this.nicknameErrorMessage = error.response.data.message;
+        }
+        setTimeout(() => {
+          this.isShaking = false;
+          this.nicknameError = false;
+        }, 3000);
       }
     },
     async fetchUserInfo() {
@@ -142,6 +192,7 @@ export default {
         await this.$store.dispatch("fetchTokenData");
         const response = await axios.get(
           `http://localhost:4000/api/mypage/userInfo?username=${this.$store.state.loggedInUsername}`,
+
           {
             withCredentials: true,
           }
@@ -159,6 +210,29 @@ export default {
 };
 </script>
 <style scoped>
+.error-shake-animation {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
 .card-user {
   overflow: hidden;
   width: 2750px;
