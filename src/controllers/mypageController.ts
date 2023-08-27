@@ -10,7 +10,7 @@ export const getUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { username } = req.query;
+    const { username } = req.user!;
     const userData = await authService.getUser(username);
 
     if (!userData) {
