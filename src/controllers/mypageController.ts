@@ -49,6 +49,14 @@ export const updateUserInfo = async (
     const { username } = req.user!;
     const { email, nickname } = req.body;
 
+    if (username !== req.user!.username) {
+      throw new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "비정상적인 접근입니다.",
+        403
+      );
+    }
+
     const updatedUserData = await authService.updateUser(
       username,
       nickname,
