@@ -24,12 +24,20 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
   },
   async updateUserByUsername(
     username: string,
-    nickname: string,
-    email: string
+    nickname?: string,
+    email?: string
   ) {
-    await this.update({ username }, { nickname, email });
-    const newUser = this.findOne({ where: { username } });
-    return newUser;
+    try {
+      await this.update({ username }, { nickname, email });
+      const newUser = this.findOne({ where: { username } });
+      return newUser;
+    } catch (error) {
+      throw new AppError(
+        CommonError.DB_ERROR,
+        "회원정보 업데이트 중 오류입니다.",
+        404
+      );
+    }
   },
   async login(username: string) {
     const existingUser = await this.findOne({
@@ -46,8 +54,8 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
           return user;
         } else {
           throw new AppError(
-            CommonError.RESOURCE_NOT_FOUND,
-            "사용자를 찾을 수 없습니다.",
+            CommonError.DB_ERROR,
+            "없는 사용자이거나 동일한 사용자의 아이디와 이메일이 아닙니다.",
             404
           );
         }
@@ -61,7 +69,7 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
       } else {
         throw new AppError(
           CommonError.RESOURCE_NOT_FOUND,
-          "사용자 정보를 찾을 수 없습니다.",
+          "없는 사용자입니다.",
           404
         );
       }
