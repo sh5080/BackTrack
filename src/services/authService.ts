@@ -23,6 +23,7 @@ export const signupUser = async (user: Type.User) => {
 
     const newUser = await AuthRepository.createUser({
       username: user.username,
+      nickname: user.nickname,
       email: user.email,
       password: hashedPassword,
     });

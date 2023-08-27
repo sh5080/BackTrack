@@ -10,7 +10,7 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    const { username, password, passwordConfirm, email } = req.body;
+    const { username, nickname, password, passwordConfirm, email } = req.body;
 
     const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
     if (!idRegex.test(username)) {
@@ -58,12 +58,14 @@ export const signup = async (
 
     const newUser = await authService.signupUser({
       username,
+      nickname,
       email,
       password,
     });
 
     const newUserData = {
       username: newUser.username,
+      nickname: newUser.nickname,
       email: newUser.email,
     };
 

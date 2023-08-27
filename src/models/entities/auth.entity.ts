@@ -8,7 +8,7 @@ export class AuthEntity {
   @Column()
   username: string;
   @Column({ nullable: true })
-  nickname?: string;
+  nickname: string;
 
   @Column()
   email: string;
@@ -31,12 +31,14 @@ export class AuthEntity {
   constructor(
     id: number,
     username: string,
+    nickname: string,
     password: string,
     email: string,
     oauth_provider: string
   ) {
     this.id = id;
     this.username = username;
+    this.nickname = nickname;
     this.password = password;
     this.email = email;
     this.oauth_provider = oauth_provider;

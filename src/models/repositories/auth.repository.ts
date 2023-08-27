@@ -4,10 +4,11 @@ import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
   async createUser(user: Type.User) {
-    const { username, email, password } = user;
+    const { username, nickname, email, password } = user;
 
     const userData = this.create({
       username,
+      nickname,
       email,
       password,
     });
