@@ -99,10 +99,75 @@
           <button
             class="generate-button"
             type="button"
-            @click="generateBacktrack"
+            @click="openEmail"
+            v-show="!emailExpanded"
           >
             이메일 변경
           </button>
+          <button
+            class="generate-button"
+            type="button"
+            @click="closeEmail"
+            v-show="emailExpanded"
+          >
+            취소
+          </button>
+        </div>
+        <div
+          class="change-email"
+          :style="{ height: emailExpanded ? '500px' : '0px' }"
+        >
+          <p
+            style="
+              font-size: 3.5em;
+              padding: 0.5em;
+              height: 1em;
+              margin-top: 100px;
+              margin-left: 0px;
+            "
+            v-show="emailExpanded"
+          >
+            - 비밀번호 재설정, 안내 등에 사용되니 실제 사용하는 이메일로
+            입력해주세요. <br />- 이메일 형식에 맞추어 입력해주세요. ex)
+            user123@backtrack.com
+          </p>
+          <input
+            class="change-input"
+            type="text"
+            v-model="email"
+            v-show="emailExpanded"
+            placeholder="이메일 입력"
+          />
+          <button
+            class="generate-button"
+            type="button"
+            @click="changeEmail"
+            v-show="emailExpanded"
+            style="margin-left: 100px"
+          >
+            변경하기
+          </button>
+          <div
+            class="alert_username alert-warning alert-dismissible fade show error-shake-animation"
+            role="alert"
+            v-if="emailError"
+            v-show="emailExpanded"
+            :class="{ 'error-shake-animation': isShaking }"
+            style="font-size: 3em; text-align: center"
+          >
+            <div class="error-message">
+              {{ emailErrorMessage }}
+            </div>
+          </div>
+          <div
+            class="alert_correct alert-success alert-dismissible fade show"
+            role="alert"
+            v-if="emailIsValid"
+            v-show="emailExpanded"
+            style="font-size: 3em; text-align: center"
+          >
+            {{ emailMessage }} 으로 이메일 변경이 완료되었습니다.
+          </div>
         </div>
         <div class="info-item">
           <span class="info-label">현재 로그인방식</span>
@@ -135,6 +200,11 @@ export default {
       nicknameMessage: null,
       nicknameIsValid: false,
       nicknameError: false,
+      emailExpanded: false,
+      email: null,
+      emailMessage: null,
+      emailIsValid: false,
+      emailError: false,
       isShaking: false,
     };
   },
@@ -151,14 +221,14 @@ export default {
     async changeNickname() {
       try {
         if (this.nickname.length > 15) {
-          throw Error("길이는 최대 15자 이내로 작성해주세요.");
+          throw "길이는 최대 15자 이내로 작성해주세요.";
         }
 
         if (
           /[&<>()'/"]/.test(this.nickname) ||
           /[\uD800-\uDBFF][\uDC00-\uDFFF]/.test(this.nickname)
         ) {
-          throw new Error("이모티콘 및 일부 특수문자 사용 불가합니다.");
+          throw "이모티콘 및 일부 특수문자 사용 불가합니다.";
         }
         const response = await axios.put(
           `http://localhost:4000/api/mypage/userInfo/nickname`,
@@ -171,15 +241,16 @@ export default {
         );
         this.nicknameIsValid = true;
         this.nicknameMessage = response.data;
+        localStorage.setItem("n_id", this.nickname);
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         this.isShaking = true;
         this.nicknameIsValid = false;
         this.nicknameError = true;
         if (error instanceof Error) {
-          this.nicknameErrorMessage = error;
-        } else {
           this.nicknameErrorMessage = error.response.data.message;
+        } else {
+          this.nicknameErrorMessage = error;
         }
         setTimeout(() => {
           this.isShaking = false;
@@ -187,11 +258,50 @@ export default {
         }, 3000);
       }
     },
+    openEmail() {
+      this.emailExpanded = !this.emailExpanded;
+    },
+    closeEmail() {
+      this.emailExpanded = !this.emailExpanded;
+    },
+    async changeEmail() {
+      try {
+        const emailRegex = /[^@]+@[^\.]+\..+/;
+        if (!emailRegex.test(this.email)) {
+          throw "이메일 형식에 맞추어 입력해주세요.";
+        }
+        const response = await axios.put(
+          `http://localhost:4000/api/mypage/userInfo/email`,
+          {
+            email: this.email,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        this.emailIsValid = true;
+        this.emailMessage = response.data;
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+        this.isShaking = true;
+        this.emailIsValid = false;
+        this.emailError = true;
+        if (error instanceof Error) {
+          this.emailErrorMessage = error.response.data.message;
+        } else {
+          this.emailErrorMessage = error;
+        }
+        setTimeout(() => {
+          this.isShaking = false;
+          this.emailError = false;
+        }, 3000);
+      }
+    },
     async fetchUserInfo() {
       try {
         await this.$store.dispatch("fetchTokenData");
         const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo?username=${this.$store.state.loggedInUsername}`,
+          `http://localhost:4000/api/mypage/userInfo`,
 
           {
             withCredentials: true,
@@ -289,5 +399,6 @@ export default {
   margin-top: 200px;
   margin-left: 350px;
   padding: 20px 200px;
+  text-align: center;
 }
 </style>
