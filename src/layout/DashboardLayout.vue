@@ -1,6 +1,10 @@
 <template>
   <div class="wrapper">
     <side-bar>
+      <sidebar-link to="/backtrack">
+        <i class="nc-icon nc-note-03"></i>
+        <p>백킹트랙</p>
+      </sidebar-link>
       <sidebar-link v-if="shouldShowUserInfoLink" to="/user">
         <i class="nc-icon nc-circle-09"></i>
         <p>회원정보</p>
@@ -9,10 +13,7 @@
         <i class="nc-icon nc-grid-45"></i>
         <p>게시판</p>
       </sidebar-link>
-      <sidebar-link to="/backtrack">
-        <i class="nc-icon nc-note-03"></i>
-        <p>백킹트랙</p>
-      </sidebar-link>
+
       <sidebar-link to="/table-list">
         <i class="nc-icon nc-settings-gear-64"></i>
         <p>환경설정</p>

@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import Login from "../components/LoginModal/LoginModal.vue";
+import Login from "../components/Modals/LoginModal.vue";
 import axios from "axios";
 import { mapMutations } from "vuex";
 export default {

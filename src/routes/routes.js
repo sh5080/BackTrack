@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import DashboardLayout from "../layout/DashboardLayout.vue";
 import NotFound from "../pages/NotFoundPage.vue";
-import LoginModal from "src/components/LoginModal/LoginModal.vue";
+import LoginModal from "src/components/Modals/LoginModal.vue";
 import UserProfile from "src/pages/UserProfile.vue";
 import TableList from "src/pages/TableList.vue";
 import Typography from "src/pages/Typography.vue";
@@ -105,24 +105,15 @@ import axios from "axios";
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.config.noAlert) {
-      return Promise.reject(error);
-    }
-
     if (error.response && error.response.data) {
-      console.log("Error response:", error.response);
+      console.log("Error response:", error.response.data.message);
       if (
-        error.response.data.message.includes("접근 거부") ||
-        error.response.data.message.includes("사용자 정보")
-      ) {
-        store.dispatch("resetState");
-        localStorage.removeItem("isLogin");
-
-        router.push("/login");
-        alert("로그아웃 되었습니다.");
-      } else if (
         error.response.data.message.includes("필수 입력값") ||
-        error.response.data.message.includes("비밀번호가 일치하지 않습니다.")
+        error.response.data.message.includes("비밀번호가 일치하지 않습니다.") ||
+        error.response.data.message.includes("코드") ||
+        error.response.data.message.includes("마디") ||
+        error.response.data.message.includes("없는 사용자") ||
+        error.response.data.message.includes("새로운")
       ) {
       } else {
         store.dispatch("resetState");

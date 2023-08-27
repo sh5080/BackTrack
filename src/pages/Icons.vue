@@ -6,7 +6,12 @@
           <card>
             <template slot="header">
               <h4 class="card-title">100 Awesome Nucleo Icons</h4>
-              <p class="card-category">Handcrafted by our friends from <a target="_blank" href="https://nucleoapp.com/?ref=1712">NucleoApp</a></p>
+              <p class="card-category">
+                Handcrafted by our friends from
+                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
+                  >NucleoApp</a
+                >
+              </p>
             </template>
             <div class="all-icons">
               <div class="row">
@@ -614,19 +619,16 @@
             </div>
           </card>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 <script>
-  import Card from 'src/components/Cards/Card.vue'
-  export default {
-    components: {
-      Card
-    }
-  }
+import Card from "./UserProfile/Card.vue";
+export default {
+  components: {
+    Card,
+  },
+};
 </script>
-<style>
-
-</style>
+<style></style>

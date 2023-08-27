@@ -181,8 +181,8 @@
   </card>
 </template>
 <script>
-import Card from "src/components/Cards/Card.vue";
-import FindPassword from "../../components/LoginModal/findPasswordModal.vue";
+import Card from "./Card.vue";
+import FindPassword from "../../components/Modals/findPasswordModal.vue";
 import axios from "axios";
 export default {
   props: ["userInfo"],
