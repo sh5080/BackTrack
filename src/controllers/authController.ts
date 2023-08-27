@@ -131,6 +131,7 @@ export const login = async (
         .json({
           message: "로그인 성공",
           userId: userData!.id,
+          nickname: userData!.nickname,
           role: userData!.role,
         });
     } else {
@@ -144,6 +145,7 @@ export const login = async (
         .json({
           message: "로그인 성공",
           userId: userData!.id,
+          nickname: userData!.nickname,
         });
     }
   } catch (error) {
