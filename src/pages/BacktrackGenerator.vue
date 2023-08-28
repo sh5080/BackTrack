@@ -90,6 +90,7 @@
                       '#9',
                       '11',
                       '#11',
+                      null,
                       'b13',
                       '13',
                       '#13',
@@ -104,9 +105,9 @@
                   >
                     {{ modifier_tension }}
                   </button>
-                  <button class="register-button" @click="registerBacktrack">
+                  <!-- <button class="register-button" @click="registerBacktrack">
                     등록
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </v-col>
@@ -127,6 +128,14 @@
                       {{ chord }}
                     </span>
                   </div>
+                </v-col>
+                <v-col>
+                  <button class="register-button" @click="registerBacktrack">
+                    등록
+                  </button>
+                  <button class="next-button" @click="registerBacktrack">
+                    마디 넘기기
+                  </button>
                 </v-col>
               </div>
             </v-col>
@@ -235,7 +244,7 @@
               <div class="preview-container">
                 <div class="fix-container">
                   <button class="reset-button" @click="addMeasureSelections">
-                    마디 추가
+                    4 마디 추가
                   </button>
                   <button class="reset-button" @click="removeMeasureSelections">
                     마디 지우기
@@ -274,7 +283,7 @@ import axios from "axios";
 import * as Toast from "../plugins/toast";
 // import HeaderSection from "@/components/HeaderSection.vue";
 // import Login from "@/components/LoginModal.vue";
-import { ref } from "vue";
+
 export default {
   components: {
     // Login,
@@ -309,7 +318,10 @@ export default {
       resultChords: [],
       tableCols: 4,
       currentTableIndex: 0,
-      tables: [0],
+      currentMeasureIndex: 0,
+      // tables: [0],
+      // tables: [[], [], [], []],
+      tables: [[]],
       isEditable: true,
     };
   },
@@ -558,19 +570,63 @@ export default {
         Toast.customError("코드를 먼저 만들어주세요.");
         return;
       }
-      const chord = this.resultChords.join("");
+      // const chord = this.resultChords.join(" ");
 
-      // 현재 테이블의 첫 번째 칸에만 등록
-      const currentTable = this.tables[this.currentTableIndex];
-      if (!currentTable || currentTable.length === 0) {
-        this.tables[this.currentTableIndex] = [chord];
-      } else if (currentTable.length < this.tableCols) {
-        currentTable.push(chord);
-      } else {
-        // 현재 테이블이 꽉 찼으면 다음 테이블로 넘어가기
-        this.currentTableIndex =
-          (this.currentTableIndex + 1) % this.selectedMeasure;
-        this.tables[this.currentTableIndex] = [chord];
+      // const currentMeasure =
+      //   this.tables[this.currentTableIndex][this.currentMeasureIndex];
+
+      // if (!currentMeasure) {
+      //   this.tables[this.currentTableIndex][this.currentMeasureIndex] = [chord];
+      // } else if (currentMeasure.length < this.tableCols) {
+      //   currentMeasure.push(chord);
+      // } else {
+      //   this.currentMeasureIndex =
+      //     (this.currentMeasureIndex + 1) % this.selectedMeasure;
+      //   if (!this.tables[this.currentTableIndex][this.currentMeasureIndex]) {
+      //     this.tables[this.currentTableIndex][this.currentMeasureIndex] = [
+      //       chord,
+      //     ];
+      //   } else {
+      //     this.currentTableIndex =
+      //       (this.currentTableIndex + 1) % this.tables.length;
+      //     this.currentMeasureIndex = 0;
+      //     this.tables[this.currentTableIndex][this.currentMeasureIndex] = [
+      //       chord,
+      //     ];
+      //   }
+      // }
+      const chord = this.resultChords.join(" ");
+
+      let addedToExistingTable = false;
+
+      // 기존 테이블에 추가
+      for (let i = 0; i < this.tables.length; i++) {
+        const currentTable = this.tables[i];
+
+        for (let j = 0; j < this.selectedMeasure; j++) {
+          const currentMeasure = currentTable[j];
+
+          if (!currentMeasure) {
+            currentTable[j] = [chord];
+            addedToExistingTable = true;
+            break;
+          } else if (currentMeasure.length < this.tableCols) {
+            currentMeasure.push(chord);
+            addedToExistingTable = true;
+            break;
+          }
+        }
+
+        if (addedToExistingTable) {
+          break;
+        }
+      }
+
+      // 새로운 테이블 생성
+      if (!addedToExistingTable) {
+        const newTable = [[]];
+        newTable[0][0] = chord;
+        this.tables.push(newTable);
       }
 
       this.resultChords = [];
@@ -584,7 +640,7 @@ export default {
     getChordAt(tableIndex, colIndex) {
       const table = this.tables[tableIndex];
       if (table && colIndex < table.length) {
-        return table[colIndex];
+        return table[colIndex].join(" ");
       }
       return "";
     },
@@ -594,7 +650,7 @@ export default {
         Toast.customError("최대 32마디의 악보 생성이 가능합니다.");
         return;
       }
-      this.tables.push([]);
+      this.tables.push([[]]);
     },
     removeMeasureSelections() {
       if (this.tables.length === 1) {
@@ -605,36 +661,56 @@ export default {
       }
       this.tables.pop();
     },
-
     removeChordSelections() {
-      if (!this.tables[0]) {
-        Toast.customError("코드를 먼저 등록해주세요.");
-        return;
-      }
-
-      let removed = false;
+      // 가장 마지막에 등록한 코드를 찾습니다.
+      let lastChordTableIndex = -1;
+      let lastChordMeasureIndex = -1;
 
       for (let i = this.tables.length - 1; i >= 0; i--) {
-        if (this.tables[i].length > 0) {
-          this.tables[i].pop();
-          removed = true;
-          this.currentTableIndex = i;
+        const currentTable = this.tables[i];
+
+        for (let j = this.selectedMeasure - 1; j >= 0; j--) {
+          const currentMeasure = currentTable[j];
+
+          if (currentMeasure && currentMeasure.length > 0) {
+            lastChordTableIndex = i;
+            lastChordMeasureIndex = j;
+            break;
+          }
+        }
+
+        if (lastChordTableIndex !== -1 && lastChordMeasureIndex !== -1) {
           break;
         }
       }
 
-      if (!removed) {
-        Toast.customError("악보에 코드가 없습니다.");
+      // 가장 마지막에 등록한 코드가 있으면 제거합니다.
+      if (lastChordTableIndex !== -1 && lastChordMeasureIndex !== -1) {
+        const lastChordMeasure =
+          this.tables[lastChordTableIndex][lastChordMeasureIndex];
+
+        if (lastChordMeasure.length > 0) {
+          lastChordMeasure.pop();
+        } else {
+          // 코드가 없을 경우 에러 처리
+          Toast.customError("제거할 코드가 없습니다.");
+        }
+      } else {
+        // 가장 마지막에 등록한 코드가 없을 경우 에러 처리
+        Toast.customError("제거할 코드가 없습니다.");
       }
     },
 
     resetSelections() {
-      if (!this.tables[0]) {
+      if (
+        this.tables.length === 0 ||
+        (this.tables.length === 1 && this.tables[0].length === 0)
+      ) {
         Toast.customError("악보에 초기화할 코드가 없습니다.");
+      } else {
+        this.tables = [[]];
+        this.currentTableIndex = 0;
       }
-
-      this.tables = [0];
-      this.currentTableIndex = 0;
     },
 
     openLoginModal() {
@@ -662,7 +738,8 @@ export default {
             bpm: this.selectedBpm,
             measures: this.selectedMeasure,
             // chordPattern: this.selectedChords,
-            chordPattern: this.tables.flat(),
+            // chordPattern: this.tables.flat(),
+            chordPattern: this.tables,
           },
           { withCredentials: true }
         );
@@ -783,8 +860,9 @@ export default {
   background-color: #f0f0f0;
   padding: 20px;
   border: 1px solid #ccc;
-  margin-top: 55px;
+  margin-top: 18px;
   margin-left: 30px;
+
   font-size: 75px;
   display: flex;
   flex-direction: row;
@@ -902,6 +980,12 @@ export default {
   background-color: #f2c72d !important;
   width: 200px;
 }
+.next-button {
+  background-color: #f2c72d !important;
+  margin-left: 30px;
+  /* width: 200px; */
+}
+.next-button:hover,
 .register-button:hover {
   background-color: #dcb837 !important;
 }
