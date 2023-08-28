@@ -129,11 +129,11 @@
                     </span>
                   </div>
                 </v-col>
-                <v-col>
+                <v-col cols="11" class="chord-button">
                   <button class="register-button" @click="registerBacktrack">
                     등록
                   </button>
-                  <button class="next-button" @click="registerBacktrack">
+                  <button class="next-button" @click="nextMeasure">
                     마디 넘기기
                   </button>
                 </v-col>
@@ -645,6 +645,29 @@ export default {
       return "";
     },
 
+    nextMeasure() {
+      const currentTable = this.tables[this.currentTableIndex];
+
+      if (this.currentMeasureIndex < currentTable.length) {
+        const currentMeasure = currentTable[this.currentMeasureIndex];
+        if (currentMeasure.length === 4) {
+          Toast.customError("더 이상 마디가 없습니다.");
+        }
+        if (currentMeasure.length < 4) {
+          while (currentMeasure.length < 4) {
+            currentMeasure.push(0);
+          }
+        }
+
+        this.currentMeasureIndex++;
+        if (this.currentMeasureIndex >= this.selectedMeasure) {
+          this.currentTableIndex++;
+          this.currentMeasureIndex = 0;
+        }
+      } else {
+        Toast.customError("더 이상 마디가 없습니다.");
+      }
+    },
     addMeasureSelections() {
       if (this.tables.length === 8) {
         Toast.customError("최대 32마디의 악보 생성이 가능합니다.");
@@ -989,6 +1012,11 @@ export default {
 .register-button:hover {
   background-color: #dcb837 !important;
 }
+.chord-button {
+  /* position: relative; */
+  margin-top: 230px;
+  margin-left: 50px;
+}
 .reset-button {
   margin-right: 10px;
   font-size: 80px;
@@ -1059,21 +1087,18 @@ export default {
 .chord-container {
   display: flex;
   justify-content: space-between;
-  flex-direction: column !important;
+  flex-direction: column;
   align-items: center;
 }
 .chord-list {
+  position: fixed;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   overflow: hidden;
   margin-top: 80px;
-}
-.chord-list2 {
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 100px;
-  padding: 0px 10px;
+  /* margin-bottom: -50px; */
+  padding: 50px 0px;
 }
 
 .chords {
