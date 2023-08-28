@@ -223,7 +223,7 @@
                 >
                   <table class="chord-table">
                     <div class="table">
-                      <img src="img/table.drawio.png" alt="마디" />
+                      <img src="img/table.drawio.png" alt="악절" />
                     </div>
                     <tr>
                       <td
@@ -233,6 +233,11 @@
                       >
                         <div class="chord-content">
                           {{ getChordAt(tableIndex, colIndex) }}
+                          <img
+                            v-if="isCurrentMeasure(tableIndex, colIndex)"
+                            src="img/measure.drawio.png"
+                            alt="마디"
+                          />
                         </div>
                       </td>
                     </tr>
@@ -644,6 +649,12 @@ export default {
       }
       return "";
     },
+    isCurrentMeasure(tableIndex, colIndex) {
+      return (
+        tableIndex === this.currentTableIndex &&
+        colIndex === this.currentMeasureIndex
+      );
+    },
 
     nextMeasure() {
       const currentTable = this.tables[this.currentTableIndex];
@@ -655,7 +666,7 @@ export default {
         }
         if (currentMeasure.length < 4) {
           while (currentMeasure.length < 4) {
-            currentMeasure.push(0);
+            currentMeasure.push("");
           }
         }
 
