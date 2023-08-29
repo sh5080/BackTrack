@@ -234,9 +234,10 @@
                         <div class="chord-content">
                           {{ getChordAt(tableIndex, colIndex) }}
                           <img
-                            v-if="isCurrentMeasure(tableIndex, colIndex)"
+                            class="measure-image"
                             src="img/measure.drawio.png"
                             alt="마디"
+                            v-if="isCurrentMeasure(tableIndex, colIndex)"
                           />
                         </div>
                       </td>
@@ -324,21 +325,50 @@ export default {
       tableCols: 4,
       currentTableIndex: 0,
       currentMeasureIndex: 0,
-      // tables: [0],
-      // tables: [[], [], [], []],
+      isCurrentMeasureImageShown: true,
       tables: [[]],
-      isEditable: true,
     };
   },
   computed: {
-    tableRows() {
-      return Math.ceil(this.selectedMeasure / this.tableCols);
+    isCurrentMeasure() {
+      return (tableIndex, colIndex) =>
+        tableIndex === this.currentTableIndex &&
+        colIndex === this.currentMeasureIndex;
+    },
+    currentMeasureImageStyle() {
+      return (tableIndex, colIndex) => {
+        const isCurrentMeasure = this.isCurrentMeasure(tableIndex, colIndex);
+        const isMeasureFull = this.isMeasureFull(tableIndex, colIndex);
+
+        if (isCurrentMeasure && !isMeasureFull) {
+          return {
+            display: "block",
+          };
+        } else if (isMeasureFull) {
+          const nextTableIndex = this.getNextTableIndex(tableIndex, colIndex);
+          const nextColIndex = this.getNextColIndex(tableIndex, colIndex);
+
+          if (this.isMeasureFull(nextTableIndex, nextColIndex)) {
+            // 다음 마디가 꽉 찼을 때 이미지 보이기
+            return {
+              display: "block",
+            };
+          } else {
+            // 다음 마디가 꽉 차지 않았을 때 이미지 숨기기
+            return {
+              display: "none",
+            };
+          }
+        } else {
+          return {
+            display: "none",
+          };
+        }
+      };
     },
   },
+
   watch: {
-    measure(newValue) {
-      this.selectedMeasure = newValue;
-    },
     bpm(newValue) {
       this.selectedBpm = newValue;
     },
@@ -575,31 +605,7 @@ export default {
         Toast.customError("코드를 먼저 만들어주세요.");
         return;
       }
-      // const chord = this.resultChords.join(" ");
 
-      // const currentMeasure =
-      //   this.tables[this.currentTableIndex][this.currentMeasureIndex];
-
-      // if (!currentMeasure) {
-      //   this.tables[this.currentTableIndex][this.currentMeasureIndex] = [chord];
-      // } else if (currentMeasure.length < this.tableCols) {
-      //   currentMeasure.push(chord);
-      // } else {
-      //   this.currentMeasureIndex =
-      //     (this.currentMeasureIndex + 1) % this.selectedMeasure;
-      //   if (!this.tables[this.currentTableIndex][this.currentMeasureIndex]) {
-      //     this.tables[this.currentTableIndex][this.currentMeasureIndex] = [
-      //       chord,
-      //     ];
-      //   } else {
-      //     this.currentTableIndex =
-      //       (this.currentTableIndex + 1) % this.tables.length;
-      //     this.currentMeasureIndex = 0;
-      //     this.tables[this.currentTableIndex][this.currentMeasureIndex] = [
-      //       chord,
-      //     ];
-      //   }
-      // }
       const chord = this.resultChords.join(" ");
 
       let addedToExistingTable = false;
@@ -608,16 +614,35 @@ export default {
       for (let i = 0; i < this.tables.length; i++) {
         const currentTable = this.tables[i];
 
-        for (let j = 0; j < this.selectedMeasure; j++) {
-          const currentMeasure = currentTable[j];
+        // for (let j = 0; j < this.selectedMeasure; j++) {
+        //   const currentMeasure = currentTable[j];
 
-          if (!currentMeasure) {
+        //   if (!currentMeasure) {
+        //     currentTable[j] = [chord];
+        //     addedToExistingTable = true;
+        //     break;
+        //   }
+        //   if (currentMeasure.length === 4) {
+        //     // this.isCurrentMeasureImageShown = false;
+        //   } else if (currentMeasure.length < this.tableCols) {
+        //     currentMeasure.push(chord);
+
+        //     addedToExistingTable = true;
+        //     break;
+        //   }
+        // }
+        for (let j = 0; j < this.tableCols; j++) {
+          if (!currentTable[j]) {
             currentTable[j] = [chord];
             addedToExistingTable = true;
+            this.currentTableIndex = i;
+            this.currentMeasureIndex = j;
             break;
-          } else if (currentMeasure.length < this.tableCols) {
-            currentMeasure.push(chord);
+          } else if (currentTable[j].length < 4) {
+            currentTable[j].push(chord);
             addedToExistingTable = true;
+            this.currentTableIndex = i;
+            this.currentMeasureIndex = j;
             break;
           }
         }
@@ -628,12 +653,18 @@ export default {
       }
 
       // 새로운 테이블 생성
+      // if (!addedToExistingTable) {
+      //   const newTable = [[]];
+      //   newTable[0][0] = chord;
+      //   this.tables.push(newTable);
+      // }
       if (!addedToExistingTable) {
         const newTable = [[]];
         newTable[0][0] = chord;
         this.tables.push(newTable);
+        this.currentTableIndex = this.tables.length - 1;
+        this.currentMeasureIndex = 0;
       }
-
       this.resultChords = [];
       this.selectedExtend = "";
       this.selectedKey = "";
@@ -642,31 +673,120 @@ export default {
       this.selectedModifier_b5 = "";
       this.selectedModifier_tension = "";
     },
+
     getChordAt(tableIndex, colIndex) {
       const table = this.tables[tableIndex];
       if (table && colIndex < table.length) {
-        return table[colIndex].join(" ");
+        return table[colIndex] ? table[colIndex].join(" ") : "";
       }
       return "";
     },
+    getNextTableIndex(tableIndex, colIndex) {
+      if (colIndex === this.tableCols - 1) {
+        // 현재 마디가 현재 테이블의 마지막 열에 위치할 때
+        // 다음 마디는 새로운 테이블의 첫 번째 열이 됨
+        return tableIndex + 1;
+      } else {
+        // 다음 마디는 현재 테이블에서 다음 열이 됨
+        return tableIndex;
+      }
+    },
+    getNextColIndex(tableIndex, colIndex) {
+      if (colIndex === this.tableCols - 1) {
+        // 현재 마디가 현재 테이블의 마지막 열에 위치할 때
+        // 다음 마디의 열 인덱스는 0
+        return 0;
+      } else {
+        // 다음 마디의 열 인덱스는 현재 열 인덱스 + 1
+        return colIndex + 1;
+      }
+    },
+    // getImageStyle(tableIndex, colIndex) {
+    //   const isCurrentMeasure =
+    //     tableIndex === this.currentTableIndex &&
+    //     colIndex === this.currentMeasureIndex;
+    //   const isMeasureFull =
+    //     this.getChordAt(tableIndex, colIndex) &&
+    //     this.getChordAt(tableIndex, colIndex).split(" ").length === 4;
+    //   console.log("여기: ", isMeasureFull);
+    //   const isNextMeasure =
+    //     tableIndex === this.currentTableIndex &&
+    //     colIndex === this.currentMeasureIndex + 1;
+
+    //   if (isCurrentMeasure && !isMeasureFull) {
+    //     return {
+    //       display: "block",
+    //     };
+    //   } else if (isNextMeasure && isMeasureFull) {
+    //     return {
+    //       display: "block",
+    //     };
+    //   } else {
+    //     return {
+    //       display: "none",
+    //     };
+    //   }
+    // },
+
+    // getImageStyle(tableIndex, colIndex) {
+    //   const isCurrentMeasure = colIndex === this.currentMeasureIndex;
+    //   const isMeasureFull =
+    //     this.getChordAt(tableIndex, colIndex) &&
+    //     this.getChordAt(tableIndex, colIndex).split(" ").length === 4;
+
+    //   if (isCurrentMeasure && !isMeasureFull) {
+    //     return {
+    //       display: "block",
+    //     };
+    //   } else if (isMeasureFull) {
+    //     return {
+    //       display: "none",
+    //     };
+    //   } else {
+    //     const isNextMeasure =
+    //       tableIndex === this.currentTableIndex &&
+    //       colIndex === this.currentMeasureIndex + 1;
+
+    //     if (!isCurrentMeasure && isNextMeasure) {
+    //       return {
+    //         display: "block",
+    //       };
+    //     } else {
+    //       return {
+    //         display: "none",
+    //       };
+    //     }
+    //   }
+    // },
     isCurrentMeasure(tableIndex, colIndex) {
       return (
         tableIndex === this.currentTableIndex &&
-        colIndex === this.currentMeasureIndex
+        colIndex === this.currentMeasureIndex &&
+        this.getChordAt(tableIndex, colIndex)?.split(" ").length !== 4
       );
     },
-
+    isNextMeasure(tableIndex, colIndex) {
+      return (
+        tableIndex === this.currentTableIndex &&
+        colIndex === this.currentMeasureIndex + 1 &&
+        this.getChordAt(tableIndex, colIndex - 1)?.split(" ").length === 4
+      );
+    },
+    isMeasureFull(tableIndex, colIndex) {
+      const chord = this.getChordAt(tableIndex, colIndex);
+      return chord && chord.split(" ").length === 4;
+    },
     nextMeasure() {
       const currentTable = this.tables[this.currentTableIndex];
 
       if (this.currentMeasureIndex < currentTable.length) {
         const currentMeasure = currentTable[this.currentMeasureIndex];
         if (currentMeasure.length === 4) {
-          Toast.customError("더 이상 마디가 없습니다.");
+          Toast.customError("다음 코드를 등록해주세요.");
         }
         if (currentMeasure.length < 4) {
           while (currentMeasure.length < 4) {
-            currentMeasure.push("");
+            currentMeasure.push(0);
           }
         }
 
@@ -676,7 +796,7 @@ export default {
           this.currentMeasureIndex = 0;
         }
       } else {
-        Toast.customError("더 이상 마디가 없습니다.");
+        Toast.customError("등록된 코드가 없습니다.");
       }
     },
     addMeasureSelections() {
@@ -744,6 +864,7 @@ export default {
       } else {
         this.tables = [[]];
         this.currentTableIndex = 0;
+        this.currentMeasureIndex = 0;
       }
     },
 
@@ -1142,5 +1263,18 @@ export default {
   height: 450px;
   padding: 20px;
   transform: translateY(-50%);
+}
+.chord-content img {
+  position: absolute;
+  top: 160px;
+  left: 0;
+  margin-left: 30px;
+}
+
+.measure-image {
+  display: block;
+}
+.measure-image.hide {
+  display: none;
 }
 </style>
