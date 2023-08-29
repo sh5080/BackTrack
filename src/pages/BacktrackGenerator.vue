@@ -250,11 +250,11 @@
             <v-col cols="12">
               <div class="preview-container">
                 <div class="fix-container">
-                  <button class="reset-button" @click="addMeasureSelections">
+                  <button class="reset-button" @click="addTableSelections">
                     4 마디 추가
                   </button>
-                  <button class="reset-button" @click="removeMeasureSelections">
-                    마디 지우기
+                  <button class="reset-button" @click="removeTableSelections">
+                    4 마디 지우기
                   </button>
                   <button class="reset-button" @click="removeChordSelections">
                     코드 지우기
@@ -690,16 +690,32 @@ export default {
 
       if (this.currentMeasureIndex < currentTable.length) {
         const currentMeasure = currentTable[this.currentMeasureIndex];
-        if (currentMeasure.length === 4) {
+
+        if (currentMeasure.length === 4 || currentMeasure.length === 0) {
           Toast.customError("다음 코드를 등록해주세요.");
-        }
-        if (currentMeasure.length < 4) {
-          while (currentMeasure.length < 4) {
-            currentMeasure.push("");
+          return;
+        } else {
+          if (currentMeasure.length < 4) {
+            while (currentMeasure.length < 4) {
+              currentMeasure.push("");
+            }
           }
         }
 
         this.currentMeasureIndex++;
+
+        while (this.currentMeasureIndex < currentTable.length) {
+          const nextMeasure = currentTable[this.currentMeasureIndex];
+          if (nextMeasure.length >= 1 && nextMeasure.length <= 3) {
+            while (nextMeasure.length < 4) {
+              nextMeasure.push(0);
+            }
+          } else if (nextMeasure.length === 0) {
+            break;
+          }
+          this.currentMeasureIndex++;
+        }
+
         if (this.currentMeasureIndex >= this.selectedMeasure) {
           this.currentTableIndex++;
           this.currentMeasureIndex = 0;
@@ -708,22 +724,36 @@ export default {
         Toast.customError("등록된 코드가 없습니다.");
       }
     },
-    addMeasureSelections() {
+
+    addTableSelections() {
       if (this.tables.length === 8) {
         Toast.customError("최대 32마디의 악보 생성이 가능합니다.");
         return;
       }
       this.tables.push([[]]);
     },
-    removeMeasureSelections() {
+    removeTableSelections() {
       if (this.tables.length === 1) {
         Toast.customError(
           "코드를 등록하기 위해서 최소 4마디의 악보가 필요합니다."
         );
         return;
       }
-      this.tables.pop();
+
+      const previousTableIndex = this.tables.length - 2;
+      const previousTable = this.tables[previousTableIndex];
+
+      if (previousTable) {
+        const lastMeasureIndex = previousTable.length - 1;
+        this.tables.pop();
+
+        this.currentTableIndex = previousTableIndex;
+        this.currentMeasureIndex = lastMeasureIndex;
+      } else {
+        this.tables.pop();
+      }
     },
+
     removeChordSelections() {
       // 가장 마지막에 등록한 코드를 찾습니다.
       let lastChordTableIndex = -1;
@@ -754,6 +784,21 @@ export default {
 
         if (lastChordMeasure.length > 0) {
           lastChordMeasure.pop();
+
+          // 이전 마디로 넘어갈 때 currentMeasureIndex를 조정합니다.
+          if (lastChordMeasureIndex === 0) {
+            if (lastChordTableIndex > 0) {
+              this.currentTableIndex = lastChordTableIndex - 1;
+              this.currentMeasureIndex =
+                this.tables[this.currentTableIndex].length - 1;
+            } else {
+              // 현재 테이블이 첫 번째 테이블이면서 첫 번째 마디에서는
+              // 이전 마디로 넘어갈 수 없으므로 currentMeasureIndex를 0으로 설정합니다.
+              this.currentMeasureIndex = 0;
+            }
+          } else {
+            this.currentMeasureIndex = lastChordMeasureIndex;
+          }
         } else {
           // 코드가 없을 경우 에러 처리
           Toast.customError("제거할 코드가 없습니다.");
@@ -788,13 +833,20 @@ export default {
     async generateBacktrack() {
       this.selectedMeasure = this.tables.length * 4;
       try {
-        if (this.tables[0] === 0) {
+        if (this.tables[0].length === 0) {
           Toast.customError("최소 하나의 코드를 등록해주세요.");
           return;
         }
-        const shouldContinue = await this.confirmAction();
-        if (!shouldContinue) {
-          return;
+
+        const lastTable = this.tables[this.tables.length - 1];
+        if (lastTable && lastTable.length > 0) {
+          const lastMeasure = lastTable[3];
+          if (lastMeasure === undefined || lastMeasure.length <= 3) {
+            const shouldContinue = await this.confirmAction();
+            if (!shouldContinue) {
+              return;
+            }
+          }
         }
         const response = await axios.post(
           "http://localhost:4000/api/backtrack",
@@ -810,26 +862,34 @@ export default {
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
         if (response) {
-          this.tables = [0];
+          this.tables = [[]];
+          this.currentMeasureIndex = 0;
+          this.currentTableIndex = 0;
+          this.backtrack = response.data.backtrack;
         }
-        this.backtrack = response.data.backtrack;
       } catch (error) {
         console.error("Error generating backtrack:", error);
-        if (
-          error.response.data.message ===
-          "필수 입력값이 누락되었습니다: bpm, measures"
-        ) {
-          Toast.customError("BPM, 마디수를 확인해 주세요.");
-        } else if (
-          error.response.data.message === "필수 입력값이 누락되었습니다: bpm"
-        ) {
-          Toast.customError("BPM을 선택하거나 입력해 주세요.");
-        } else if (
-          error.response.data.message ===
-          "필수 입력값이 누락되었습니다: measures"
-        ) {
-          Toast.customError("마디수를 선택하거나 입력해 주세요.");
-        } else Toast.errorMessage(error);
+        if (error.response) {
+          if (
+            error.response.data.message ===
+            "필수 입력값이 누락되었습니다: bpm, measures"
+          ) {
+            Toast.customError("BPM, 마디수를 확인해 주세요.");
+          } else if (
+            error.response.data.message === "필수 입력값이 누락되었습니다: bpm"
+          ) {
+            Toast.customError("BPM을 선택하거나 입력해 주세요.");
+          } else if (
+            error.response.data.message ===
+            "필수 입력값이 누락되었습니다: measures"
+          ) {
+            Toast.customError("마디수를 선택하거나 입력해 주세요.");
+          } else {
+            Toast.errorMessage(error);
+          }
+        } else {
+          Toast.customWarning("서버 응답을 받을 수 없습니다.");
+        }
       }
     },
   },
