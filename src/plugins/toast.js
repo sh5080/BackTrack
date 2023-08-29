@@ -31,6 +31,16 @@ export function customError(error) {
     showIcon: true,
   });
 }
+export function customWarning(error) {
+  createToast(error, {
+    title: "Warning",
+    description: error,
+    type: "danger",
+    position: "top-right",
+    timeout: 5000,
+    showIcon: true,
+  });
+}
 export function alertMessage(res) {
   createToast(res, {
     type: "success",
