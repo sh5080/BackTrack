@@ -20,13 +20,13 @@ export const getUserInfo = async (
         404
       );
     }
-    if (username !== req.user!.username) {
-      throw new AppError(
-        CommonError.UNAUTHORIZED_ACCESS,
-        "비정상적인 접근입니다.",
-        403
-      );
-    }
+    // if (username !== req.user!.username) {
+    //   throw new AppError(
+    //     CommonError.UNAUTHORIZED_ACCESS,
+    //     "비정상적인 접근입니다.",
+    //     403
+    //   );
+    // }
     const resultData = {
       username: userData.username,
       nickname: userData.nickname,
@@ -47,19 +47,52 @@ export const updateUserInfo = async (
 ) => {
   try {
     const { username } = req.user!;
-    const { email, nickname, password } = req.body;
-
-    if (username !== req.user!.username) {
+    const { email, nickname, password, newPassword, newPasswordConfirm } =
+      req.body;
+    console.log(req.body);
+    // if (username !== req.user!.username) {
+    //   throw new AppError(
+    //     CommonError.UNAUTHORIZED_ACCESS,
+    //     "비정상적인 접근입니다.",
+    //     403
+    //   );
+    // }
+    const userData = await authService.getUser(username);
+    if (userData?.oauth_provider !== "ORIGIN") {
       throw new AppError(
         CommonError.UNAUTHORIZED_ACCESS,
-        "비정상적인 접근입니다.",
+        "간편로그인 회원은 해당 로그인서비스에서 비밀번호 변경이 가능합니다.",
         403
       );
     }
 
+    if (password !== userData?.password) {
+      throw new AppError(
+        CommonError.AUTHENTICATION_ERROR,
+        "기존 비밀번호가 일치하지 않습니다.",
+        400
+      );
+    }
+    if (newPassword !== newPasswordConfirm) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.",
+        400
+      );
+    }
+    const passwordRegex =
+      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{10,20}$/;
+    if (!passwordRegex.test(newPassword)) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "비밀번호는 영문, 숫자, 특수문자를 포함하여 10자 이상 20자 이내여야 합니다.",
+        400
+      );
+    }
     const updatedUserData = await authService.updateUser(
       username,
       password,
+      newPassword,
       nickname,
       email
     );

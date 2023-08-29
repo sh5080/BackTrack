@@ -7,6 +7,8 @@ export interface CustomRequest extends Request {
     username: string;
     email: string;
     password: string;
+    newPassword: string;
+    newPasswordConfirm: string;
     chordPattern: string;
     measures: number;
     bpm: number;

@@ -146,7 +146,7 @@ export const getUser = async (username?: string) => {
   try {
     const user = await AuthRepository.findUser(username);
     if (user !== null) {
-      const { password, ...userData } = user;
+      const { ...userData } = user;
       return userData;
     }
     return null;
@@ -258,6 +258,7 @@ function generateTemporaryPassword(length: number = 10): string {
 export const updateUser = async (
   username: string,
   password: string,
+  newPassword: string,
   nickname: string,
   email: string
 ) => {
@@ -296,7 +297,7 @@ export const updateUser = async (
 
     const updatedUser = await AuthRepository.updateUserByUsername(
       username,
-      password,
+      newPassword,
       nickname,
       email
     );
