@@ -14,11 +14,18 @@ router.put(
   validateRequestBody(["nickname"]),
   mypageController.updateUserInfo
 );
-/** [사용자] 닉네임 재설정 */
+/** [사용자] 이메일 변경 */
 router.put(
   "/userInfo/email",
   validateToken,
   validateRequestBody(["email"]),
+  mypageController.updateUserInfo
+);
+/** [사용자] 비밀번호 변경 */
+router.put(
+  "/userInfo/password",
+  validateToken,
+  validateRequestBody(["password", "newPassword", "newPasswordConfirm"]),
   mypageController.updateUserInfo
 );
 
