@@ -257,6 +257,7 @@ function generateTemporaryPassword(length: number = 10): string {
  */
 export const updateUser = async (
   username: string,
+  password: string,
   nickname: string,
   email: string
 ) => {
@@ -285,9 +286,17 @@ export const updateUser = async (
         400
       );
     }
+    if (password !== existingUser.password) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "비밀번호를 잘못 입력하셨습니다.",
+        400
+      );
+    }
 
     const updatedUser = await AuthRepository.updateUserByUsername(
       username,
+      password,
       nickname,
       email
     );
@@ -299,7 +308,7 @@ export const updateUser = async (
         500
       );
     }
-    const { password, ...userInfo } = updatedUser;
+    const { ...userInfo } = updatedUser;
     return userInfo;
   } catch (error) {
     if (error instanceof AppError) {

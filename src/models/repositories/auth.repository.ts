@@ -25,11 +25,12 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
   },
   async updateUserByUsername(
     username: string,
+    password?: string,
     nickname?: string,
     email?: string
   ) {
     try {
-      await this.update({ username }, { nickname, email });
+      await this.update({ username }, { password, nickname, email });
       const newUser = this.findOne({ where: { username } });
       return newUser;
     } catch (error) {

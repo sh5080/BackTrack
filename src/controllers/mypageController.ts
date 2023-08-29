@@ -47,7 +47,7 @@ export const updateUserInfo = async (
 ) => {
   try {
     const { username } = req.user!;
-    const { email, nickname } = req.body;
+    const { email, nickname, password } = req.body;
 
     if (username !== req.user!.username) {
       throw new AppError(
@@ -59,6 +59,7 @@ export const updateUserInfo = async (
 
     const updatedUserData = await authService.updateUser(
       username,
+      password,
       nickname,
       email
     );
