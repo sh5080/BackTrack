@@ -645,7 +645,7 @@ export default {
     },
 
     registerComma() {
-      const comma = "&"; // The comma value to be inserted
+      const comma = "𝄽";
 
       let addedToExistingTable = false;
       let moveToNextMeasure = false;
@@ -655,13 +655,13 @@ export default {
 
         for (let j = 0; j < this.tableCols; j++) {
           if (!currentTable[j]) {
-            currentTable[j] = [comma]; // Insert comma into an empty cell
+            currentTable[j] = [comma];
             addedToExistingTable = true;
             this.currentTableIndex = i;
             this.currentMeasureIndex = j;
             break;
           } else if (currentTable[j].length < 4) {
-            currentTable[j].push(comma); // Push comma into the existing cell
+            currentTable[j].push(comma);
             addedToExistingTable = true;
             this.currentTableIndex = i;
             this.currentMeasureIndex = j;
@@ -682,20 +682,9 @@ export default {
       }
 
       if (!addedToExistingTable) {
-        // Create a new table if necessary
-        // ...
       }
-
-      // Reset other variables
-      // ...
     },
-    // isCurrentMeasure(tableIndex, colIndex) {
-    //   return (
-    //     tableIndex === this.currentTableIndex &&
-    //     colIndex === this.currentMeasureIndex &&
-    //     this.getChordAt(tableIndex, colIndex)?.split(" ").length !== 4
-    //   );
-    // },
+
     nextMeasure() {
       const currentTable = this.tables[this.currentTableIndex];
 
@@ -1188,9 +1177,15 @@ export default {
 
 .chord-content {
   position: absolute;
-  /* height: 110%; */
+  display: flex;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 450px;
   padding: 20px;
+
   transform: translateY(-50%);
 }
 .chord-content img {
