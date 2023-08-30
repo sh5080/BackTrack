@@ -22,9 +22,6 @@ export class AuthEntity {
   @Column({ default: "USER" })
   role?: string;
 
-  @Column({ nullable: true })
-  access_token?: string;
-
   @Column({ default: 1 })
   activated?: number;
 
