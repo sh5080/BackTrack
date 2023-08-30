@@ -119,7 +119,12 @@ export const login = async (
     const refresh = token.refreshToken;
     const userData = await authService.getUser(username);
     const maxAge = 3600000; //1시간
-    await saveSessionToRedis(userData!.username, refresh, maxAge);
+    await saveSessionToRedis(
+      userData!.username,
+      userData!.nickname,
+      refresh,
+      maxAge
+    );
 
     if (userData!.role === "ADMIN") {
       res

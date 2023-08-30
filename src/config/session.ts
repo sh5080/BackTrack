@@ -9,6 +9,7 @@ const getAsync = promisify(redisClient.get).bind(redisClient);
 
 export const saveSessionToRedis = async (
   username: string,
+  nickname: string,
   refreshToken: string,
   maxAge: number
 ) => {
@@ -21,6 +22,7 @@ export const saveSessionToRedis = async (
 
   const sessionData = JSON.stringify({
     username: username,
+    nickname: nickname,
     refreshToken: refreshToken,
     session_start_time: sessionStart,
     session_expire_time: sessionExpire,
