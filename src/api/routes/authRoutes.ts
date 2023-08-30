@@ -1,14 +1,20 @@
 import { Router } from "express";
 import * as authController from "../../controllers/authController";
 import { validateRequestBody } from "../middlewares/validateRequest";
-import { isLoggedIn } from "../middlewares/jwt";
+import { isLoggedIn, validateToken } from "../middlewares/jwt";
 
 const router = Router();
 
 /** 회원가입 */
 router.post(
   "/signup",
-  validateRequestBody(["username", "password", "passwordConfirm", "email"]),
+  validateRequestBody([
+    "username",
+    "nickname",
+    "password",
+    "passwordConfirm",
+    "email",
+  ]),
   authController.signup
 );
 /** [회원가입] 아이디 중복검사 */
@@ -38,5 +44,5 @@ router.post(
 router.get("/isAuth", isLoggedIn);
 
 /**[인증] 세션 조회 */
-router.get("/getSessionData", authController.getSessionData);
+router.get("/getSessionData", isLoggedIn, authController.getSessionData);
 export default router;
