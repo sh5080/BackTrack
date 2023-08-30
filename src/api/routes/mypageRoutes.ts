@@ -26,7 +26,7 @@ router.put(
   "/userInfo/password",
   validateToken,
   validateRequestBody(["password", "newPassword", "newPasswordConfirm"]),
-  mypageController.updateUserInfo
+  mypageController.updatePassword
 );
 
 export default router;

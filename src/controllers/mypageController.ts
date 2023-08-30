@@ -4,6 +4,7 @@ import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import bcrypt from "bcrypt";
 import config from "../config";
+import { getSessionFromRedis, saveSessionToRedis } from "../config/session";
 const { saltRounds } = config.bcrypt;
 /** 내 정보 조회 */
 export const getUserInfo = async (
@@ -18,7 +19,7 @@ export const getUserInfo = async (
     if (!userData) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
-        "사용자를 찾을 수 없습니다.",
+        "비정상적인 접근입니다.",
         404
       );
     }
@@ -49,8 +50,50 @@ export const updateUserInfo = async (
 ) => {
   try {
     const { username } = req.user!;
-    const { email, nickname, password, newPassword, newPasswordConfirm } =
-      req.body;
+    const { email, nickname } = req.body;
+    // if (username !== req.user!.username) {
+    //   throw new AppError(
+    //     CommonError.UNAUTHORIZED_ACCESS,
+    //     "비정상적인 접근입니다.",
+    //     403
+    //   );
+    // }
+    const updatedUserData = await authService.updateUser(
+      username,
+      nickname,
+      email
+    );
+
+    if (nickname && email === undefined) {
+      const sessionData = await getSessionFromRedis(username);
+      if (sessionData) {
+        // const parsedSessionData = JSON.parse(sessionData);
+        // sessionData.nickname = nickname;
+        await saveSessionToRedis(
+          username,
+          nickname,
+          sessionData.refreshToken,
+          3600000
+        );
+      }
+      res.status(200).json(updatedUserData.nickname);
+    } else if (email && nickname === undefined) {
+      res.status(200).json(updatedUserData.email);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+export const updatePassword = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username } = req.user!;
+    const { password, newPassword, newPasswordConfirm } = req.body;
     console.log(req.body);
     // if (username !== req.user!.username) {
     //   throw new AppError(
@@ -104,23 +147,15 @@ export const updateUserInfo = async (
       String(newPassword),
       saltRounds
     );
-    const updatedUserData = await authService.updateUser(
+    const updatedUserData = await authService.updatePassword(
       username,
       password,
-      hashedNewPassword,
-      nickname,
-      email
+      hashedNewPassword
     );
 
-    if (nickname && email === undefined) {
-      res.status(200).json(updatedUserData.nickname);
-    } else if (email && nickname === undefined) {
-      res.status(200).json(updatedUserData.email);
-    } else if (password && hashedNewPassword && newPasswordConfirm) {
-      res
-        .status(200)
-        .json({ message: "성공적으로 비밀번호 변경이 완료되었습니다." });
-    } else throw Error;
+    res
+      .status(200)
+      .json({ message: "성공적으로 비밀번호 변경이 완료되었습니다." });
   } catch (error) {
     console.error(error);
     next(error);
