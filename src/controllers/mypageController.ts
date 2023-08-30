@@ -76,7 +76,7 @@ export const updateUserInfo = async (
         403
       );
     }
-    if (password === newPassword) {
+    if (password && password === newPassword) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "새로운 비밀번호를 입력해주세요.",
