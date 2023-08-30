@@ -43,7 +43,9 @@ const generateUsername = async (username: string): Promise<string> => {
 /**
  * OAuth 사용자 로그인
  */
-export const OauthLoginUser = async (email: string): Promise<object> => {
+export const OauthLoginUser = async (
+  email: string
+): Promise<{ accessToken: string; refreshToken: string }> => {
   const user = await AuthRepository.findUser(undefined, email);
 
   if (!user) {
@@ -78,7 +80,8 @@ export const OauthLoginUser = async (email: string): Promise<object> => {
     }
   );
 
-  return { accessToken, refreshToken };
+  const tokenData = { accessToken: accessToken, refreshToken: refreshToken };
+  return tokenData;
 };
 
 /**
