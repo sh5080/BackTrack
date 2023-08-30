@@ -30,10 +30,14 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
     email?: string
   ) {
     try {
-      await this.update(
-        { username },
-        { password: newPassword, nickname, email }
-      );
+      if (nickname) {
+        await this.update({ username }, { nickname });
+      } else if (email) {
+        await this.update({ username }, { email });
+      } else {
+        await this.update({ username }, { password: newPassword });
+      }
+
       const newUser = this.findOne({ where: { username } });
       return newUser;
     } catch (error) {
