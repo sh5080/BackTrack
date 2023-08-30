@@ -100,7 +100,10 @@ export const updateUserInfo = async (
         400
       );
     }
-    const hashedNewPassword = await bcrypt.hash(String(password), saltRounds);
+    const hashedNewPassword = await bcrypt.hash(
+      String(newPassword),
+      saltRounds
+    );
     const updatedUserData = await authService.updateUser(
       username,
       password,
