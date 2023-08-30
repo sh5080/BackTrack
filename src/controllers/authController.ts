@@ -116,9 +116,10 @@ export const login = async (
     const { username, password } = req.body;
 
     const token = await authService.loginUser(username!, password!);
+    const refresh = token.refreshToken;
     const userData = await authService.getUser(username);
     const maxAge = 3600000; //1시간
-    await saveSessionToRedis(userData!.id, maxAge);
+    await saveSessionToRedis(userData!.username, refresh, maxAge);
 
     if (userData!.role === "ADMIN") {
       res
@@ -159,9 +160,10 @@ export const getSessionData = async (
   next: NextFunction
 ) => {
   try {
-    const userId = Number(req.query.userId);
-    const sessionData = await getSessionFromRedis(userId);
-
+    const username = req.user!.username;
+    console.log("getSession req.user: ", req.user);
+    const sessionData = await getSessionFromRedis(username);
+    console.log("sData: ", sessionData);
     res.status(200).json(sessionData);
   } catch (error) {
     console.error("세션 데이터 조회 에러:", error);

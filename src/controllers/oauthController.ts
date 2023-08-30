@@ -70,7 +70,7 @@ export const kakaoCallback = async (
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
-      await saveSessionToRedis(existingInfo.id, maxAge);
+      await saveSessionToRedis(existingInfo.username, "임의", maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
@@ -90,7 +90,7 @@ export const kakaoCallback = async (
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
-      await saveSessionToRedis(existingInfo.id, maxAge);
+      await saveSessionToRedis(existingInfo.username, "임의", maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
@@ -165,7 +165,7 @@ export const googleCallback = async (
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
-      await saveSessionToRedis(existingInfo.id, maxAge);
+      await saveSessionToRedis(existingInfo.username, "임의", maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
@@ -183,7 +183,7 @@ export const googleCallback = async (
       // 기존에 회원 가입되어 있는 경우, 해당 유저로 로그인
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
-      await saveSessionToRedis(existingInfo.id, maxAge);
+      await saveSessionToRedis(existingInfo.username, "임의", maxAge);
       // 토큰을 쿠키에 설정하고 클라이언트에게 보냄
       res
         .cookie("token", token, {
