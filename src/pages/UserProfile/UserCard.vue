@@ -6,14 +6,94 @@
         <div class="info-item">
           <span class="info-label">아이디</span>
           <span class="info-value">{{ fetchedUserInfo.username }} </span>
-
           <button
             class="generate-button"
             type="button"
-            @click="showFindPassword"
+            @click="openPassword"
+            v-show="!passwordExpanded"
           >
-            비밀번호 재설정
+            비밀번호 변경
           </button>
+          <button
+            class="generate-button"
+            type="button"
+            @click="closePassword"
+            v-show="passwordExpanded"
+          >
+            취소
+          </button>
+        </div>
+
+        <div
+          class="change-password"
+          :style="{ height: passwordExpanded ? '800px' : '0px' }"
+        >
+          <p
+            style="
+              font-size: 3.5em;
+              padding: 0.5em;
+              height: 1em;
+              margin-top: 50px;
+              margin-left: 0px;
+            "
+            v-show="passwordExpanded"
+          >
+            - 기존 비밀번호를 통해 비밀번호 변경이 가능합니다. <br />- 영문,
+            숫자를 포함하여 10자 이상 20자 이내로 사용이 가능합니다.
+          </p>
+          <div class="change-pw" v-show="passwordExpanded">
+            <input
+              class="change-password-input"
+              type="password"
+              v-model="originPassword"
+              v-show="passwordExpanded"
+              placeholder="기존 비밀번호"
+            />
+            <div
+              class="alert-password alert-warning alert-dismissible fade show error-shake-animation"
+              role="alert"
+              v-if="passwordError"
+              v-show="passwordExpanded"
+              :class="{ 'error-shake-animation': isShaking }"
+              style="font-size: 60px; text-align: center"
+            >
+              <div class="error-message">
+                {{ passwordErrorMessage }}
+              </div>
+            </div>
+            <div
+              class="alert_correct alert-success alert-dismissible fade show"
+              role="alert"
+              v-if="passwordIsValid"
+              v-show="passwordExpanded"
+              style="font-size: 3em; text-align: center"
+            >
+              비밀번호 변경이 완료되었습니다.
+            </div>
+            <input
+              class="change-password-input"
+              type="password"
+              v-model="newPassword"
+              v-show="passwordExpanded"
+              placeholder="새 비밀번호"
+            />
+            <input
+              class="change-password-input"
+              type="password"
+              v-model="newPasswordConfirm"
+              v-show="passwordExpanded"
+              placeholder="새 비밀번호 확인"
+            />
+            <button
+              class="generate-button"
+              type="button"
+              @click="showFindPassword"
+              v-show="passwordExpanded"
+              style="margin-left: 530px"
+            >
+              비밀번호 변경
+            </button>
+          </div>
         </div>
 
         <div class="info-item">
@@ -195,6 +275,11 @@ export default {
       username: this.$store.state.loggedInUsername,
       fetchedUserInfo: null,
       provider: "Backtrack",
+      passwordExpanded: false,
+      password: null,
+      passwordMessage: null,
+      passwordIsValid: false,
+      passwordError: false,
       nicknameExpanded: false,
       nickname: null,
       nicknameMessage: null,
@@ -212,6 +297,12 @@ export default {
     this.fetchUserInfo();
   },
   methods: {
+    openPassword() {
+      this.passwordExpanded = !this.passwordExpanded;
+    },
+    closePassword() {
+      this.passwordExpanded = !this.passwordExpanded;
+    },
     openNickname() {
       this.nicknameExpanded = !this.nicknameExpanded;
     },
@@ -241,7 +332,8 @@ export default {
         );
         this.nicknameIsValid = true;
         this.nicknameMessage = response.data;
-        localStorage.setItem("n_id", this.nickname);
+        // localStorage.setItem("n_id", this.nickname);
+        this.$router.go();
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         this.isShaking = true;
@@ -281,6 +373,7 @@ export default {
         );
         this.emailIsValid = true;
         this.emailMessage = response.data;
+        this.$router.go();
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         this.isShaking = true;
@@ -314,7 +407,42 @@ export default {
       }
     },
     async showFindPassword() {
-      this.$store.commit("toggleFindPasswordModal", true);
+      try {
+        if (
+          this.password === undefined ||
+          this.newPassword === undefined ||
+          this.newPasswordConfirm === undefined
+        ) {
+          throw "빈 칸을 모두 입력해주세요.";
+        }
+        const response = await axios.put(
+          `http://localhost:4000/api/mypage/userInfo/password`,
+          {
+            password: this.originPassword,
+            newPassword: this.newPassword,
+            newPasswordConfirm: this.newPasswordConfirm,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        this.passwordIsValid = true;
+        this.passwordMessage = response.data;
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+        this.isShaking = true;
+        this.passwordIsValid = false;
+        this.passwordError = true;
+        if (error instanceof Error) {
+          this.passwordErrorMessage = error.response.data.message;
+        } else {
+          this.passwordErrorMessage = error;
+        }
+        setTimeout(() => {
+          this.isShaking = false;
+          this.passwordError = false;
+        }, 3000);
+      }
     },
   },
 };
@@ -393,6 +521,19 @@ export default {
 
   font-size: 70px;
 }
+
+.change-password-input {
+  font-size: 70px;
+  border: 1px solid #ccc;
+  margin-top: 40px;
+  margin-left: 200px;
+  padding: 20px 200px;
+  text-align: center;
+  position: relative;
+}
+.change-pw {
+  margin-top: 200px;
+}
 .change-input {
   font-size: 70px;
   border: 1px solid #ccc;
@@ -400,5 +541,12 @@ export default {
   margin-left: 350px;
   padding: 20px 200px;
   text-align: center;
+}
+.alert-password {
+  position: absolute;
+  top: 870px;
+  left: 1700px;
+  background: none;
+  color: rgb(43, 4, 234);
 }
 </style>
