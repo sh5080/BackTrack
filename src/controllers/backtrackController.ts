@@ -2,73 +2,72 @@ import { NextFunction, Request, Response } from "express";
 import * as backtrackService from "../services/backtrackService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
-import * as Tone from "tone";
+import fs from "fs";
+import path from "path";
 
 // 백킹트랙 생성 함수
-function generateBacktrack(chordPattern: string, measures: number): string[] {
-  const backingTrack: string[] = [];
-  const numChords = chordPattern.length;
+function convertChordToAbc(chordData: string[][][]) {
+  const abcContent = chordData
+    .map((measure) => measure.map((chords) => chords.join(" ")).join(" | "))
+    .join(" | ");
 
-  for (let i = 0; i < measures; i++) {
-    const chordIndex = i % numChords;
-    const chord = chordPattern[chordIndex];
-    backingTrack.push(chord);
-  }
-  console.log(backingTrack);
-  return backingTrack;
+  return `X:1\nT:Generated Backtrack\nM:4/4\nK:C\n${abcContent}`;
 }
 
-/** jamTrack 생성 */
+/** Backtrack 생성 */
 export const createBacktrack = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { chordPattern, bpm, measures } = req.body;
-    console.log("bpm: ", bpm);
-    console.log("chord: ", chordPattern);
-    console.log("measures: ", measures);
-    const numChords = chordPattern.length;
-    console.log("chordsCount: ", numChords);
-    if (numChords > measures) {
-      throw new AppError(
-        CommonError.INVALID_INPUT,
-        "등록한 코드가 마디수보다 많습니다. 마디수를 늘려주세요.",
-        400
-      );
-    }
-    if (numChords === 0) {
-      throw new AppError(
-        CommonError.INVALID_INPUT,
-        "최소 하나의 코드를 등록해주세요.",
-        400
-      );
-    }
-    // 백킹트랙 생성
-    const backingTrack = generateBacktrack(chordPattern, measures);
+    const { chord } = req.body;
+    console.log("chord: ", chord);
 
-    return res.status(200).json({ backingTrack });
+    const abcContent = convertChordToAbc(chord);
+
+    const currentDate = new Date();
+    const koreaTime = new Date(currentDate.getTime());
+
+    const year = koreaTime.getFullYear();
+    const month = String(koreaTime.getMonth() + 1).padStart(2, "0");
+    const day = String(koreaTime.getDate()).padStart(2, "0");
+    const hours = String(koreaTime.getHours()).padStart(2, "0");
+    const minutes = String(koreaTime.getMinutes()).padStart(2, "0");
+    const seconds = String(koreaTime.getSeconds()).padStart(2, "0");
+
+    const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+    const fileName = `${formattedDate}-backtrack.abc`;
+
+    const filePath = path.join(__dirname, "../..", "uploads", fileName);
+
+    console.log("1: ", __dirname);
+    console.log("filePath: ", filePath);
+    // Write the .abc content to the file
+    fs.writeFileSync(filePath, abcContent);
+
+    // Send the file path to the client
+    res.json({ filePath });
   } catch (error) {
     next(error);
   }
 };
 
-export const saveBacktrack = async (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { chordPattern, bpm, measures } = req.body;
+// export const saveBacktrack = async (
+//   req: CustomRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { chord, bpm, measures } = req.body;
 
-    const backtrackData = { chordPattern, bpm, measures };
-    await backtrackService.saveBacktrack(backtrackData);
-    return res.status(200).json({ message: "백킹트랙 저장에 성공했습니다." });
-  } catch (error) {
-    next(error);
-  }
-};
+//     const backtrackData = { chord, bpm, measures };
+//     await backtrackService.saveBacktrack(backtrackData);
+//     return res.status(200).json({ message: "백킹트랙 저장에 성공했습니다." });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // const synth = new Tone.Synth().toDestination();
 // synth.triggerAttackRelease("C4", "8n");
