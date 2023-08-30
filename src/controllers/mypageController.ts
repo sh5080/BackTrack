@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/authService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
-
+import bcrypt from "bcrypt";
+import config from "../config";
+const { saltRounds } = config.bcrypt;
 /** 내 정보 조회 */
 export const getUserInfo = async (
   req: CustomRequest,
@@ -58,21 +60,30 @@ export const updateUserInfo = async (
     //   );
     // }
     const userData = await authService.getUser(username);
-    if (userData?.oauth_provider !== "ORIGIN") {
+    if (
+      userData?.oauth_provider === "KAKAO" ||
+      userData?.oauth_provider === "GOOGLE"
+    ) {
       throw new AppError(
         CommonError.UNAUTHORIZED_ACCESS,
         "간편로그인 회원은 해당 로그인서비스에서 비밀번호 변경이 가능합니다.",
         403
       );
-    }
-
-    if (password !== userData?.password) {
+    } else if (userData?.oauth_provider !== "ORIGIN") {
       throw new AppError(
-        CommonError.AUTHENTICATION_ERROR,
-        "기존 비밀번호가 일치하지 않습니다.",
+        CommonError.UNAUTHORIZED_ACCESS,
+        "비정상적인 접근입니다.",
+        403
+      );
+    }
+    if (password === newPassword) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "새로운 비밀번호를 입력해주세요.",
         400
       );
     }
+
     if (newPassword !== newPasswordConfirm) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -82,28 +93,33 @@ export const updateUserInfo = async (
     }
     const passwordRegex =
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{10,20}$/;
-    if (!passwordRegex.test(newPassword)) {
+    if (newPassword && !passwordRegex.test(newPassword)) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "비밀번호는 영문, 숫자, 특수문자를 포함하여 10자 이상 20자 이내여야 합니다.",
         400
       );
     }
+    const hashedNewPassword = await bcrypt.hash(String(password), saltRounds);
     const updatedUserData = await authService.updateUser(
       username,
       password,
-      newPassword,
+      hashedNewPassword,
       nickname,
       email
     );
 
-    if (email === undefined) {
+    if (nickname && email === undefined) {
       res.status(200).json(updatedUserData.nickname);
-    }
-    if (nickname === undefined) {
+    } else if (email && nickname === undefined) {
       res.status(200).json(updatedUserData.email);
-    }
+    } else if (password && hashedNewPassword && newPasswordConfirm) {
+      res
+        .status(200)
+        .json({ message: "성공적으로 비밀번호 변경이 완료되었습니다." });
+    } else throw Error;
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };
