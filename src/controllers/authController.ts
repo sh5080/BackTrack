@@ -126,34 +126,16 @@ export const login = async (
       maxAge
     );
 
-    if (userData!.role === "ADMIN") {
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          // secure: true,
-          maxAge: maxAge,
-        })
-        .status(200)
-        .json({
-          message: "로그인 성공",
-          userId: userData!.id,
-          nickname: userData!.nickname,
-          role: userData!.role,
-        });
-    } else {
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          // secure: true,
-          maxAge: maxAge,
-        })
-        .status(200)
-        .json({
-          message: "로그인 성공",
-          userId: userData!.id,
-          nickname: userData!.nickname,
-        });
-    }
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        // secure: true,
+        maxAge: maxAge,
+      })
+      .status(200)
+      .json({
+        message: "로그인 성공",
+      });
   } catch (error) {
     next(error);
   }
