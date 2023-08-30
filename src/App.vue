@@ -23,10 +23,13 @@ export default {
   methods: {
     async checkAuthentication() {
       const isLogin = localStorage.getItem("isLogin");
-      const nickname = localStorage.getItem("n_id");
+      const isNickname = localStorage.getItem("n_id");
       if (isLogin === "true") {
         try {
-          await this.$store.dispatch("fetchTokenData");
+          const nickname = await this.$store.dispatch("fetchSessionData");
+          if (!nickname) {
+            throw "유효하지 않은 세션입니다. 다시 로그인해주세요.";
+          }
           this.$store.commit("setLoggedInNickname", nickname);
         } catch (error) {
           console.error("Error checking authentication:", error);
