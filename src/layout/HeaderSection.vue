@@ -67,18 +67,10 @@ export default {
   },
   async created() {
     const params = new URLSearchParams(window.location.search);
-    const userId = params.get("id");
-    const username = params.get("username");
     const provider = params.get("provider");
 
-    if (userId) {
-      // this.setAuthenticated(true);
-      this.$store.commit("setIsAdmin", true);
-      this.$store.commit("setUserId", userId);
-      this.$store.commit("setLoggedInUsername", username);
-
+    if (provider) {
       this.$store.commit("setLoginProvider", provider);
-
       this.$router.push("/");
     }
   },

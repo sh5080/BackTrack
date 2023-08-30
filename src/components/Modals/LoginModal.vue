@@ -164,11 +164,8 @@ export default {
     async oauthLogin(provider) {
       try {
         const loginUrl = this.generateLoginUrl(provider);
-        // this.$store.commit("setLoginProvider", provider);
         localStorage.setItem("oauth", provider);
         window.location.href = loginUrl;
-
-        // this.$router.push("/");
       } catch (error) {
         console.error(error);
       }
@@ -246,14 +243,6 @@ export default {
           localStorage.setItem("oauth", "Backtrack");
           this.$emit("closeLogin");
           this.$router.go();
-        }
-
-        if (response && response.data) {
-          const { message, user, role } = response.data;
-
-          if (role === "ADMIN") {
-            this.$store.commit("setIsAdmin", true);
-          }
         }
       } catch (error) {
         console.error("Error logging in:", error);

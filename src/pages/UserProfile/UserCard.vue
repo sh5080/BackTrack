@@ -272,7 +272,6 @@ export default {
   },
   data() {
     return {
-      username: this.$store.state.loggedInUsername,
       fetchedUserInfo: null,
       provider: "Backtrack",
       passwordExpanded: false,
@@ -392,7 +391,6 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        await this.$store.dispatch("fetchTokenData");
         const response = await axios.get(
           `http://localhost:4000/api/mypage/userInfo`,
 

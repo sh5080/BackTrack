@@ -5,7 +5,6 @@ export const store = createStore({
     isAuthenticated: false,
     loggedInUsername: null,
     loggedInNickname: null,
-    provider: null,
     showLoginModal: false,
     showRegisterModal: false,
     showRegisterSuccessModal: false,
@@ -29,9 +28,7 @@ export const store = createStore({
     setLoggedInNickname(state, nickname) {
       state.loggedInNickname = nickname;
     },
-    setLoginProvider(state, value) {
-      state.provider = value;
-    },
+
     toggleLoginModal(state, value) {
       state.showLoginModal = value;
     },
