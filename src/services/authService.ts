@@ -257,8 +257,6 @@ function generateTemporaryPassword(length: number = 10): string {
  */
 export const updateUser = async (
   username: string,
-  password: string,
-  newPassword: string,
   nickname: string,
   email: string
 ) => {
@@ -288,6 +286,52 @@ export const updateUser = async (
       );
     }
 
+    const updatedUser = await AuthRepository.updateUserByUsername(
+      username,
+      undefined,
+      nickname,
+      email
+    );
+
+    if (!updatedUser) {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "사용자 정보 수정에 실패했습니다.",
+        500
+      );
+    }
+
+    const { ...userInfo } = updatedUser;
+    return userInfo;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    } else {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "회원정보 수정에 실패했습니다.",
+        500
+      );
+    }
+  }
+};
+
+export const updatePassword = async (
+  username: string,
+  password: string,
+  newPassword: string
+) => {
+  try {
+    const existingUser = await AuthRepository.findUser(username);
+
+    if (!existingUser) {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "사용자 정보를 찾을 수 없습니다.",
+        404
+      );
+    }
+
     if (password) {
       const isPasswordMatch = await bcrypt.compare(
         password,
@@ -305,9 +349,7 @@ export const updateUser = async (
 
     const updatedUser = await AuthRepository.updateUserByUsername(
       username,
-      newPassword,
-      nickname,
-      email
+      newPassword
     );
 
     if (!updatedUser) {
