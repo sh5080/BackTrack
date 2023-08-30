@@ -7,7 +7,11 @@ const redisClient = Redis.createClient();
 const setAsync = promisify(redisClient.set).bind(redisClient);
 const getAsync = promisify(redisClient.get).bind(redisClient);
 
-export const saveSessionToRedis = async (userId: number, maxAge: number) => {
+export const saveSessionToRedis = async (
+  username: string,
+  refreshToken: string,
+  maxAge: number
+) => {
   const currentTime = new Date();
   const koreanTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
   const koreanTime = new Date(currentTime.getTime() + koreanTimeOffset);
@@ -16,16 +20,17 @@ export const saveSessionToRedis = async (userId: number, maxAge: number) => {
   const sessionExpire = new Date(koreanTime.getTime() + maxAge);
 
   const sessionData = JSON.stringify({
-    user_id: userId,
+    username: username,
+    refreshToken: refreshToken,
     session_start_time: sessionStart,
     session_expire_time: sessionExpire,
   });
-
-  await redisClient.set(`session:${userId}`, sessionData, "EX", maxAge);
+  const key = `session:${username}`;
+  await redisClient.set(key, sessionData, "EX", maxAge);
 };
 
-export const getSessionFromRedis = async (userId: number) => {
-  const sessionData = await getAsync(`session:${userId}`);
+export const getSessionFromRedis = async (username: string) => {
+  const sessionData = await getAsync(`session:${username}`);
 
   if (sessionData) {
     return JSON.parse(sessionData);
