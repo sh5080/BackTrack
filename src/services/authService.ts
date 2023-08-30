@@ -77,7 +77,7 @@ export const getUsername = async (username: string): Promise<boolean> => {
 export const loginUser = async (
   username: string,
   password: string
-): Promise<object> => {
+): Promise<{ accessToken: string; refreshToken: string }> => {
   try {
     const user = await AuthRepository.login(username);
 
@@ -123,8 +123,8 @@ export const loginUser = async (
         expiresIn: REFRESH_TOKEN_EXPIRES_IN,
       }
     );
-
-    return { accessToken, refreshToken };
+    const tokenData = { accessToken: accessToken, refreshToken: refreshToken };
+    return tokenData;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
