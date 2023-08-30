@@ -171,7 +171,7 @@ export const isLoggedIn = async (
       );
     }
   } else {
-    console.log("로그인되지 않은 상태");
+    console.log("로그인하지 않은 상태");
     req.user = undefined;
   }
 
