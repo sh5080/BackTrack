@@ -3,7 +3,6 @@ import axios from "axios";
 export const store = createStore({
   state: {
     isAuthenticated: false,
-    userId: null,
     loggedInUsername: null,
     loggedInNickname: null,
     provider: null,
@@ -14,17 +13,11 @@ export const store = createStore({
     showFindPasswordModal: false,
     showGoogleLoginModal: false,
     showKakaoLoginModal: false,
-    showEditProfile: false,
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated;
     },
-
-    setUserId(state, userId) {
-      state.userId = userId;
-    },
-
     setIsAdmin(state, isAdmin) {
       if (isAdmin) {
         state.isAdmin = true;
@@ -59,9 +52,6 @@ export const store = createStore({
     },
     toggleKakaoLoginModal(state, value) {
       state.showKakaoLoginModal = value;
-    },
-    toggleEditProfile(state, value) {
-      state.showEditProfile = value;
     },
   },
 
