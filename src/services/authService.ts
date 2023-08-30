@@ -287,16 +287,20 @@ export const updateUser = async (
         400
       );
     }
-    const isPasswordMatch = await bcrypt.compare(
-      password,
-      existingUser.password
-    );
-    if (!isPasswordMatch) {
-      throw new AppError(
-        CommonError.AUTHENTICATION_ERROR,
-        "비밀번호가 일치하지 않습니다.",
-        401
+
+    if (password) {
+      const isPasswordMatch = await bcrypt.compare(
+        password,
+        existingUser.password
       );
+
+      if (!isPasswordMatch) {
+        throw new AppError(
+          CommonError.AUTHENTICATION_ERROR,
+          "기존 비밀번호가 일치하지 않습니다.",
+          401
+        );
+      }
     }
 
     const updatedUser = await AuthRepository.updateUserByUsername(
@@ -313,6 +317,7 @@ export const updateUser = async (
         500
       );
     }
+
     const { ...userInfo } = updatedUser;
     return userInfo;
   } catch (error) {
