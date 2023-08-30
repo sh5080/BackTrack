@@ -287,11 +287,15 @@ export const updateUser = async (
         400
       );
     }
-    if (password !== existingUser.password) {
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordMatch) {
       throw new AppError(
-        CommonError.INVALID_INPUT,
-        "비밀번호를 잘못 입력하셨습니다.",
-        400
+        CommonError.AUTHENTICATION_ERROR,
+        "비밀번호가 일치하지 않습니다.",
+        401
       );
     }
 
