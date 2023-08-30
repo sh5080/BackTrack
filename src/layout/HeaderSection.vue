@@ -104,8 +104,7 @@ export default {
         );
         if (response.data.message === "로그아웃 되었습니다.") {
           await this.$store.dispatch("resetState");
-          this.$router.push("/");
-          delete this.$store.state.isAdmin;
+          this.$router.go();
         }
       } catch (error) {
         console.error("Error during logout:", error);
@@ -123,7 +122,7 @@ export default {
   margin-left: 325px;
   border: 1px solid #ccc;
   border-radius: 10px;
-
+  width: 93%;
   box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
 }
 .categories {
@@ -140,7 +139,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-right: 350px;
+  margin-right: 50px;
 }
 .button-container {
   display: flex;

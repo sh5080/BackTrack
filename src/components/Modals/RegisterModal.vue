@@ -59,10 +59,27 @@
       >
         {{ usernameMessage }}
       </div>
-
+      <div class="input-reg3">
+        <label for="nickname" style="font-size: 4em; margin-top: 100px"
+          >닉네임</label
+        >
+        <input
+          class="form-control"
+          type="text"
+          v-model="nickname"
+          placeholder="닉네임"
+          style="
+            font-size: 4em;
+            padding: 0.5em;
+            height: 1em;
+            margin-top: 10px;
+            margin-bottom: 20px;
+          "
+        />
+      </div>
       <div class="input-reg">
         <label for="password" style="font-size: 4em; margin-top: 140px"
-          >비밀번호</label
+          >비밀번호 (영문, 숫자 포함 10자 이상 20자 이내)</label
         >
         <input
           class="form-control"
@@ -164,6 +181,7 @@ export default {
   data() {
     return {
       username: "",
+      nickname: "",
       email: "",
       password: "",
       passwordConfirm: "",
@@ -326,6 +344,7 @@ export default {
             "http://localhost:4000/api/auth/signup",
             {
               username: this.username,
+              nickname: this.nickname,
               password: this.password,
               passwordConfirm: this.passwordConfirm,
               email: this.email,
@@ -342,23 +361,9 @@ export default {
               { withCredentials: true }
             );
 
-            const sessionDataResponse = await axios.get(
-              "http://localhost:4000/api/auth/getSessionData",
-              {
-                params: { userId: loginResponse.data.userId },
-                withCredentials: true,
-              }
-            );
-            const sessionData = sessionDataResponse.data;
-
-            this.$store.commit(
-              "setLoggedInUsername",
-              response.data.newUserData.username
-            );
-
-            this.$store.commit("setSessionData", sessionData);
             this.$store.commit("setLoginProvider", "Backtrack");
             this.$store.commit("toggleRegisterSuccessModal", true);
+            this.$router.go();
           }
         } catch (error) {
           console.error("Registration error:", error);
@@ -414,7 +419,7 @@ export default {
   background: #fefefe;
   max-width: 2000px;
   max-height: 80vh;
-  width: 1500px;
+  width: 1600px;
   /* z-index: 9997; */
 }
 .mb-3 {
@@ -477,7 +482,7 @@ export default {
 }
 .btn-check {
   position: relative;
-  top: 8%;
+  top: 6%;
   left: 85%;
   padding: 0.5em 2.5em;
   font-size: 8px;
@@ -514,7 +519,7 @@ export default {
 
 .alternative-option {
   text-align: center;
-  margin-top: 70px;
+  margin-top: 130px;
 }
 
 .alternative-option > span {
@@ -524,12 +529,12 @@ export default {
 
 .alert_username {
   font-size: 0.9rem;
-  margin-bottom: -152px;
+  margin-bottom: -72px;
 }
 .alert_password {
   font-size: 0.9rem;
 
-  margin-bottom: -20px;
+  margin-bottom: -48px;
   max-height: 0px;
 }
 .alert {
@@ -538,10 +543,12 @@ export default {
 }
 .alert_correct {
   font-size: 0.9rem;
-  margin-bottom: -152px;
+  /* margin-bottom: -152px; */
+  margin-bottom: -72px;
 }
 .alert-reg {
   font-size: 0.9rem;
-  margin-bottom: -92px;
+  /* margin-bottom: -92px; */
+  margin-bottom: -120px;
 }
 </style>

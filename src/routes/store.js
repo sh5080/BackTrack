@@ -3,7 +3,6 @@ import axios from "axios";
 export const store = createStore({
   state: {
     isAuthenticated: false,
-    sessionData: null,
     userId: null,
     loggedInUsername: null,
     loggedInNickname: null,
@@ -21,12 +20,7 @@ export const store = createStore({
     setAuthenticated(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated;
     },
-    setSessionData(state, sessionData) {
-      state.sessionData = sessionData;
-      if (sessionData) {
-        state.isAuthenticated = true;
-      }
-    },
+
     setUserId(state, userId) {
       state.userId = userId;
     },
@@ -72,54 +66,31 @@ export const store = createStore({
   },
 
   actions: {
-    async fetchSessionData({ commit, state }) {
+    async fetchSessionData({ commit }) {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/auth/getSessionData?userId=${state.userId}`,
+          `http://localhost:4000/api/auth/getSessionData`,
           {
             withCredentials: true,
           }
         );
 
-        const sessionData = response.data;
-
-        if (sessionData) {
-          commit("setAuthenticated", true);
-          commit("setSessionData", sessionData);
+        const nickname = response.data.nickname;
+        const role = response.data.role;
+        if (role === "ADMIN") {
+          commit("setIsAdmin", true);
         }
-
-        return sessionData;
+        if (nickname) {
+          commit("setAuthenticated", true);
+          commit("setLoggedInNickname", nickname);
+        }
+        return nickname;
       } catch (error) {
         console.error("Error fetching session data:", error);
         return null;
       }
     },
-    async fetchTokenData({ commit }) {
-      try {
-        const response = await axios.get(
-          `http://localhost:4000/api/auth/isAuth`,
-          {
-            withCredentials: true,
-          }
-        );
-        const role = response.data.role;
-        if (role === "ADMIN") {
-          commit("setIsAdmin", true);
-        }
-        commit("setAuthenticated", true);
-      } catch (error) {
-        console.error("Error fetching token data:", error);
-        return null;
-      }
-    },
-
     async resetState({ commit }) {
-      commit("setAuthenticated", false);
-      commit("setSessionData", null);
-      commit("setUserId", null);
-      commit("setIsAdmin", false);
-      commit("setLoggedInUsername", null);
-      commit("setLoginProvider", null);
       commit("toggleLoginModal", false);
       commit("toggleRegisterModal", false);
       commit("toggleRegisterSuccessModal", false);

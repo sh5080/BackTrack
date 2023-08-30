@@ -11,13 +11,7 @@
           name="username"
           placeholder="아이디"
           v-model="username"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 100px;
-            /* margin-bottom: 150px; */
-          "
+          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: 100px"
         />
       </div>
 
@@ -28,13 +22,7 @@
           name="password"
           placeholder="비밀번호"
           v-model="password"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: -90px;
-            /* margin-bottom: 100px; */
-          "
+          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: -90px"
         />
       </div>
       <div
@@ -68,7 +56,11 @@
 
       <div class="image-button">
         <button type="button" @click="oauthLogin('GOOGLE')">
-          <img src="/img/google.png" alt="Google 로그인" />
+          <img
+            src="/img/google.png"
+            style="margin-top: 50px"
+            alt="Google 로그인"
+          />
         </button>
       </div>
 
@@ -93,16 +85,19 @@
         "
       >
         <span
+          class="alt-reg"
           @click="openRegisterModal"
           style="font-size: 1.3em; cursor: pointer"
           >회원가입</span
         >
         <span
+          class="alt-id"
           @click="openFindUsernameModal"
           style="font-size: 1.3em; cursor: pointer"
-          >아이디 찾기 /</span
+          >아이디 찾기&nbsp;&nbsp;&nbsp;&nbsp;/</span
         >
         <span
+          class="alt-pw"
           @click="openFindPasswordModal"
           style="font-size: 1.3em; margin-left: -200px; cursor: pointer"
           >비밀번호 재설정</span
@@ -248,12 +243,9 @@ export default {
         );
 
         if (response.data.message === "로그인 성공") {
-          this.$store.commit("setUserId", response.data.userId);
-          localStorage.setItem("n_id", response.data.nickname);
-          this.$store.commit("setLoggedInNickname", response.data.nickname);
           localStorage.setItem("oauth", "Backtrack");
           this.$emit("closeLogin");
-          this.$router.push("/main");
+          this.$router.go();
         }
 
         if (response && response.data) {
@@ -283,7 +275,7 @@ export default {
   border-radius: 5px;
   background: #fefefe;
   max-width: 2000px;
-  max-height: 80vh;
+  max-height: 5000px;
 }
 .title {
   font-weight: 600;
@@ -324,8 +316,8 @@ export default {
 }
 
 .container {
-  width: 1500px !important;
-  height: 2000px;
+  width: 1700px !important;
+  height: 2500px;
   max-width: 95%;
   /* z-index: 9996; */
 }
@@ -355,7 +347,6 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
-
   background: none;
   border: none;
   padding: 0;
@@ -413,12 +404,19 @@ export default {
 .alternative-option {
   text-align: center;
   margin-top: 100px;
+  transition: transform 0.2s;
+}
+.alt-id:hover,
+.alt-pw:hover,
+.alt-reg:hover {
+  transform: scale(1.05);
 }
 
 .alternative-option > span {
   color: #0e9448;
   cursor: pointer;
 }
+
 .login-error-alert {
   font-size: 0.9rem;
   margin-bottom: -92px;
