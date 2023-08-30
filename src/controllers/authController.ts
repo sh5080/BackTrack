@@ -165,11 +165,19 @@ export const getSessionData = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
-    console.log("getSession req.user: ", req.user);
+    const username = req.user?.username;
+
+    if (!username) {
+      next();
+      return;
+    }
+
     const sessionData = await getSessionFromRedis(username);
-    console.log("sData: ", sessionData);
-    res.status(200).json(sessionData);
+    const nickname = sessionData.nickname;
+    const role = req.user?.role;
+
+    const userDataForStateUser = { nickname, role };
+    res.status(200).json(userDataForStateUser);
   } catch (error) {
     console.error("세션 데이터 조회 에러:", error);
     next(error);
