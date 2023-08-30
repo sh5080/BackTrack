@@ -3,7 +3,6 @@ import axios from "axios";
 export const store = createStore({
   state: {
     isAuthenticated: false,
-    loggedInUsername: null,
     loggedInNickname: null,
     showLoginModal: false,
     showRegisterModal: false,
@@ -21,9 +20,6 @@ export const store = createStore({
       if (isAdmin) {
         state.isAdmin = true;
       }
-    },
-    setLoggedInUsername(state, username) {
-      state.loggedInUsername = username;
     },
     setLoggedInNickname(state, nickname) {
       state.loggedInNickname = nickname;
