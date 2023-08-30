@@ -263,6 +263,7 @@
                     전체 초기화
                   </button>
                 </div>
+
                 <div class="generate-container">
                   <button
                     class="generate-button"
@@ -272,6 +273,12 @@
                     Backingtrack 생성하기
                   </button>
                 </div>
+                <v-dialog
+                  v-model="$store.state.showBacktrackSuccessModal"
+                  persistent=""
+                >
+                  <BacktrackSuccessModal />
+                </v-dialog>
               </div>
             </v-col>
           </div>
@@ -288,13 +295,13 @@
 <script>
 import axios from "axios";
 import * as Toast from "../plugins/toast";
+import BacktrackSuccessModal from "../components/Modals/BacktrackSuccessModal.vue";
 // import HeaderSection from "@/components/HeaderSection.vue";
 // import Login from "@/components/LoginModal.vue";
 
 export default {
   components: {
-    // Login,
-    // HeaderSection,
+    BacktrackSuccessModal,
   },
 
   data() {
@@ -645,7 +652,7 @@ export default {
     },
 
     registerComma() {
-      const comma = "𝄽";
+      const comma = "-";
 
       let addedToExistingTable = false;
       let moveToNextMeasure = false;
@@ -697,7 +704,7 @@ export default {
         } else {
           if (currentMeasure.length < 4) {
             while (currentMeasure.length < 4) {
-              currentMeasure.push("");
+              currentMeasure.push("-");
             }
           }
         }
@@ -866,6 +873,7 @@ export default {
           this.currentMeasureIndex = 0;
           this.currentTableIndex = 0;
           this.backtrack = response.data.backtrack;
+          this.$store.commit("toggleBacktrackSuccessModal", true);
         }
       } catch (error) {
         console.error("Error generating backtrack:", error);
@@ -944,7 +952,6 @@ export default {
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  /* background: linear-gradient(to top, #00b869, #03c75a); */
 }
 
 .backtrack-generator button:hover {
@@ -1093,7 +1100,9 @@ export default {
 .key-button.selected {
   background-color: #084dbf;
 }
-
+.generate-button:hover,
+.reset-button:hover,
+.ext-button:hover,
 .key-button:hover {
   background: #60a687;
 }
@@ -1132,14 +1141,21 @@ export default {
   font-size: 80px;
   width: 500px;
   flex-wrap: wrap;
+  cursor: pointer;
   background: linear-gradient(to top, #00b869, #03c75a);
+  z-index: 100;
 }
 .generate-button {
+  position: relative;
   margin-right: 20px;
+  top: 0;
+  left: 0;
   font-size: 80px;
   width: 1000px;
   flex-wrap: wrap;
   background: linear-gradient(to top, #00b869, #03c75a);
+  cursor: pointer;
+  z-index: 100 !important;
 }
 .welcome-message {
   display: flex;
