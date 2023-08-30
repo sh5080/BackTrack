@@ -3,6 +3,7 @@ import { Response, NextFunction } from "express";
 import config from "../../config/index";
 import { AppError, CommonError } from "../../types/AppError";
 import { CustomRequest } from "../../types/customRequest";
+import { getSessionFromRedis } from "../../config/session";
 
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES_IN } =
   config.jwt;
@@ -59,6 +60,20 @@ export const validateToken = async (
       }
 
       try {
+        const username = req.user!.username;
+        const sessionData = await getSessionFromRedis(username);
+        const redisRefreshToken = sessionData.refreshToken;
+
+        if (redisRefreshToken !== refreshToken) {
+          return next(
+            new AppError(
+              CommonError.TOKEN_EXPIRED_ERROR,
+              "리프레시 토큰이 일치하지 않습니다. 다시 로그인 해주세요.",
+              401
+            )
+          );
+        }
+
         const decodedRefreshToken = jwt.verify(
           refreshToken,
           REFRESH_TOKEN_SECRET
@@ -119,7 +134,6 @@ export const validateToken = async (
     }
   }
 };
-
 export const isLoggedIn = async (
   req: CustomRequest,
   res: Response,
@@ -143,97 +157,23 @@ export const isLoggedIn = async (
     }
   }
 
-  if (!accessToken) {
-    return next(
-      new AppError(
+  if (accessToken) {
+    try {
+      req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & {
+        username: string;
+        role: string;
+      };
+    } catch (err) {
+      throw new AppError(
         CommonError.UNAUTHORIZED_ACCESS,
-        "접근 거부. 유효한 토큰을 제공해주세요.",
+        "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
         401
-      )
-    );
-  }
-
-  try {
-    req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & {
-      username: string;
-      role: string;
-    };
-
-    console.log(req.user);
-
-    res.status(200).json({ role: req.user.role });
-    next();
-  } catch (err) {
-    if (err instanceof jwt.TokenExpiredError) {
-      if (!refreshToken) {
-        console.error(err);
-        return next(
-          new AppError(
-            CommonError.TOKEN_EXPIRED_ERROR,
-            "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
-            401
-          )
-        );
-      }
-
-      try {
-        const decodedRefreshToken = jwt.verify(
-          refreshToken,
-          REFRESH_TOKEN_SECRET
-        ) as JwtPayload & {
-          username: string;
-          role: string;
-        };
-
-        const newAccessToken = jwt.sign(
-          {
-            username: decodedRefreshToken.username,
-            role: decodedRefreshToken.role,
-          },
-          ACCESS_TOKEN_SECRET,
-          {
-            expiresIn: ACCESS_TOKEN_EXPIRES_IN,
-          }
-        );
-
-        req.user = {
-          username: decodedRefreshToken.username,
-          role: decodedRefreshToken.role,
-        };
-        res
-          .cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: true,
-          })
-          .status(200)
-          .json({ message: "새로운 엑세스 토큰이 발급되었습니다." });
-      } catch (err) {
-        if (err instanceof jwt.TokenExpiredError) {
-          res.clearCookie("refreshToken");
-          return next(
-            new AppError(
-              CommonError.TOKEN_EXPIRED_ERROR,
-              "리프레쉬 토큰이 만료되었습니다. 다시 로그인 해주세요.",
-              401
-            )
-          );
-        }
-        return next(
-          new AppError(
-            CommonError.TOKEN_EXPIRED_ERROR,
-            "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
-            401
-          )
-        );
-      }
-    } else {
-      return next(
-        new AppError(
-          CommonError.UNAUTHORIZED_ACCESS,
-          "토큰이 유효하지 않습니다. 토큰을 확인해주세요.",
-          401
-        )
       );
     }
+  } else {
+    console.log("로그인되지 않은 상태");
+    req.user = undefined;
   }
+
+  next();
 };
