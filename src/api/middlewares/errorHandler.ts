@@ -14,6 +14,9 @@ const errorHandler = (
       name,
       status,
     };
+    if (message === "비정상적인 접근입니다.") {
+      res.clearCookie("token");
+    }
     res.status(status).json(errorResponse);
     console.error(err);
   } else {
