@@ -1,5 +1,5 @@
 {
-  "name": "backtrack",
+  "name": "twofiveone_fe",
   "version": "2.1.0",
   "private": true,
   "description": "make backtrack for practice music",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
+    "abcjs": "^6.2.2",
     "axios": "^1.4.0",
     "bootstrap": "4.6.0",
     "cache-loader": "^4.1.0",
