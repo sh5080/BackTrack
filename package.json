@@ -1,9 +1,9 @@
 {
-  "name": "jam_track",
+  "name": "twofiveone",
   "version": "1.0.0",
   "description": "Elevate your musical improvisations with our intelligent backing track generation service.",
   "main": "index.js",
-  "repository": "https://github.com/sh5080/JamTrack.git",
+  "repository": "https://github.com/sh5080/TwoFiveOne.git",
   "author": "김승환 <prpn97@gmail.com>",
   "license": "MIT",
   "scripts": {
