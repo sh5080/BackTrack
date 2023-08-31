@@ -8,8 +8,15 @@ import path from "path";
 // 백킹트랙 생성 함수
 function convertChordToAbc(chordData: string[][][]) {
   const abcContent = chordData
-    .map((measure) => measure.map((chords) => chords.join(" ")).join(" | "))
-    .join(" | ");
+    .map(
+      (measureChords) =>
+        `| ${measureChords
+          .map((chords) =>
+            chords.map((chord) => `'${chord.replace(/'|\s/g, "")}'`).join("")
+          )
+          .join(" | ")} |`
+    )
+    .join("\n");
 
   return `X:1\nT:Generated Backtrack\nM:4/4\nK:C\n${abcContent}`;
 }
@@ -41,33 +48,40 @@ export const createBacktrack = async (
 
     const filePath = path.join(__dirname, "../..", "uploads", fileName);
 
-    console.log("1: ", __dirname);
-    console.log("filePath: ", filePath);
-    // Write the .abc content to the file
     fs.writeFileSync(filePath, abcContent);
 
-    // Send the file path to the client
     res.json({ filePath });
   } catch (error) {
     next(error);
   }
 };
 
-// export const saveBacktrack = async (
-//   req: CustomRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const { chord, bpm, measures } = req.body;
-
-//     const backtrackData = { chord, bpm, measures };
-//     await backtrackService.saveBacktrack(backtrackData);
-//     return res.status(200).json({ message: "백킹트랙 저장에 성공했습니다." });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+export const getBacktrack = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const fileName = req.query.filePath;
+    // const filePath = path.join(__dirname, "../..", "uploads", fileName);
+    console.log("여기: ", fileName);
+    fs.readFile(fileName, (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        res.status(500).json({ error: "Failed to read file" });
+      } else {
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=${fileName}`
+        );
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.send(data);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // const synth = new Tone.Synth().toDestination();
 // synth.triggerAttackRelease("C4", "8n");

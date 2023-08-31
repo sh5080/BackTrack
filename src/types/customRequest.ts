@@ -9,7 +9,7 @@ export interface CustomRequest extends Request {
     password: string;
     newPassword: string;
     newPasswordConfirm: string;
-    chordPattern: string;
+    chord: string[][][];
     measures: number;
     bpm: number;
     backtrack: string;
@@ -19,6 +19,6 @@ export interface CustomRequest extends Request {
   query: {
     username: string;
     code: string;
-    userId: string;
+    filePath: string;
   };
 }
