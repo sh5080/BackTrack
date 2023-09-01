@@ -100,33 +100,33 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
-
 import axios from "axios";
+
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.data) {
-      console.log("Error response:", error.response.data.message);
-      if (
-        error.response.data.message.includes("필수 입력값") ||
-        error.response.data.message.includes("비밀번호가 일치하지 않습니다.") ||
-        error.response.data.message.includes("코드") ||
-        error.response.data.message.includes("마디") ||
-        error.response.data.message.includes("없는 사용자") ||
-        error.response.data.message.includes("새로운") ||
-        error.response.data.message.includes("간편로그인") ||
-        error.response.data.message.includes("새 비밀번호와 비밀번호 확인이")
-      ) {
-      } else if (
-        error.response.data.message &&
-        error.response.data.message !== "비정상적인 접근입니다."
-      ) {
-        // alert(error.response.data.message);
-      } else {
-        store.dispatch("resetState");
-
-        router.push("/login");
-        alert("비정상적인 접근입니다.");
+      const errorMessage = error.response.data.message;
+      if (errorMessage) {
+        console.log("Error response:", errorMessage);
+        if (
+          errorMessage.includes("필수 입력값") ||
+          errorMessage.includes("비밀번호가 일치하지 않습니다.") ||
+          errorMessage.includes("코드") ||
+          errorMessage.includes("마디") ||
+          errorMessage.includes("없는 사용자") ||
+          errorMessage.includes("새로운") ||
+          errorMessage.includes("간편로그인") ||
+          errorMessage.includes("새 비밀번호와 비밀번호 확인이")
+        ) {
+          // 처리 로직 추가
+        } else if (errorMessage !== "비정상적인 접근입니다.") {
+          // alert(errorMessage);
+        } else {
+          store.dispatch("resetState");
+          router.push("/login");
+          alert("비정상적인 접근입니다.");
+        }
       }
     }
     return Promise.reject(error);
