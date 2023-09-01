@@ -4,12 +4,7 @@ import { validateToken } from "../middlewares/jwt";
 import { ensureAdmin } from "../middlewares/admin";
 const router = Router();
 
-// /** [어드민] 카테고리 생성 */
-router.post(
-  "/categories",
-  validateToken,
-  ensureAdmin,
-  adminController.createCategory
-);
+// /** [어드민] 팝업 생성 */
+router.post("/popup", validateToken, ensureAdmin, adminController.createPopup);
 
 export default router;

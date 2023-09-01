@@ -3,16 +3,17 @@ import { AdminEntity } from "../entities/admin.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 export const AdminRepository = AppDataSource.getRepository(AdminEntity).extend({
-  async createCategory(category: Type.Category) {
+  async createDescription(description: Type.Description) {
     try {
-      const { name } = category;
+      // const { description, details } = description;
 
-      const categoryData = this.create({
-        name,
+      const descriptionData = this.create({
+        description,
+        details,
       });
 
-      await this.save(categoryData);
-      return categoryData;
+      await this.save(descriptionData);
+      return descriptionData;
     } catch (error) {
       throw error;
     }

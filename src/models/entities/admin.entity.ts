@@ -6,10 +6,10 @@ export class AdminEntity {
   id: number;
 
   @Column()
-  name: string;
+  description: string;
 
-  constructor(id: number, name: string) {
+  constructor(id: number, description: string) {
     this.id = id;
-    this.name = name;
+    this.description = description;
   }
 }
