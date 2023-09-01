@@ -50,17 +50,6 @@
                     </button>
                     <button
                       class="key-button"
-                      v-for="modifier_67 in ['6', '7']"
-                      :key="modifier_67"
-                      @click="toggleButton('selectedModifier_67', modifier_67)"
-                      :class="{
-                        selected: selectedModifier_67 === modifier_67,
-                      }"
-                    >
-                      {{ modifier_67 }}
-                    </button>
-                    <button
-                      class="key-button"
                       v-for="modifier_b5 in ['b5']"
                       :key="modifier_b5"
                       @click="toggleButton('selectedModifier_b5', modifier_b5)"
@@ -69,6 +58,17 @@
                       }"
                     >
                       {{ modifier_b5 }}
+                    </button>
+                    <button
+                      class="key-button"
+                      v-for="modifier_67 in ['6', '7']"
+                      :key="modifier_67"
+                      @click="toggleButton('selectedModifier_67', modifier_67)"
+                      :class="{
+                        selected: selectedModifier_67 === modifier_67,
+                      }"
+                    >
+                      {{ modifier_67 }}
                     </button>
                   </div>
                 </div>
@@ -233,7 +233,17 @@
                         class="chord-cell"
                       >
                         <div class="chord-content">
-                          {{ getChordAt(tableIndex, colIndex) }}
+                          <!-- {{ getChordAt(tableIndex, colIndex) }} -->
+                          <span
+                            v-for="(chordSegment, index) in getChordAt(
+                              tableIndex,
+                              colIndex
+                            ).split(' ')"
+                            :key="index"
+                            :class="getChordSegmentClasses(chordSegment)"
+                          >
+                            {{ chordSegment }}
+                          </span>
                           <img
                             class="measure-image"
                             src="img/measure.drawio.png"
@@ -307,7 +317,7 @@ export default {
   data() {
     return {
       keyOptions: ["C", "D", "E", "F", "G", "A", "B"],
-      extendOptions: ["min", "mM", "sus4", "dim", "hdim", "aug"],
+      extendOptions: ["Maj", "min", "mM", "sus4", "dim", "aug"],
       selectedExtend: "",
       selectedKey: "",
       selectedModifier_fs: "",
@@ -316,17 +326,18 @@ export default {
       selectedModifier_tension: "",
       previewChords: [],
       selectedChords: [],
-      bpm: 60,
+      // bpm: 60,
+      bpm: this.$store.state.bpm,
       measure: 4,
       bpmDropdownOpen: false,
       measureDropdownOpen: false,
       bpmDirectInput: false,
+      bpmInputValue: "",
       measureDirectInput: false,
       measureOptions: [4, 8, 16, 32],
       bpmOptions: [60, 90, 120, 180],
       selectedMeasure: 4,
       selectedBpm: 60,
-      backtrack: null,
       bpmDropdownStyle: {},
       measureDropdownStyle: {},
       resultChords: [],
@@ -348,13 +359,14 @@ export default {
   watch: {
     bpm(newValue) {
       this.selectedBpm = newValue;
+      this.$store.commit("setBpm", newValue);
     },
   },
   methods: {
     errorMessage() {},
     async confirmAction() {
       const shouldContinue = window.confirm(
-        "비어있는 마디가 있습니다. 백킹트랙을 생성하시겠습니까? \n(그대로 생성하실 경우 비어있는 마디는 처음 등록한 코드부터 채워집니다.)"
+        "비어있는 마디가 있습니다. 백킹트랙을 생성하시겠습니까?"
       );
       return shouldContinue;
     },
@@ -385,6 +397,7 @@ export default {
       this.bpmDropdownOpen = false;
       this.bpm = bpm;
       this.selectedBpm = bpm;
+      this.$store.commit("setBpm", bpm);
       if (this.bpmDirectInput) {
         this.bpmDirectInput = false;
       }
@@ -642,7 +655,41 @@ export default {
         this.currentMeasureIndex = 0;
       }
     },
+    getChordSegmentClasses(chordSegment) {
+      const classes = [];
 
+      if (
+        chordSegment === "A" ||
+        chordSegment === "B" ||
+        chordSegment === "C" ||
+        chordSegment === "D" ||
+        chordSegment === "E" ||
+        chordSegment === "F" ||
+        chordSegment === "G" ||
+        chordSegment === "A#" ||
+        chordSegment === "B#" ||
+        chordSegment === "C#" ||
+        chordSegment === "D#" ||
+        chordSegment === "E#" ||
+        chordSegment === "F#" ||
+        chordSegment === "G#" ||
+        chordSegment === "Ab" ||
+        chordSegment === "Bb" ||
+        chordSegment === "Cb" ||
+        chordSegment === "Db" ||
+        chordSegment === "Eb" ||
+        chordSegment === "Fb" ||
+        chordSegment === "Gb"
+      ) {
+        classes.push("key-font");
+      } else if (chordSegment === "-") {
+        classes.push("blank-font");
+      } else {
+        classes.push("extends-font");
+      }
+
+      return classes;
+    },
     getChordAt(tableIndex, colIndex) {
       const table = this.tables[tableIndex];
       if (table && colIndex < table.length) {
@@ -844,6 +891,10 @@ export default {
           Toast.customError("최소 하나의 코드를 등록해주세요.");
           return;
         }
+        if (this.bpm === "") {
+          Toast.customError("bpm을 입력해주세요.");
+          return;
+        }
 
         const lastTable = this.tables[this.tables.length - 1];
         if (lastTable && lastTable.length > 0) {
@@ -855,26 +906,32 @@ export default {
             }
           }
         }
-        const response = await axios.post(
-          "http://localhost:4000/api/backtrack",
-          {
-            bpm: this.selectedBpm,
-            measures: this.selectedMeasure,
-            chordPattern: this.tables,
-          },
-          { withCredentials: true }
-        );
-
+        // const response = await axios.post(
+        //   "http://localhost:4000/api/backtrack",
+        //   {
+        //     bpm: this.selectedBpm,
+        //     measures: this.selectedMeasure,
+        //     chord: this.tables,
+        //   },
+        //   { withCredentials: true }
+        // );
+        this.$store.commit("setChordData", this.tables);
+        this.$store.commit("toggleBacktrackSuccessModal", true);
+        console.log(this.tables);
         Toast.alertMessage(
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
-        if (response) {
-          this.tables = [[]];
-          this.currentMeasureIndex = 0;
-          this.currentTableIndex = 0;
-          this.backtrack = response.data.backtrack;
-          this.$store.commit("toggleBacktrackSuccessModal", true);
-        }
+        // if (response) {
+        //   const filePath = response.data.filePath;
+        //   this.$store.commit("setBacktrackModalData", {
+        //     abcFilePath: filePath,
+        //   });
+        //   this.tables = [[]];
+        //   this.currentMeasureIndex = 0;
+        //   this.currentTableIndex = 0;
+
+        //   this.$store.commit("toggleBacktrackSuccessModal", true);
+        // }
       } catch (error) {
         console.error("Error generating backtrack:", error);
         if (error.response) {
@@ -1263,11 +1320,45 @@ export default {
   padding: 20px;
 
   transform: translateY(-50%);
+  /* font-family: "Font1"; */
 }
 .chord-content img {
   position: absolute;
   top: 160px;
   left: 0;
   margin-left: 30px;
+}
+
+@font-face {
+  font-family: "Font1";
+  src: url("../assets/fonts/realbook.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Font2";
+  src: url("../assets/fonts/PetalumaScript.woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.key-font {
+  font-family: "Font1";
+  font-size: 90px;
+  padding: 0 20px;
+}
+
+.extends-font {
+  position: relative;
+  font-family: "Font2";
+  font-size: 50px;
+  /* bottom: 100px; */
+}
+.blank-font {
+  font-family: "Font1";
+  font-size: 90px;
+  /* margin-left: 50px; */
+  margin-right: 30px;
 }
 </style>
