@@ -11,6 +11,11 @@ export const store = createStore({
     showFindPasswordModal: false,
     showGoogleLoginModal: false,
     showKakaoLoginModal: false,
+    showBacktrackSuccessModal: false,
+    chordData: null,
+    bpm: 60,
+    //
+    backtrackModalData: null,
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -46,6 +51,20 @@ export const store = createStore({
     toggleKakaoLoginModal(state, value) {
       state.showKakaoLoginModal = value;
     },
+    toggleBacktrackSuccessModal(state, value) {
+      state.showBacktrackSuccessModal = value;
+    },
+    setChordData(state, value) {
+      state.chordData = value;
+    },
+
+    //
+    setBacktrackModalData(state, value) {
+      state.backtrackModalData = value;
+    },
+    setBpm(state, bpm) {
+      state.bpm = bpm;
+    },
   },
 
   actions: {
@@ -73,6 +92,9 @@ export const store = createStore({
         return null;
       }
     },
+    selectBpm({ commit }, bpm) {
+      commit("setBpm", bpm);
+    },
     async resetState({ commit }) {
       commit("toggleLoginModal", false);
       commit("toggleRegisterModal", false);
@@ -81,8 +103,8 @@ export const store = createStore({
       commit("toggleFindPasswordModal", false);
       commit("toggleGoogleLoginModal", false);
       commit("toggleKakaoLoginModal", false);
+      commit("toggleBacktrackSuccessModal", false);
       localStorage.removeItem("isLogin");
-      localStorage.removeItem("n_id");
       localStorage.removeItem("oauth");
       // 다른 상태도 초기화하는 코드 추가
     },
