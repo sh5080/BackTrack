@@ -8,8 +8,12 @@ export class AdminEntity {
   @Column()
   description: string;
 
-  constructor(id: number, description: string) {
+  @Column()
+  images: string;
+
+  constructor(id: number, description: string, images: string) {
     this.id = id;
     this.description = description;
+    this.images = images;
   }
 }

@@ -3,13 +3,13 @@ import { AdminEntity } from "../entities/admin.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 export const AdminRepository = AppDataSource.getRepository(AdminEntity).extend({
-  async createDescription(description: Type.Description) {
+  async createPopup(popupData: Type.Popup) {
     try {
       // const { description, details } = description;
 
       const descriptionData = this.create({
-        description,
-        details,
+        description: popupData.description,
+        images: popupData.images,
       });
 
       await this.save(descriptionData);

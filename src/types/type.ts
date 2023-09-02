@@ -20,9 +20,9 @@ export interface UserRepository {
   findOne(user: User): Promise<boolean>;
 }
 
-export interface Description {
+export interface Popup {
   description: string;
-  details: string;
+  images: string;
 }
 
 export interface Backtrack {
