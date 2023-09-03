@@ -1,20 +1,30 @@
 <template>
   <div class="popup-modal">
     <div class="popup-content">
-      <h3>팝업 미리보기</h3>
-      <img :src="selectedImageURL" alt="미리보기 이미지" />
-      <p>{{ description }}</p>
-      <button @click="closeModal">닫기</button>
+      <h3 style="font-size: 100px; text-align: left; padding: 70px">
+        팝업 미리보기
+      </h3>
+
+      <img :src="previewData.imageURL" alt="미리보기 이미지" />
+      <div v-html="previewData.description" class="quill-content"></div>
+      <div class="close-btn">
+        <button @click="closeModal">닫기</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import "../../plugins/vue-quill.snow.css";
 export default {
-  props: {
-    selectedImageURL: String,
-    description: String,
+  computed: {
+    ...mapGetters(["getPreviewData"]),
+    previewData() {
+      return this.getPreviewData;
+    },
   },
+  //   props: ["previewData"],
   methods: {
     closeModal() {
       this.$store.commit("togglePopupPreviewModal", false);
@@ -45,5 +55,29 @@ export default {
   text-align: center;
   width: 2000px;
   height: 2500px;
+}
+.quill-content {
+  box-sizing: border-box;
+  line-height: 1.42;
+  height: 100%;
+  max-height: 800px;
+  outline: none;
+  overflow-y: auto;
+  padding: 24px 30px;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  text-align: start;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-right: 200px;
+}
+
+.close-btn {
+  border: 1px solid #ccc;
+  padding: 20px 0px;
+  width: 450px;
+  display: inline-block;
+  margin-top: 120px;
+  font-size: 70px;
 }
 </style>

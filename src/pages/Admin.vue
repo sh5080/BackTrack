@@ -5,7 +5,7 @@
         <div class="col-12">
           <card v-if="isAdmin" class="card-user">
             <div class="author">
-              <h4 class="title">{{ this.nickname }}님의 관리자 페이지</h4>
+              <h4 class="title">관리자 페이지</h4>
               <div class="user-info">
                 <!-- <div class="info-item">
                   <span class="info-label">회원 관리</span>
@@ -106,75 +106,92 @@
                 </div>
                 <div
                   class="change-popup"
-                  :style="{ height: popupExpanded ? '1250px' : '0px' }"
+                  :style="{ height: popupExpanded ? '1700px' : '0px' }"
                 >
                   <p
                     style="
                       font-size: 3.5em;
                       padding: 0.5em;
                       height: 1em;
-                      margin-top: 100px;
+                      margin-bottom: 100px;
                       margin-left: 0px;
                     "
                     v-show="popupExpanded"
                   >
                     - 팝업을 통해 공지할 수 있습니다.
                   </p>
-                  <textarea
-                    class="description-input"
-                    type="text"
-                    v-model="description"
-                    v-show="popupExpanded"
-                    placeholder="팝업에 들어갈 글을 작성하세요."
-                  ></textarea>
-                  <input
-                    class="file-input"
-                    type="file"
-                    ref="fileInput"
-                    @change="handleFileUpload"
-                    v-show="popupExpanded"
-                  />
+                  <div class="editor" v-show="popupExpanded">
+                    <quillEditor
+                      theme="snow"
+                      :options="editorOptions"
+                      v-model:content="description"
+                      contentType="html"
+                      placeholder="팝업에 들어갈 글을 작성하세요."
+                    ></quillEditor>
+                  </div>
+
                   <!-- <div v-if="popupPreview">
                     <h3>미리보기</h3>
                     <img :src="selectedImageURL" alt="미리보기 이미지" />
                     <p>{{ description }}</p>
                   </div> -->
-                  <button
-                    class="upload-button"
-                    type="button"
-                    @click="showPreview"
-                    v-show="popupExpanded"
-                    style="margin-left: 50px"
-                  >
-                    미리보기
-                  </button>
-                  <button
-                    class="upload-button"
-                    type="button"
-                    @click="uploadImage"
-                    v-show="popupExpanded"
-                    style="margin-left: 20px"
-                  >
-                    업로드
-                  </button>
-
-                  <div v-if="imageUploaded">이미지 업로드 완료!</div>
+                  <div style="text-align: right">
+                    <input
+                      class="file-input"
+                      type="file"
+                      ref="fileInput"
+                      @change="handleFileUpload"
+                      v-show="popupExpanded"
+                    />
+                    <button
+                      class="upload-button"
+                      type="button"
+                      @click="resetImage"
+                      v-show="popupExpanded"
+                      style="margin-left: 20px"
+                    >
+                      초기화
+                    </button>
+                    <button
+                      class="upload-button"
+                      type="button"
+                      @click="showPreview"
+                      v-show="popupExpanded"
+                      style="margin-left: 50px"
+                    >
+                      미리보기
+                    </button>
+                  </div>
                   <div
                     class="alert_username alert-warning alert-dismissible fade show error-shake-animation"
                     role="alert"
-                    v-if="popupError"
+                    v-if="fileSizeExceeded"
                     v-show="popupExpanded"
                     :class="{ 'error-shake-animation': isShaking }"
                     style="font-size: 3em; text-align: center"
                   >
                     <div class="error-message">
-                      {{ popupErrorMessage }}
+                      파일 크기가 너무 큽니다. {{ maxFileSize / 1024 }}KB 이하의
+                      파일을 선택해주세요.
                     </div>
                   </div>
+
+                  <div style="text-align: right">
+                    <button
+                      class="register-button"
+                      type="button"
+                      @click="postPopup"
+                      v-show="popupExpanded"
+                      style=""
+                    >
+                      업로드
+                    </button>
+                  </div>
+
                   <v-dialog
                     v-model="$store.state.showPopupPreviewModal"
                     :selectedImageURL="selectedImageURL"
-                    :popupText="description"
+                    :description="description"
                     persistent=""
                   >
                     <PopupPreview />
@@ -189,10 +206,6 @@
                     {{ popupMessage }} 으로 이메일 변경이 완료되었습니다.
                   </div>
                 </div>
-                <div class="info-item">
-                  <span class="info-label">현재 로그인방식</span>
-                  <span class="info-value">{{ this.provider }}</span>
-                </div>
               </div>
             </div>
           </card>
@@ -205,17 +218,26 @@
 import Card from "./UserProfile/Card.vue";
 import PopupPreview from "../components/Modals/PopupPreviewModal.vue";
 import axios from "axios";
+import * as Toast from "../plugins/toast";
+import { mapActions } from "vuex";
+import { QuillEditor } from "@vueup/vue-quill";
+// import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import "../plugins/vue-quill.snow.css";
+import { ref } from "vue";
 
 export default {
   components: {
     Card,
     PopupPreview,
+    QuillEditor,
   },
+
   computed: {
     isAdmin() {
       return !!this.$store.state.isAdmin;
     },
   },
+
   data() {
     return {
       nickname: this.$store.state.loggedInNickname,
@@ -225,6 +247,25 @@ export default {
       // userIsValid: false,
       // userError: false,
       description: "",
+      editorOptions: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ header: 1 }, { header: 2 }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ script: "sub" }, { script: "super" }],
+            [{ indent: "-1" }, { indent: "+1" }],
+            [{ direction: "rtl" }],
+            [{ size: ["small", false, "large", "huge"] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ color: [] }, { background: [] }],
+            [{ font: [] }],
+            [{ align: [] }],
+            ["clean"],
+          ],
+        },
+      },
       popupExpanded: false,
       popup: null,
       popupMessage: null,
@@ -235,7 +276,8 @@ export default {
       imageUploaded: false,
       popupPreview: false,
       selectedImageURL: "",
-
+      maxFileSize: 1024 * 1024,
+      fileSizeExceeded: false,
       //
       result: null,
     };
@@ -248,42 +290,90 @@ export default {
     closePopup() {
       this.popupExpanded = !this.popupExpanded;
     },
-    handleFileUpload() {
-      this.selectedFile = this.$refs.fileInput.files[0];
-      this.selectedImageURL = URL.createObjectURL(this.selectedFile);
-    },
-    uploadImage() {
-      const formData = new FormData();
-      formData.append("image", this.selectedFile);
+    resetImage() {
+      this.updatePreviewData({
+        imageURL: null,
+      });
 
-      this.imageUploaded = true;
+      this.selectedFile = null;
+      this.selectedImageURL = null;
     },
+    // handleFileUpload() {
+    //   this.selectedFile = this.$refs.fileInput.files[0];
+    //   this.selectedImageURL = URL.createObjectURL(this.selectedFile);
+    // },
+    handleFileUpload() {
+      const fileInput = this.$refs.fileInput;
+      const selectedFile = fileInput.files[0];
+
+      // 파일 크기 확인
+      if (selectedFile) {
+        if (selectedFile.size > this.maxFileSize) {
+          this.fileSizeExceeded = true;
+          fileInput.value = "";
+        } else {
+          this.fileSizeExceeded = false;
+          this.selectedFile = selectedFile; // 파일 크기가 제한 이내인 경우 선택한 파일 저장
+          this.selectedImageURL = URL.createObjectURL(selectedFile);
+        }
+      }
+    },
+    ...mapActions(["updatePreviewData", "togglePopupPreviewModal"]),
     showPreview() {
       this.$store.commit("togglePopupPreviewModal", true);
+      this.updatePreviewData({
+        description: this.description,
+        imageURL: this.selectedImageURL,
+      });
     },
     async postPopup() {
       try {
-        const response = await axios.post(
-          `http://localhost:4000/api/admin/popup`,
-          {
-            description: this.description,
-            images: this.selectedFile,
-          },
+        const requestData = {
+          description: this.description,
+          image: this.selectedFile ? this.selectedFile : null,
+        };
 
-          {
-            withCredentials: true,
-          }
-        );
+        if (this.selectedFile) {
+          const formData = new FormData();
+          formData.append("description", this.description);
+          formData.append("image", this.selectedFile);
 
-        this.result = response.data;
+          const response = await axios.post(
+            `http://localhost:4000/api/admin/popup`,
+            formData,
+            {
+              withCredentials: true,
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          this.result = response.data;
+        } else {
+          const response = await axios.post(
+            `http://localhost:4000/api/admin/popup`,
+            requestData,
+            {
+              withCredentials: true,
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          this.result = response.data;
+        }
+        Toast.alertMessage("팝업 설정이 완료되었습니다.");
+        this.$router.go();
       } catch (error) {
-        console.error("Failed to fetch user info:", error);
+        console.error("Failed to post popup:", error);
       }
     },
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .card-user {
   overflow: hidden;
   width: 2750px;
@@ -335,13 +425,29 @@ export default {
 
   font-size: 70px;
 }
+
+.register-button {
+  // margin-right: 47px;
+  border: 1px solid #ccc;
+  padding: 20px 0px;
+  width: 450px;
+  display: inline-block;
+  margin-top: 30px;
+  font-size: 70px;
+  background-color: aliceblue;
+}
 .upload-button {
   border: 1px solid #ccc;
   padding: 20px 0px;
   width: 450px;
   display: inline-block;
-
+  margin-top: 120px;
   font-size: 70px;
+}
+.register-button:hover,
+.upload-button:hover,
+.generate-button:hover {
+  background-color: #f0eded;
 }
 
 .change-password-input {
@@ -349,34 +455,27 @@ export default {
   border: 1px solid #ccc;
   margin-top: 40px;
   margin-left: 200px;
-  padding: 20px 200px;
+  // padding: 20px 200px;
   text-align: center;
   position: relative;
 }
 .change-pw {
   margin-top: 200px;
 }
+.editor {
+  height: 1000px;
+}
 .file-input {
-  font-size: 70px;
+  font-size: 65px;
   border: 1px solid #ccc;
   margin-top: 100px;
-  margin-left: 20px;
+  // margin-left: 20px;
   padding: 20px 200px;
   text-align: center;
 
-  width: 1470px;
+  width: 1530px;
 }
 
-.description-input {
-  font-size: 70px;
-  border: 1px solid #ccc;
-  margin-top: 100px;
-  margin-left: 20px;
-  width: 2440px;
-  height: 800px;
-  padding: 50px;
-  resize: vertical;
-}
 .alert-password {
   position: absolute;
   top: 870px;
