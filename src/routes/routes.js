@@ -4,7 +4,7 @@ import NotFound from "../pages/NotFoundPage.vue";
 import LoginModal from "src/components/Modals/LoginModal.vue";
 import UserProfile from "src/pages/UserProfile.vue";
 import TableList from "src/pages/TableList.vue";
-import Typography from "src/pages/Typography.vue";
+import Admin from "src/pages/Admin.vue";
 import Icons from "src/pages/Icons.vue";
 import Notifications from "src/pages/Notifications.vue";
 import Backtrack from "src/pages/BacktrackGenerator.vue";
@@ -37,9 +37,9 @@ export const routes = [
         component: TableList,
       },
       {
-        path: "typography",
-        name: "Typography",
-        component: Typography,
+        path: "/admin",
+        name: "Admin",
+        component: Admin,
       },
       {
         path: "icons",

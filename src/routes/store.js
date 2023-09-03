@@ -3,6 +3,7 @@ import axios from "axios";
 export const store = createStore({
   state: {
     isAuthenticated: false,
+    isAdmin: false,
     loggedInNickname: null,
     showLoginModal: false,
     showRegisterModal: false,
@@ -12,8 +13,10 @@ export const store = createStore({
     showGoogleLoginModal: false,
     showKakaoLoginModal: false,
     showBacktrackSuccessModal: false,
+    showPopupPreviewModal: false,
     chordData: null,
     bpm: 60,
+    isAudioPlaying: false,
     //
     backtrackModalData: null,
   },
@@ -54,10 +57,15 @@ export const store = createStore({
     toggleBacktrackSuccessModal(state, value) {
       state.showBacktrackSuccessModal = value;
     },
+    togglePopupPreviewModal(state, value) {
+      state.showPopupPreviewModal = value;
+    },
     setChordData(state, value) {
       state.chordData = value;
     },
-
+    setAudioPlaying(state, value) {
+      state.isAudioPlaying = value;
+    },
     //
     setBacktrackModalData(state, value) {
       state.backtrackModalData = value;

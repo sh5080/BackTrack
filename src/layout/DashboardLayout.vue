@@ -22,6 +22,14 @@
         <i class="nc-icon nc-chat-round"></i>
         <p>문의사항</p>
       </sidebar-link>
+      <sidebar-link
+        v-if="shouldShowAdminLink"
+        style="margin-top: 400px"
+        to="/admin"
+      >
+        <i class="nc-icon nc-settings-gear-64"></i>
+        <p>관리자</p>
+      </sidebar-link>
     </side-bar>
     <header-section></header-section>
     <div class="main-panel">
@@ -53,6 +61,9 @@ export default defineComponent({
   computed: {
     shouldShowUserInfoLink() {
       return this.$store.state.isAuthenticated;
+    },
+    shouldShowAdminLink() {
+      return this.$store.state.isAdmin;
     },
   },
 });
