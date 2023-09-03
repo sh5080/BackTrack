@@ -5,11 +5,9 @@ import { AppError, CommonError } from "../../types/AppError";
 export const AdminRepository = AppDataSource.getRepository(AdminEntity).extend({
   async createPopup(popupData: Type.Popup) {
     try {
-      // const { description, details } = description;
-
       const descriptionData = this.create({
         description: popupData.description,
-        images: popupData.images,
+        image: popupData.image,
       });
 
       await this.save(descriptionData);

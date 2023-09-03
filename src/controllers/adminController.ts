@@ -9,10 +9,10 @@ export const createPopup = async (
   next: NextFunction
 ) => {
   try {
-    const { description, images } = req.body;
+    const { description, image } = req.body;
     const newDescription = await adminService.createPopup({
       description,
-      images,
+      image,
     });
     res.status(201).json({
       message: "팝업이 생성되었습니다.",

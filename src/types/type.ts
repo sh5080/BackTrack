@@ -22,7 +22,7 @@ export interface UserRepository {
 
 export interface Popup {
   description: string;
-  images: string;
+  image: string;
 }
 
 export interface Backtrack {

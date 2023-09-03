@@ -15,7 +15,7 @@ export interface CustomRequest extends Request {
     backtrack: string;
     description: string;
     nickname: string;
-    images: string;
+    image: string;
   };
   query: {
     username: string;
