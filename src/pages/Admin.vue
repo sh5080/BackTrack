@@ -291,17 +291,20 @@ export default {
       this.popupExpanded = !this.popupExpanded;
     },
     resetImage() {
-      this.updatePreviewData({
-        imageURL: null,
-      });
+      if (this.selectedImageURL) {
+        URL.revokeObjectURL(this.selectedImageURL); // 이전 이미지 URL 해제
+      }
 
-      this.selectedFile = null;
       this.selectedImageURL = null;
+      this.updatePreviewData({
+        imageURL: "",
+      });
+      this.selectedFile = null;
+      const fileInput = this.$refs.fileInput;
+      if (fileInput) {
+        fileInput.value = null;
+      }
     },
-    // handleFileUpload() {
-    //   this.selectedFile = this.$refs.fileInput.files[0];
-    //   this.selectedImageURL = URL.createObjectURL(this.selectedFile);
-    // },
     handleFileUpload() {
       const fileInput = this.$refs.fileInput;
       const selectedFile = fileInput.files[0];
