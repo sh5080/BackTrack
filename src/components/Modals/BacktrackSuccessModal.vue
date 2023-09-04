@@ -162,17 +162,6 @@ export default {
           const currentRow = backtrackData[rowIndex];
           if (colIndex < currentRow.length) {
             const currentCol = currentRow[colIndex];
-
-            // if (subColIndex < currentCol.length) {
-            //   const sound = currentCol[subColIndex];
-            //   const soundArray = currentCol;
-            //   console.log("soundArray: ", soundArray);
-            //   // console.log("sound: ", sound);
-            //   playSoundsSequentially(soundArray);
-            //   subColIndex++;
-            //   console.log("1", subColIndex);
-            // }
-
             if (subColIndex < currentCol.length) {
               console.log("!", currentCol);
               const sound = currentCol[subColIndex];
@@ -233,22 +222,6 @@ export default {
             console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
           }
         } else {
-          // 현재 배열의 모든 음원 재생이 완료되면 다음 배열로 이동
-          //     if (colIndex < currentRow.length - 1) {
-          //       subColIndex = 0;
-          //       colIndex++;
-          //       playSoundsSequentially(currentRow);
-          //     } else if (rowIndex < backtrackData.length - 1) {
-          //       subColIndex = 0;
-          //       colIndex = 0;
-          //       rowIndex++;
-          //       playSoundsSequentially(backtrackData[rowIndex]);
-          //     } else {
-          //       // 모든 음원 재생이 완료되면 종료
-          //       console.log("모든 음원 재생 완료");
-          //     }
-          //   }
-          // }
           if (colIndex < backtrackData[rowIndex].length - 1) {
             subColIndex = 0;
             colIndex++;
