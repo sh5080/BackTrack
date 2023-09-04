@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-@Entity({ name: "category" })
+@Entity({ name: "admin" })
 export class AdminEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -8,12 +8,12 @@ export class AdminEntity {
   @Column()
   description: string;
 
-  @Column()
-  images: string;
+  @Column({ nullable: true })
+  image: string;
 
-  constructor(id: number, description: string, images: string) {
+  constructor(id: number, description: string, image: string) {
     this.id = id;
     this.description = description;
-    this.images = images;
+    this.image = image;
   }
 }
