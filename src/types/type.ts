@@ -31,7 +31,15 @@ export interface Backtrack {
   bpm: number;
 }
 export interface SessionData {
-  user_id: number;
+  username: string;
+  nickname: string;
+  refreshToken: string;
   session_start_time: string;
   session_expire_time: string;
+}
+
+export interface ChatMessage {
+  chat_id: string;
+  message: string;
+  created_at: Date;
 }

@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import { AppDataSource } from "../loaders/dbLoader";
 import cors from "cors";
 import { redisLoader } from "../loaders/dbLoader";
+import { socketIoLoader } from "./socketIoLoader";
 import routeLoader from "./routeLoader";
 import { errorHandler } from "../api/middlewares/errorHandler";
 import responseTime from "../api/middlewares/responseTime";
@@ -11,6 +12,7 @@ export default async function expressLoader(
 ): Promise<Application> {
   try {
     const redisClient = await redisLoader();
+    const io = socketIoLoader(app);
     const corsOptions = {
       origin: ["http://localhost:8080", "http://127.0.0.1:8080"],
       credentials: true,
