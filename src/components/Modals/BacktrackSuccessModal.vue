@@ -136,24 +136,19 @@ export default {
       let subColIndex = 0;
 
       function playNextSound() {
+        console.log("backtrackData: ", backtrackData);
         if (rowIndex < backtrackData.length) {
           console.log("?");
           const currentRow = backtrackData[rowIndex];
           if (colIndex < currentRow.length) {
-            console.log("!");
             const currentCol = currentRow[colIndex];
             if (subColIndex < currentCol.length) {
+              console.log("!", currentCol);
               const sound = currentCol[subColIndex];
-              console.log("0");
-              switch (sound) {
-                case "C":
-                  playSound(C);
-
-                case "D":
-                  playSound(D);
-                  break;
-              }
-
+              const soundArray = currentCol;
+              console.log("soundArray: ", soundArray);
+              // console.log("sound: ", sound);
+              playSoundsSequentially(soundArray);
               subColIndex++;
               console.log("1", subColIndex);
             } else {
@@ -173,14 +168,50 @@ export default {
           console.log("모든 음원 재생 완료");
         }
       }
+      const soundUrls = {
+        C: "midi/C.wav",
+        D: "midi/D.wav",
+      };
+
+      function playSoundsSequentially(soundArray, index = 0) {
+        if (index < soundArray.length) {
+          const sound = soundArray[index];
+          const soundUrl = soundUrls[sound]; // 문자열에 대응되는 URL 가져오기
+          if (soundUrl) {
+            playSound(soundUrl);
+
+            // 다음 음원을 4초 후에 재생
+            setTimeout(() => {
+              playSoundsSequentially(soundArray, index + 1);
+            }, 4000);
+          } else {
+            console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
+          }
+        }
+      }
 
       let prevSound;
+      let currentSounds = [];
+      function stopSounds() {
+        // 현재 재생 중인 모든 음원을 중지
+        currentSounds.forEach((sound) => {
+          sound.stop();
+        });
+        currentSounds = [];
+      }
       function playSound(soundUrl) {
         console.log("여기: ", soundUrl);
+
+        stopSounds();
+
         const sound = new Tone.Player({
           url: soundUrl,
           autostart: true, // 자동 재생 활성화
         }).toDestination();
+
+        currentSounds.forEach((sound) => {
+          sound.stop();
+        });
 
         // 다음 음원 재생을 위해 이전 음원 중지
         // if (typeof prevSound !== "undefined") {
@@ -189,6 +220,7 @@ export default {
 
         // 현재 재생 중인 음원을 이전 음원으로 설정
         prevSound = sound;
+        currentSounds.push(sound);
       }
 
       const drum = new Tone.Player({
@@ -218,7 +250,7 @@ export default {
         "4n"
       );
 
-      metronome.start(0.1);
+      metronome.start(0.09);
       playNextSound();
       document.getElementById("playButton").addEventListener("click", () => {
         Tone.Transport.start();
@@ -226,8 +258,10 @@ export default {
 
       // 정지 버튼 클릭 이벤트 처리
       document.getElementById("stopButton").addEventListener("click", () => {
+        stopSounds();
         drum.stop();
         metronome.clear();
+
         this.isDrum = false;
         this.transport.stop();
       });
