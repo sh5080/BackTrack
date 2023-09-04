@@ -173,6 +173,22 @@ export default {
         D: "midi/D.wav",
       };
 
+      // function playSoundsSequentially(soundArray, index = 0) {
+      //   if (index < soundArray.length) {
+      //     const sound = soundArray[index];
+      //     const soundUrl = soundUrls[sound]; // 문자열에 대응되는 URL 가져오기
+      //     if (soundUrl) {
+      //       playSound(soundUrl);
+
+      //       // 다음 음원을 4초 후에 재생
+      //       setTimeout(() => {
+      //         playSoundsSequentially(soundArray, index + 1);
+      //       }, 4000);
+      //     } else {
+      //       console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
+      //     }
+      //   }
+      // }
       function playSoundsSequentially(soundArray, index = 0) {
         if (index < soundArray.length) {
           const sound = soundArray[index];
@@ -180,10 +196,10 @@ export default {
           if (soundUrl) {
             playSound(soundUrl);
 
-            // 다음 음원을 4초 후에 재생
-            setTimeout(() => {
+            // 다음 음원을 BPM에 따른 간격으로 재생
+            Tone.Transport.scheduleOnce(() => {
               playSoundsSequentially(soundArray, index + 1);
-            }, 4000);
+            }, `+${60 / tempo}`); // 60을 BPM으로 나눈 값이 음원 간격 (초)
           } else {
             console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
           }
