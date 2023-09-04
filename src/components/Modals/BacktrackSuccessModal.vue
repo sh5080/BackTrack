@@ -126,7 +126,29 @@ export default {
       const upSoundUrl = "midi/up.wav";
       const downSoundUrl = "midi/down.wav";
       const drumSoundUrl = "midi/Drummer.wav";
-
+      const bassUrls = {
+        Cb: "midi/bass/B.wav",
+        C: "midi/bass/C.wav",
+        Csharp: "midi/bass/Db.wav",
+        Db: "midi/bass/Db.wav",
+        D: "midi/bass/D.wav",
+        Dsharp: "midi/bass/Eb.wav",
+        Eb: "midi/bass/Eb.wav",
+        E: "midi/bass/E.wav",
+        Esharp: "midi/bass/F.wav",
+        Fb: "midi/bass/E.wav",
+        F: "midi/bass/F.wav",
+        Fsharp: "midi/bass/Gb.wav",
+        Gb: "midi/bass/Gb.wav",
+        G: "midi/bass/G.wav",
+        Gsharp: "midi/bass/Ab.wav",
+        Ab: "midi/bass/Ab.wav",
+        A: "midi/bass/A.wav",
+        Asharp: "midi/bass/Bb.wav",
+        Bb: "midi/bass/Bb.wav",
+        B: "midi/bass/B.wav",
+        Bsharp: "midi/bass/C.wav",
+      };
       const backtrackData = this.$store.state.chordData;
       console.log("backtrackDataLength: ", backtrackData.length);
 
@@ -137,10 +159,20 @@ export default {
       function playNextSound() {
         console.log("backtrackData: ", backtrackData);
         if (rowIndex < backtrackData.length) {
-          console.log("?");
           const currentRow = backtrackData[rowIndex];
           if (colIndex < currentRow.length) {
             const currentCol = currentRow[colIndex];
+
+            // if (subColIndex < currentCol.length) {
+            //   const sound = currentCol[subColIndex];
+            //   const soundArray = currentCol;
+            //   console.log("soundArray: ", soundArray);
+            //   // console.log("sound: ", sound);
+            //   playSoundsSequentially(soundArray);
+            //   subColIndex++;
+            //   console.log("1", subColIndex);
+            // }
+
             if (subColIndex < currentCol.length) {
               console.log("!", currentCol);
               const sound = currentCol[subColIndex];
@@ -167,28 +199,6 @@ export default {
           console.log("모든 음원 재생 완료");
         }
       }
-      const bassUrls = {
-        Cb: "midi/bass/B.wav",
-        C: "midi/bass/C.wav",
-        Csharp: "midi/bass/C#.wav",
-        Db: "midi/bass/Db.wav",
-        D: "midi/bass/D.wav",
-        Dsharp: "midi/bass/D#.wav",
-        Eb: "midi/bass/Eb.wav",
-        E: "midi/bass/E.wav",
-        Esharp: "midi/bass/F.wav",
-        Fb: "midi/bass/E.wav",
-        F: "midi/bass/F.wav",
-        Fsharp: "midi/bass/F#.wav",
-        Gb: "midi/bass/Gb.wav",
-        G: "midi/bass/G.wav",
-        Gsharp: "midi/bass/G#.wav",
-        Ab: "midi/bass/Ab.wav",
-        A: "midi/bass/A.wav",
-        Asharp: "midi/bass/A#.wav",
-        Bb: "midi/bass/Bb.wav",
-        B: "midi/bass/B.wav",
-      };
 
       async function playSoundsSequentially(input, index = 0) {
         let soundArray;
@@ -212,10 +222,45 @@ export default {
 
             // 다음 음원을 BPM에 따른 간격으로 재생
             Tone.Transport.scheduleOnce(() => {
-              playSoundsSequentially(soundArray, index + 1);
-            }, `+${60 / tempo}`); // 0.1초 여분을 더함
+              // playSoundsSequentially(soundArray, index + 1);
+              playSoundsSequentially(
+                soundArray,
+
+                index + 1
+              );
+            }, `+${60 / tempo}`);
           } else {
             console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
+          }
+        } else {
+          // 현재 배열의 모든 음원 재생이 완료되면 다음 배열로 이동
+          //     if (colIndex < currentRow.length - 1) {
+          //       subColIndex = 0;
+          //       colIndex++;
+          //       playSoundsSequentially(currentRow);
+          //     } else if (rowIndex < backtrackData.length - 1) {
+          //       subColIndex = 0;
+          //       colIndex = 0;
+          //       rowIndex++;
+          //       playSoundsSequentially(backtrackData[rowIndex]);
+          //     } else {
+          //       // 모든 음원 재생이 완료되면 종료
+          //       console.log("모든 음원 재생 완료");
+          //     }
+          //   }
+          // }
+          if (colIndex < backtrackData[rowIndex].length - 1) {
+            subColIndex = 0;
+            colIndex++;
+            playSoundsSequentially(backtrackData[rowIndex][colIndex]);
+          } else if (rowIndex < backtrackData.length - 1) {
+            subColIndex = 0;
+            colIndex = 0;
+            rowIndex++;
+            playSoundsSequentially(backtrackData[rowIndex][colIndex]);
+          } else {
+            // 모든 음원 재생이 완료되면 종료
+            console.log("모든 음원 재생 완료");
           }
         }
       }
@@ -230,7 +275,7 @@ export default {
         currentSounds = [];
       }
       function playSound(soundUrl) {
-        console.log("여기: ", soundUrl);
+        console.log("현재 재생된 url: ", soundUrl);
 
         stopSounds();
 
