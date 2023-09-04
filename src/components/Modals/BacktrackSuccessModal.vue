@@ -45,13 +45,24 @@
       </div>
 
       <!-- <button @click="playBacktrack">악보 재생</button> -->
-      <button @click="playAudio" class="btn-play" style="font-size: 3.5em">
+      <button
+        id="playButton"
+        @click="playAudio"
+        class="btn-play"
+        style="font-size: 3.5em"
+      >
         음원 재생
       </button>
-      <button @click="stopAllAudio" class="btn-stop" style="font-size: 3.5em">
+      <button
+        id="stopButton"
+        @click="stopAllAudio"
+        class="btn-stop"
+        style="font-size: 3.5em"
+      >
         음원 정지
       </button>
       <button
+        id="closeButton"
         type="button"
         @click="closeAllModals"
         class="btn-success"
@@ -66,7 +77,6 @@
 <script>
 // import axios from "axios";
 import * as Tone from "tone";
-import { Piano } from "@tonejs/piano";
 export default {
   data() {
     return {
@@ -75,6 +85,11 @@ export default {
       metronomeInterval: null,
       isDrum: null,
       isUp: null,
+      metronome: null,
+      drum: null,
+      isAudio: null,
+      transport: Tone.Transport,
+      isPlaying: false,
     };
   },
   computed: {
@@ -89,7 +104,7 @@ export default {
     },
   },
   created() {
-    Tone.Transport.loop = true;
+    Tone.Transport.loop = false;
     Tone.Transport.loopStart = 0;
     Tone.Transport.loopEnd = "4m";
   },
@@ -102,110 +117,129 @@ export default {
     },
     /** 재생 */
     playAudio() {
-      const chords = ["C4", "E4", "G4"];
-      const duration = ["4n", "4n", "4n"];
+      Tone.start();
+
       const tempo = this.$store.state.bpm;
       Tone.Transport.bpm.value = tempo;
 
-      // 반복 재생 설정
-      Tone.Transport.loop = true;
-      Tone.Transport.loopStart = 0;
-      // Tone.Transport.loopEnd = "4m";
-
-      // 메트로놈 관련
+      // .wav
       const upSoundUrl = "midi/up.wav";
       const downSoundUrl = "midi/down.wav";
       const drumSoundUrl = "midi/Drummer.wav";
+      const C = "midi/C.wav";
+      const D = "midi/D.wav";
+      const backtrackData = this.$store.state.chordData;
+      console.log("backtrackDataLength: ", backtrackData.length);
+      console.log("backtrackData[0][0][0]: ", backtrackData[0][0][0]);
+      let rowIndex = 0;
+      let colIndex = 0;
+      let subColIndex = 0;
+
+      function playNextSound() {
+        if (rowIndex < backtrackData.length) {
+          console.log("?");
+          const currentRow = backtrackData[rowIndex];
+          if (colIndex < currentRow.length) {
+            console.log("!");
+            const currentCol = currentRow[colIndex];
+            if (subColIndex < currentCol.length) {
+              const sound = currentCol[subColIndex];
+              console.log("0");
+              switch (sound) {
+                case "C":
+                  playSound(C);
+
+                case "D":
+                  playSound(D);
+                  break;
+              }
+
+              subColIndex++;
+              console.log("1", subColIndex);
+            } else {
+              // 하위 배열이 모두 재생되면 다음 열로 이동
+              subColIndex = 0;
+              colIndex++;
+              console.log("2");
+            }
+          } else {
+            // 현재 행이 모두 재생되면 다음 행으로 이동
+            colIndex = 0;
+            rowIndex++;
+            console.log("3");
+          }
+        } else {
+          // 모든 음원 재생이 완료되면 종료
+          console.log("모든 음원 재생 완료");
+        }
+      }
+
+      let prevSound;
+      function playSound(soundUrl) {
+        console.log("여기: ", soundUrl);
+        const sound = new Tone.Player({
+          url: soundUrl,
+          autostart: true, // 자동 재생 활성화
+        }).toDestination();
+
+        // 다음 음원 재생을 위해 이전 음원 중지
+        // if (typeof prevSound !== "undefined") {
+        //   prevSound.stop();
+        // }
+
+        // 현재 재생 중인 음원을 이전 음원으로 설정
+        prevSound = sound;
+      }
+
+      const drum = new Tone.Player({
+        url: drumSoundUrl,
+        autostart: true,
+        console: console.log("drum: ", drumSoundUrl),
+      }).toDestination();
+
       const metronome = new Tone.Sequence(
         (time, note) => {
           // "up" 또는 "down" 사운드 재생
           if (note === "up" && !this.isUp) {
-            playSound(upSoundUrl);
+            const upSound = new Tone.Player({
+              url: upSoundUrl,
+              autostart: true, // 자동 재생 활성화
+            }).toDestination();
             this.isUp = true;
           } else if (note === "down") {
+            const downSound = new Tone.Player({
+              url: downSoundUrl,
+              autostart: true, // 자동 재생 활성화
+            }).toDestination();
             this.isUp = false;
-            playSound(downSoundUrl);
           }
         },
         ["up", "down", "down", "down"],
         "4n"
       );
-      const drum = new Tone.Sequence(
-        (time, note) => {
-          if (note === "drum" && !this.isDrum) {
-            playSound(drumSoundUrl);
-            this.isDrum = true;
-          }
-        },
-        ["drum"],
-        "1n"
-      );
-      function playSound(soundUrl) {
-        const sound = new Tone.Player({
-          url: soundUrl,
-          autostart: true,
-          console: console.log("here!: ", soundUrl),
-        }).toDestination();
-      }
-      // drum.start();
-      Tone.start().then(() => {
-        setTimeout(() => {
-          metronome.start();
-        }, 100);
-        drum.start();
-      });
-      this.audioElements.push(drum);
 
+      metronome.start(0.1);
+      playNextSound();
+      document.getElementById("playButton").addEventListener("click", () => {
+        Tone.Transport.start();
+      });
+
+      // 정지 버튼 클릭 이벤트 처리
+      document.getElementById("stopButton").addEventListener("click", () => {
+        drum.stop();
+        metronome.clear();
+        this.isDrum = false;
+        this.transport.stop();
+      });
+      document.getElementById("closeButton").addEventListener("click", () => {
+        drum.stop();
+        metronome.clear();
+        this.isDrum = false;
+        this.transport.stop();
+      });
       // 메트로놈 시작
-      Tone.Transport.start();
+      this.transport.start();
     },
-
-    stopAllAudio() {
-      // 모든 음원을 정지
-      if (this.metronome) {
-        this.metronome.stop();
-        this.metronome.dispose();
-      }
-      this.audioElements.forEach((audioElement) => {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-      });
-      Tone.stop();
-      Tone.Transport.stop();
-
-      // 배열 비우기
-      this.audioElements = [];
-    },
-
-    // fetchMidi() {
-    //   // MIDI 파일의 URL
-    //   const midiFileURL = "midi/Drummer.wav";
-
-    //   // MIDI 파일 데이터 가져오기
-    //   fetch(midiFileURL)
-    //     .then((response) => response.arrayBuffer())
-    //     .then((data) => {
-    //       const midiFileData = new Uint8Array(data);
-    //       this.playMidiFile(midiFileData);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error loading MIDI file:", error);
-    //     });
-    // },
-
-    // async playMidiFile(midiFileData) {
-    //   try {
-    //     const midiAccess = await navigator.requestMIDIAccess();
-    //     // MIDI 출력 장치 선택
-    //     const outputs = midiAccess.outputs.values();
-    //     let output = outputs.next().value;
-
-    //     // MIDI 파일 재생
-    //     output.send(midiFileData);
-    //   } catch (error) {
-    //     console.error("MIDI 오류:", error);
-    //   }
-    // },
 
     async sheetMusic() {
       try {
