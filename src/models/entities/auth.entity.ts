@@ -7,7 +7,7 @@ export class AuthEntity {
 
   @Column()
   username: string;
-  @Column({ nullable: true })
+  @Column()
   nickname: string;
 
   @Column()
