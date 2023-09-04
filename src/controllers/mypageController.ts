@@ -4,7 +4,7 @@ import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import bcrypt from "bcrypt";
 import config from "../config";
-import { getSessionFromRedis, saveSessionToRedis } from "../config/session";
+import { getSessionFromRedis, saveSessionToRedis } from "../config/redis";
 const { saltRounds } = config.bcrypt;
 /** 내 정보 조회 */
 export const getUserInfo = async (

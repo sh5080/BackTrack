@@ -3,7 +3,7 @@ import { Response, NextFunction } from "express";
 import config from "../../config/index";
 import { AppError, CommonError } from "../../types/AppError";
 import { CustomRequest } from "../../types/customRequest";
-import { getSessionFromRedis } from "../../config/session";
+import { getSessionFromRedis } from "../../config/redis";
 
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES_IN } =
   config.jwt;

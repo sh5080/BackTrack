@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/authService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
-import { getSessionFromRedis, saveSessionToRedis } from "../config/session";
+import { getSessionFromRedis, saveSessionToRedis } from "../config/redis";
 
 export const signup = async (
   req: Request,

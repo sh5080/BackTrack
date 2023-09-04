@@ -4,7 +4,7 @@ import config from "../config/index";
 import qs from "qs";
 import { CustomRequest } from "../types/customRequest";
 import axios from "axios";
-import { saveSessionToRedis } from "../config/session";
+import { saveSessionToRedis } from "../config/redis";
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
   config.google;
