@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
+    "@vueup/vue-quill": "^1.2.0",
     "abcjs": "^6.2.2",
     "axios": "^1.4.0",
     "bootstrap": "4.6.0",
@@ -22,12 +23,14 @@
     "core-js-compat": "^3.32.1",
     "register-service-worker": "1.7.2",
     "roboto-fontface": "*",
+    "tone": "^14.7.77",
     "v-tooltip": "2.0.0-rc.33",
     "vue": "^3.2.36",
     "vue-router": "^4.0.13",
     "vuetify": "^3.3.13",
     "vuex": "^4.1.0",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "webmidi": "^3.1.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^5.0.8",
