@@ -126,11 +126,10 @@ export default {
       const upSoundUrl = "midi/up.wav";
       const downSoundUrl = "midi/down.wav";
       const drumSoundUrl = "midi/Drummer.wav";
-      const C = "midi/C.wav";
-      const D = "midi/D.wav";
+
       const backtrackData = this.$store.state.chordData;
       console.log("backtrackDataLength: ", backtrackData.length);
-      console.log("backtrackData[0][0][0]: ", backtrackData[0][0][0]);
+
       let rowIndex = 0;
       let colIndex = 0;
       let subColIndex = 0;
@@ -168,38 +167,53 @@ export default {
           console.log("모든 음원 재생 완료");
         }
       }
-      const soundUrls = {
-        C: "midi/C.wav",
-        D: "midi/D.wav",
+      const bassUrls = {
+        Cb: "midi/bass/B.wav",
+        C: "midi/bass/C.wav",
+        Csharp: "midi/bass/C#.wav",
+        Db: "midi/bass/Db.wav",
+        D: "midi/bass/D.wav",
+        Dsharp: "midi/bass/D#.wav",
+        Eb: "midi/bass/Eb.wav",
+        E: "midi/bass/E.wav",
+        Esharp: "midi/bass/F.wav",
+        Fb: "midi/bass/E.wav",
+        F: "midi/bass/F.wav",
+        Fsharp: "midi/bass/F#.wav",
+        Gb: "midi/bass/Gb.wav",
+        G: "midi/bass/G.wav",
+        Gsharp: "midi/bass/G#.wav",
+        Ab: "midi/bass/Ab.wav",
+        A: "midi/bass/A.wav",
+        Asharp: "midi/bass/A#.wav",
+        Bb: "midi/bass/Bb.wav",
+        B: "midi/bass/B.wav",
       };
 
-      // function playSoundsSequentially(soundArray, index = 0) {
-      //   if (index < soundArray.length) {
-      //     const sound = soundArray[index];
-      //     const soundUrl = soundUrls[sound]; // 문자열에 대응되는 URL 가져오기
-      //     if (soundUrl) {
-      //       playSound(soundUrl);
+      async function playSoundsSequentially(input, index = 0) {
+        let soundArray;
 
-      //       // 다음 음원을 4초 후에 재생
-      //       setTimeout(() => {
-      //         playSoundsSequentially(soundArray, index + 1);
-      //       }, 4000);
-      //     } else {
-      //       console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
-      //     }
-      //   }
-      // }
-      function playSoundsSequentially(soundArray, index = 0) {
+        if (Array.isArray(input)) {
+          soundArray = input;
+        } else {
+          console.error("잘못된 입력 형식입니다.");
+          return;
+        }
+
         if (index < soundArray.length) {
-          const sound = soundArray[index];
-          const soundUrl = soundUrls[sound]; // 문자열에 대응되는 URL 가져오기
-          if (soundUrl) {
-            playSound(soundUrl);
+          let sound = soundArray[index];
+          if (sound.endsWith("#")) {
+            sound = sound.replace("#", "sharp");
+          }
+
+          const bassUrl = bassUrls[sound];
+          if (bassUrl) {
+            playSound(bassUrl);
 
             // 다음 음원을 BPM에 따른 간격으로 재생
             Tone.Transport.scheduleOnce(() => {
               playSoundsSequentially(soundArray, index + 1);
-            }, `+${60 / tempo}`); // 60을 BPM으로 나눈 값이 음원 간격 (초)
+            }, `+${60 / tempo}`); // 0.1초 여분을 더함
           } else {
             console.error(`음원 ${sound}의 URL을 찾을 수 없습니다.`);
           }
@@ -222,19 +236,13 @@ export default {
 
         const sound = new Tone.Player({
           url: soundUrl,
-          autostart: true, // 자동 재생 활성화
+          autostart: true,
         }).toDestination();
 
         currentSounds.forEach((sound) => {
           sound.stop();
         });
 
-        // 다음 음원 재생을 위해 이전 음원 중지
-        // if (typeof prevSound !== "undefined") {
-        //   prevSound.stop();
-        // }
-
-        // 현재 재생 중인 음원을 이전 음원으로 설정
         prevSound = sound;
         currentSounds.push(sound);
       }
@@ -251,13 +259,13 @@ export default {
           if (note === "up" && !this.isUp) {
             const upSound = new Tone.Player({
               url: upSoundUrl,
-              autostart: true, // 자동 재생 활성화
+              autostart: true,
             }).toDestination();
             this.isUp = true;
           } else if (note === "down") {
             const downSound = new Tone.Player({
               url: downSoundUrl,
-              autostart: true, // 자동 재생 활성화
+              autostart: true,
             }).toDestination();
             this.isUp = false;
           }
