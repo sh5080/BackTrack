@@ -7,7 +7,7 @@ export const AdminRepository = AppDataSource.getRepository(AdminEntity).extend({
     try {
       const descriptionData = this.create({
         description: popupData.description,
-        image: popupData.image,
+        image: popupData.imgNames,
       });
 
       await this.save(descriptionData);

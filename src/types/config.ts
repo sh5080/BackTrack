@@ -34,5 +34,6 @@ export interface Config {
   };
   server: {
     URL: string;
+    IMG_PATH: string;
   };
 }

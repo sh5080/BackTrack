@@ -79,6 +79,7 @@ const config: Config = {
   },
   server: {
     URL: getEnv("SERVER_URL"),
+    IMG_PATH: getEnv("IMG_PATH"),
   },
 };
 

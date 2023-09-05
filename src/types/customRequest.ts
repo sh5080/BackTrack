@@ -23,4 +23,5 @@ export interface CustomRequest extends Request {
     code: string;
     filePath: string;
   };
+  file?: Express.Multer.File;
 }

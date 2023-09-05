@@ -11,9 +11,9 @@ export class AdminEntity {
   @Column({ nullable: true })
   image: string;
 
-  constructor(id: number, description: string, image: string) {
+  constructor(id: number, description: string, imgNames: string) {
     this.id = id;
     this.description = description;
-    this.image = image;
+    this.image = imgNames;
   }
 }
