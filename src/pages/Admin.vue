@@ -7,82 +7,6 @@
             <div class="author">
               <h4 class="title">관리자 페이지</h4>
               <div class="user-info">
-                <!-- <div class="info-item">
-                  <span class="info-label">회원 관리</span>
-                  <span class="info-value">{{}}</span>
-
-                  <button
-                    class="generate-button"
-                    type="button"
-                    @click="openUser"
-                    v-show="!userExpanded"
-                  >
-                    닉네임 변경
-                  </button>
-                  <button
-                    class="generate-button"
-                    type="button"
-                    @click="closeUser"
-                    v-show="userExpanded"
-                  >
-                    취소
-                  </button>
-                </div>
-                <div
-                  class="change-user"
-                  :style="{ height: userExpanded ? '500px' : '0px' }"
-                >
-                  <p
-                    style="
-                      font-size: 3.5em;
-                      padding: 0.5em;
-                      height: 1em;
-                      margin-top: 100px;
-                      margin-left: 0px;
-                    "
-                    v-show="userExpanded"
-                  >
-                    - 길이는 최대 15자 이내로 작성해주세요. <br />- 이모티콘 및
-                    일부 특수문자 사용 불가합니다. &&lt;>()'/"
-                  </p>
-                  <input
-                    class="change-input"
-                    type="text"
-                    v-model="user"
-                    v-show="userExpanded"
-                    placeholder="닉네임 입력 (최대 15자)"
-                  />
-                  <button
-                    class="generate-button"
-                    type="button"
-                    @click="changeuser"
-                    v-show="userExpanded"
-                    style="margin-left: 100px"
-                  >
-                    변경하기
-                  </button>
-                  <div
-                    class="alert_username alert-warning alert-dismissible fade show error-shake-animation"
-                    role="alert"
-                    v-if="userError"
-                    v-show="userExpanded"
-                    :class="{ 'error-shake-animation': isShaking }"
-                    style="font-size: 3em; text-align: center"
-                  >
-                    <div class="error-message">
-                      {{ userErrorMessage }}
-                    </div>
-                  </div>
-                  <div
-                    class="alert_correct alert-success alert-dismissible fade show"
-                    role="alert"
-                    v-if="userIsValid"
-                    v-show="userExpanded"
-                    style="font-size: 3em; text-align: center"
-                  >
-                    {{ userMessage }} 으로 닉네임 변경이 완료되었습니다.
-                  </div>
-                </div> -->
                 <div class="info-item">
                   <span class="info-label">팝업 관리</span>
                   <span class="info-value">{{}}</span>
@@ -130,11 +54,6 @@
                     ></quillEditor>
                   </div>
 
-                  <!-- <div v-if="popupPreview">
-                    <h3>미리보기</h3>
-                    <img :src="selectedImageURL" alt="미리보기 이미지" />
-                    <p>{{ description }}</p>
-                  </div> -->
                   <div style="text-align: right">
                     <input
                       class="file-input"
@@ -142,6 +61,7 @@
                       ref="fileInput"
                       @change="handleFileUpload"
                       v-show="popupExpanded"
+                      accept="image/*"
                     />
                     <button
                       class="upload-button"
@@ -176,13 +96,23 @@
                     </div>
                   </div>
 
-                  <div style="text-align: right">
+                  <div class="flex-container" v-show="popupExpanded">
+                    <v-select
+                      :items="items"
+                      :disabled="isDisabled"
+                      label="팝업 다시보기"
+                      v-show="popupExpanded"
+                    ></v-select>
+
+                    <v-checkbox
+                      @click="toggleSelect"
+                      v-show="popupExpanded"
+                    ></v-checkbox>
                     <button
                       class="register-button"
                       type="button"
                       @click="postPopup"
                       v-show="popupExpanded"
-                      style=""
                     >
                       업로드
                     </button>
@@ -192,19 +122,9 @@
                     v-model="$store.state.showPopupPreviewModal"
                     :selectedImageURL="selectedImageURL"
                     :description="description"
-                    persistent=""
                   >
                     <PopupPreview />
                   </v-dialog>
-                  <div
-                    class="alert_correct alert-success alert-dismissible fade show"
-                    role="alert"
-                    v-if="popupIsValid"
-                    v-show="popupExpanded"
-                    style="font-size: 3em; text-align: center"
-                  >
-                    {{ popupMessage }} 으로 이메일 변경이 완료되었습니다.
-                  </div>
                 </div>
               </div>
             </div>
@@ -241,11 +161,7 @@ export default {
   data() {
     return {
       nickname: this.$store.state.loggedInNickname,
-      // userExpanded: false,
-      // user: null,
-      // userMessage: null,
-      // userIsValid: false,
-      // userError: false,
+
       description: "",
       editorOptions: {
         modules: {
@@ -266,6 +182,13 @@ export default {
           ],
         },
       },
+      items: [
+        "해당사항 없음",
+        "3일 뒤 다시보기",
+        "7일 뒤 다시보기",
+        "30일 뒤 다시보기",
+      ],
+      isDisabled: true,
       popupExpanded: false,
       popup: null,
       popupMessage: null,
@@ -284,6 +207,9 @@ export default {
   },
 
   methods: {
+    toggleSelect() {
+      this.isDisabled = !this.isDisabled;
+    },
     openPopup() {
       this.popupExpanded = !this.popupExpanded;
     },
@@ -292,7 +218,7 @@ export default {
     },
     resetImage() {
       if (this.selectedImageURL) {
-        URL.revokeObjectURL(this.selectedImageURL); // 이전 이미지 URL 해제
+        URL.revokeObjectURL(this.selectedImageURL);
       }
 
       this.selectedImageURL = null;
@@ -340,7 +266,6 @@ export default {
           const formData = new FormData();
           formData.append("description", this.description);
           formData.append("image", this.selectedFile);
-
           const response = await axios.post(
             `http://localhost:4000/api/admin/popup`,
             formData,
@@ -453,18 +378,6 @@ export default {
   background-color: #f0eded;
 }
 
-.change-password-input {
-  font-size: 70px;
-  border: 1px solid #ccc;
-  margin-top: 40px;
-  margin-left: 200px;
-  // padding: 20px 200px;
-  text-align: center;
-  position: relative;
-}
-.change-pw {
-  margin-top: 200px;
-}
 .editor {
   height: 1000px;
 }
@@ -478,12 +391,48 @@ export default {
 
   width: 1530px;
 }
+.flex-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+::v-deep .v-input__control,
+::v-deep .v-input__details {
+  // margin-top: 20px;
+  width: 800px;
+  // font-size: 80px;
+}
 
-.alert-password {
-  position: absolute;
-  top: 870px;
-  left: 1700px;
-  background: none;
-  color: rgb(43, 4, 234);
+::v-deep.v-select .v-field .v-field__input > input,
+::v-deep .v-label {
+  width: 800px;
+  font-size: 50px;
+}
+
+::v-deep .v-select .v-select__selection-text {
+  margin-top: 50px;
+  font-size: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+::v-deep .v-field--variant-filled {
+  --v-input-control-height: 150px;
+  --v-field-padding-bottom: 100px;
+}
+::v-deep .v-select .v-select__selection,
+::v-deep .v-btn .v-btn--elevated {
+  width: 800px;
+  font-size: 100px;
+}
+::v-deep .v-checkbox {
+  width: 800px;
+  height: 100px;
+  font-size: 70px;
+}
+
+::v-deep .v-field.v-field--appended {
+  --v-field-padding-end: 6px;
+  font-size: 100px;
 }
 </style>
