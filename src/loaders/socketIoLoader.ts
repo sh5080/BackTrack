@@ -3,10 +3,15 @@ import { Application } from "express";
 
 export function socketIoLoader(app: Application): Server {
   const httpServer = app.listen(3000);
-  const io = new Server(httpServer);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: ["http://localhost:8080"],
+      credentials: true,
+    },
+  });
 
   io.on("connection", (socket) => {
-    console.log("A user connected");
+    console.log("SocketIO is connected");
 
     socket.on("chat message", (message) => {
       console.log(`Received message from client: ${message}`);
