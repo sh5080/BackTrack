@@ -1,7 +1,7 @@
 import Constant from "../constant";
 
 const state = {
-  msgData: [],
+  messageData: [],
 };
 
 const getters = {};
@@ -9,8 +9,8 @@ const getters = {};
 const actions = {};
 
 const mutations = {
-  [Constant.PUSH_MSG_DATA]: ($state, $payload) => {
-    $state.msgData.push($payload);
+  [Constant.PUSH_message_DATA]: ($state, $payload) => {
+    $state.messageData.push($payload);
   },
 };
 

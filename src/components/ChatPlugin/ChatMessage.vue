@@ -1,12 +1,12 @@
 <template>
   <div>
     <div
-      v-if="msg.from.name === 'prpn97'"
+      v-if="message && message.nickname === $store.state.loggedInNickname"
       class="chat__mymessage"
       :class="[isSame ? '' : 'chat__first']"
     >
       <p class="chat__mymessage__time">23:38</p>
-      <p class="chat__mymessage__paragraph">{{ msg.msg }}</p>
+      <p class="chat__mymessage__paragraph">{{ message.message }}</p>
     </div>
     <div
       v-else
@@ -14,20 +14,15 @@
       :class="[isSame ? '' : 'chat__first']"
     >
       <div class="chat__yourmessage__avartar">
-        <img
-          :src="avatar"
-          alt=""
-          v-if="!isSame"
-          class="chat__yourmessage__img"
-        />
+        <img alt="" v-if="!isSame" class="chat__yourmessage__img" />
       </div>
       <div>
         <p class="chat__yourmessage__user" v-if="!isSame">
-          {{ msg.from.name }}
+          {{ message.nickname }}
         </p>
         <div class="chat__yourmessage__p">
           <p class="chat__yourmessage__paragraph">
-            {{ msg.msg }}
+            {{ message.message }}
           </p>
           <p class="chat__yourmessage__time">23:38</p>
         </div>
@@ -38,18 +33,15 @@
 
 <script>
 export default {
-  props: ["msg", "prev"],
+  props: ["message", "prev"],
   data() {
     return {
       isSame: false,
-      avatar: require("../../assets/avatar.svg"),
     };
   },
   methods: {
-    isSamePerson(msg, prev) {
-      if (prev === null) {
-        return false;
-      } else if (prev[0]?.from.name == msg?.from.name) {
+    isSamePerson(message, prev) {
+      if (prev !== null && prev[0]?.nickname == message?.nickname) {
         return true;
       } else {
         return false;
@@ -57,10 +49,7 @@ export default {
     },
   },
   created() {
-    this.isSame = this.isSamePerson(this.msg, this.prev);
-    if (this.msg?.from.avatar) {
-      this.avatar = this.msg?.from.avatar;
-    }
+    this.isSame = this.isSamePerson(this.message, this.prev);
   },
 };
 </script>

@@ -18,7 +18,7 @@ export const SocketPlugin = {
     app.provide("sendMessage", ($payload) => {
       console.log("Sending message with payload:", $payload);
       socket.emit("chat", {
-        msg: $payload.msg,
+        message: $payload.message,
         name: $payload.name,
         avatar: $payload.avatar,
       });

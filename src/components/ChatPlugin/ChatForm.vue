@@ -4,7 +4,7 @@
       class="form__input"
       type="text"
       placeholder="메세지를 입력하세요."
-      v-model.trim="msg"
+      v-model.trim="message"
       @keyup.enter="submitMessage"
     />
     <div @click="submitMessage" class="form__submit">
@@ -42,14 +42,14 @@
 export default {
   data() {
     return {
-      msg: "",
+      message: "",
     };
   },
   methods: {
     submitMessage() {
-      if (this.msg) {
-        this.$emit("submitMessage", this.msg);
-        this.msg = "";
+      if (this.message) {
+        this.$emit("submitMessage", this.message);
+        this.message = "";
       }
       return;
     },

@@ -2,10 +2,19 @@
   <div class="chat">
     <div class="chat__header">
       <span class="chat__header__greetings">
-        안녕하세요. {{ userData }}님!
+        안녕하세요. {{ nickname }}님!
       </span>
+      <v-col cols="auto">
+        <v-btn
+          style="color: #999999; transform: rotate(45deg)"
+          tonal
+          density="compact"
+          icon="mdi-plus"
+          size="medium"
+        ></v-btn>
+      </v-col>
     </div>
-    <chat-list :msgs="msgData"></chat-list>
+    <chat-list :messages="messageData"></chat-list>
     <chat-form @submitMessage="sendMessage"></chat-form>
   </div>
 </template>
@@ -17,47 +26,34 @@ import ChatForm from "../components/ChatPlugin/ChatForm.vue";
 import Constant from "../constant";
 import { useStore } from "vuex";
 import io from "socket.io-client";
+import axios from "axios";
 
 export default {
   setup() {
     const store = useStore();
-    const userData = computed(() => store.state.loggedInNickname);
-    const msgData = computed(() => store.state.socket.msgData);
+    const nickname = computed(() => store.state.loggedInNickname);
+    const messageData = computed(() => store.state.socket.messageData);
 
-    const pushMsgData = (data) => {
-      store.commit(Constant.PUSH_MSG_DATA, data);
+    const pushmessageData = (data) => {
+      store.commit(Constant.PUSH_message_DATA, data);
     };
+    const socket = io("http://localhost:3000");
+    const sendMessage = async (message) => {
+      pushmessageData({
+        nickname: nickname.value,
 
-    const sendMessage = (msg) => {
-      const username = userData.value.userName;
-      const avatar = userData.value.userImage;
-
-      pushMsgData({
-        from: {
-          name: "prpn97",
-          avatar: avatar,
-        },
-        msg,
+        message,
       });
-
-      const socket = io("http://localhost:3000");
 
       socket.emit("chat", {
-        name: username,
-        msg,
-        avatar: avatar,
+        nickname: nickname.value,
+        message,
       });
-
-      setTimeout(() => {
-        const element = document.getElementById("chat__body");
-        element.scrollTop = element.scrollHeight;
-      }, 0);
     };
 
     onMounted(() => {
-      const socket = io("http://localhost:3000");
       socket.on("chat", (data) => {
-        pushMsgData(data);
+        pushmessageData(data);
 
         setTimeout(() => {
           const element = document.getElementById("chat__body");
@@ -71,8 +67,8 @@ export default {
     });
 
     return {
-      userData,
-      msgData,
+      nickname,
+      messageData,
       sendMessage,
     };
   },
@@ -96,6 +92,7 @@ export default {
   right: 0;
   position: fixed;
   background: #ffffff;
+  z-index: 999;
 }
 
 .chat__header {
@@ -105,9 +102,13 @@ export default {
   padding: 1.8rem;
   font-size: 60px;
   font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .chat__header__greetings {
   color: #292929;
+  margin-top: 20px;
 }
 </style>

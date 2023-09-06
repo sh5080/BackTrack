@@ -1,10 +1,10 @@
 <template>
   <div class="chat__body" id="chat__body">
     <chat-message
-      v-for="(msg, index) in msgs"
+      v-for="(message, index) in messages"
       :key="index"
-      :msg="msg"
-      :prev="[index == 0 ? null : msgs[index - 1]]"
+      :message="message"
+      :prev="[index == 0 ? null : messages[index - 1]]"
     >
     </chat-message>
   </div>
@@ -17,7 +17,7 @@ export default {
   components: {
     ChatMessage,
   },
-  props: ["msgs"],
+  props: ["messages"],
 };
 </script>
 
