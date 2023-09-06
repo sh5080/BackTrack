@@ -2,7 +2,7 @@ import Redis from "ioredis";
 import { promisify } from "util";
 import { AppError, CommonError } from "../types/AppError";
 
-const redisClient = Redis.createClient();
+export const redisClient = Redis.createClient();
 
 const setAsync = promisify(redisClient.set).bind(redisClient);
 const getAsync = promisify(redisClient.get).bind(redisClient);
