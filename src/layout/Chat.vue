@@ -3,7 +3,12 @@
     <div
       class="position-absolute d-flex align-center justify-center w-100 h-100"
     >
-      <v-img src="../assets/chatIcon.png" @click="openDialog" class="chat-icon">
+      <v-img
+        v-if="!dialog"
+        src="../assets/chatIcon.png"
+        @click="openDialog"
+        class="chat-icon"
+      >
       </v-img>
     </div>
 
