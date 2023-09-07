@@ -179,13 +179,10 @@ export default {
     },
 
     updatePreviousChordArray() {
-      // this.previousChordArray = newChordArray;
       this.previousChordArray = this.currentChordArray;
     },
 
     updateCurrentChordArray(newChordArray) {
-      // this.currentChordArray = this.nextChordArray;
-      // this.nextChordArray = newChordArray;
       this.currentChordArray = newChordArray;
     },
 
@@ -229,14 +226,12 @@ export default {
         Bsharp: "midi/bass/C.wav",
       };
       const backtrackData = this.$store.state.chordData;
-      console.log("backtrackDataLength: ", backtrackData.length);
 
       let rowIndex = this.rowIndex;
       let colIndex = this.colIndex;
       let subColIndex = this.subColIndex;
 
       function playNextSound() {
-        console.log("backtrackData: ", backtrackData);
         if (rowIndex < backtrackData.length) {
           const currentRow = backtrackData[rowIndex];
           if (colIndex < currentRow.length) {
@@ -277,12 +272,11 @@ export default {
           console.error("잘못된 입력 형식입니다.");
           return;
         }
-
+        //1마디만 생성하는 경우
         if (index < soundArray.length) {
-          console.log("여기0: ", backtrackData[rowIndex][colIndex]);
           self.updateCurrentChordArray(backtrackData[rowIndex][colIndex]);
+          self.updateNextChordArray(backtrackData[rowIndex][colIndex + 1]);
 
-          self.updateNextChordArray();
           let chord = soundArray[index];
           if (chord.endsWith("#")) {
             chord = chord.replace("#", "sharp");
@@ -305,8 +299,7 @@ export default {
             subColIndex = 0;
             colIndex++;
             self.updatePreviousChordArray();
-            self.updateNextChordArray([]);
-            console.log("여기1: ", backtrackData[rowIndex][colIndex]);
+
             playSoundsSequentially(backtrackData[rowIndex][colIndex]);
           } else if (rowIndex < backtrackData.length - 1) {
             subColIndex = 0;
@@ -314,8 +307,7 @@ export default {
             rowIndex++;
             self.updateCurrentChordArray(backtrackData[rowIndex][colIndex]);
             self.updatePreviousChordArray();
-            self.updateNextChordArray([]);
-            console.log("여기2: ", backtrackData[rowIndex][colIndex]);
+
             playSoundsSequentially(backtrackData[rowIndex][colIndex]);
           } else {
             // 모든 음원 재생이 완료되면 종료
@@ -605,7 +597,7 @@ export default {
 } */
 .key-font {
   font-family: "Font1";
-  font-size: 200px;
+  font-size: 300px;
   padding: 0px 100px;
 }
 .small-key-font {
