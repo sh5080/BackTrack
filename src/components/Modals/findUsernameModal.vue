@@ -211,7 +211,7 @@ export default {
   width: 1500px !important;
   height: 2000px;
   max-width: 95%;
-  /* z-index: 9996; */
+  z-index: 9996 !important;
 }
 
 .input {

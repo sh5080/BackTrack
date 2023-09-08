@@ -344,18 +344,18 @@ export default {
 .image-button img {
   /* width: 250%;
   max-width: 700px; */
-  width: 700px; /* 예시로 이미지의 가로 크기 조정 */
+  width: 700px;
   height: auto;
-  margin-right: auto; /* 이미지의 오른쪽 여백을 자동으로 채워줌 */
-  margin-left: auto; /* 이미지의 왼쪽 여백을 자동으로 채워줌 */
+  margin-right: auto;
+  margin-left: auto;
 
   /* height: 208px; */
 }
 .image-button-img {
-  width: 100%; /* 이미지의 가로 크기를 100%로 설정하여 부모 요소에 맞게 조정 */
-  max-width: 680px; /* 이미지의 최대 가로 크기를 설정 */
+  width: 100%;
+  max-width: 680px;
   height: 200px;
-  object-fit: cover; /* 이미지를 부모 요소에 맞춰 자르기 */
+  object-fit: cover;
 }
 
 .btn-pers {
