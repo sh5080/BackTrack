@@ -1,9 +1,9 @@
 import * as type from "../types/type";
-import * as backtrackModel from "../models/backtrackModel";
+import { BacktrackRepository } from "../models/repositories/backtrack.repository";
 
-export const saveBacktrack = async (backtrack: type.Backtrack) => {
+export const createBacktrack = async (backtrack: type.Backtrack) => {
   try {
-    await backtrackModel.saveBacktrack(backtrack);
+    await BacktrackRepository.createBacktrack(backtrack);
   } catch (error) {
     throw error;
   }

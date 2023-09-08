@@ -3,7 +3,7 @@ import { BacktrackEntity } from "../entities/backtrack.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 
-export const AuthRepository = AppDataSource.getRepository(
+export const BacktrackRepository = AppDataSource.getRepository(
   BacktrackEntity
 ).extend({
   async findBacktrack(username: string, backtrack: string) {

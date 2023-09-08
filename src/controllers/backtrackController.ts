@@ -5,22 +5,6 @@ import { CustomRequest } from "../types/customRequest";
 import fs from "fs";
 import path from "path";
 
-// 백킹트랙 생성 함수
-function convertChordToAbc(chordData: string[][][]) {
-  const abcContent = chordData
-    .map(
-      (measureChords) =>
-        `| ${measureChords
-          .map((chords) =>
-            chords.map((chord) => `'${chord.replace(/'|\s/g, "")}'`).join("")
-          )
-          .join(" | ")} |`
-    )
-    .join("\n");
-
-  return `X:1\nT:Generated Backtrack\nM:4/4\nK:C\n${abcContent}`;
-}
-
 /** Backtrack 생성 */
 export const createBacktrack = async (
   req: CustomRequest,
@@ -28,29 +12,15 @@ export const createBacktrack = async (
   next: NextFunction
 ) => {
   try {
-    const { chord } = req.body;
-    console.log("chord: ", chord);
+    const { chords } = req.body;
+    console.log("chords: ", chords);
 
-    const abcContent = convertChordToAbc(chord);
+    const newUser = await backtrackService.createBacktrack({
+      username,
+      chords,
+    });
 
-    const currentDate = new Date();
-    const koreaTime = new Date(currentDate.getTime());
-
-    const year = koreaTime.getFullYear();
-    const month = String(koreaTime.getMonth() + 1).padStart(2, "0");
-    const day = String(koreaTime.getDate()).padStart(2, "0");
-    const hours = String(koreaTime.getHours()).padStart(2, "0");
-    const minutes = String(koreaTime.getMinutes()).padStart(2, "0");
-    const seconds = String(koreaTime.getSeconds()).padStart(2, "0");
-
-    const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
-    const fileName = `${formattedDate}-backtrack.abc`;
-
-    const filePath = path.join(__dirname, "../..", "uploads", fileName);
-
-    fs.writeFileSync(filePath, abcContent);
-
-    res.json({ filePath });
+    res.json({ message: "악보 저장이 완료되었습니다.", chords });
   } catch (error) {
     next(error);
   }
