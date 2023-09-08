@@ -18,7 +18,7 @@
         <i class="nc-icon nc-settings-gear-64"></i>
         <p>환경설정</p>
       </sidebar-link>
-      <sidebar-link to="/typography">
+      <sidebar-link to="/questions">
         <i class="nc-icon nc-chat-round"></i>
         <p>문의사항</p>
       </sidebar-link>
@@ -33,21 +33,22 @@
     </side-bar>
     <header-section></header-section>
     <div class="main-panel">
+      <chat> </chat>
       <dashboard-content> </dashboard-content>
-
       <content-footer></content-footer>
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, reactive, readonly, provide, inject } from "vue";
+import { defineComponent } from "vue";
 import HeaderSection from "./HeaderSection.vue";
 import ContentFooter from "./ContentFooter.vue";
 import DashboardContent from "./Content.vue";
 import MobileMenu from "./MobileMenu.vue";
 import sideBar from "../components/SidebarPlugin/SideBar.vue";
 import sidebarLink from "../components/SidebarPlugin/SidebarLink.vue";
+import Chat from "./Chat.vue";
 export default defineComponent({
   components: {
     HeaderSection,
@@ -56,6 +57,7 @@ export default defineComponent({
     MobileMenu,
     sideBar,
     sidebarLink,
+    Chat,
   },
   methods: {},
   computed: {
