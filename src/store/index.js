@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
+import socket from "./socket";
 import axios from "axios";
+
 export const store = createStore({
   state: {
     isAuthenticated: false,
@@ -17,6 +19,11 @@ export const store = createStore({
     chordData: null,
     bpm: 60,
     isAudioPlaying: false,
+    previewData: {
+      description: "",
+      imageURL: "",
+    },
+
     //
     backtrackModalData: null,
   },
@@ -73,6 +80,9 @@ export const store = createStore({
     setBpm(state, bpm) {
       state.bpm = bpm;
     },
+    setPreviewData(state, data) {
+      state.previewData = data;
+    },
   },
 
   actions: {
@@ -103,7 +113,12 @@ export const store = createStore({
     selectBpm({ commit }, bpm) {
       commit("setBpm", bpm);
     },
+    updatePreviewData({ commit }, data) {
+      commit("setPreviewData", data);
+    },
+
     async resetState({ commit }) {
+      commit("setIsAdmin", false);
       commit("toggleLoginModal", false);
       commit("toggleRegisterModal", false);
       commit("toggleRegisterSuccessModal", false);
@@ -116,5 +131,11 @@ export const store = createStore({
       localStorage.removeItem("oauth");
       // 다른 상태도 초기화하는 코드 추가
     },
+  },
+  modules: {
+    socket,
+  },
+  getters: {
+    getPreviewData: (state) => state.previewData,
   },
 });
