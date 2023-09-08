@@ -5,10 +5,16 @@
         팝업 미리보기
       </h3>
 
-      <img :src="previewData.imageURL" alt="미리보기 이미지" />
+      <v-img
+        :width="2000"
+        aspect-ratio="1/1"
+        cover
+        :src="previewData.imageURL"
+        alt="미리보기 이미지"
+      ></v-img>
       <div v-html="previewData.description" class="quill-content"></div>
-      <div class="close-btn">
-        <button @click="closeModal">닫기</button>
+      <div>
+        <v-btn class="close-btn" @click="closeModal">닫기</v-btn>
       </div>
     </div>
   </div>
@@ -46,6 +52,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 }
 
 .popup-content {
@@ -73,11 +80,16 @@ export default {
 }
 
 .close-btn {
+  position: absolute;
   border: 1px solid #ccc;
   padding: 20px 0px;
   width: 450px;
   display: inline-block;
-  margin-top: 120px;
+  top: 1000px;
+  right: 1000px;
+  height: 120px;
+  /* margin-top: 120px; */
+
   font-size: 70px;
 }
 </style>
