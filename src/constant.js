@@ -1,3 +1,3 @@
 export default {
-  PUSH_MSG_DATA: "pushMsgData",
+  PUSH_message_DATA: "pushmessageData",
 };
