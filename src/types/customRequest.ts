@@ -9,10 +9,10 @@ export interface CustomRequest extends Request {
     password: string;
     newPassword: string;
     newPasswordConfirm: string;
-    chords: string[][][];
+
     measures: number;
     bpm: number;
-    backtrack: string;
+    backtrack: string[][][];
     description: string;
     nickname: string;
     image: string;

@@ -4,6 +4,7 @@ import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import fs from "fs";
 import path from "path";
+import * as Type from "../types/type";
 
 /** Backtrack 생성 */
 export const createBacktrack = async (
@@ -12,15 +13,16 @@ export const createBacktrack = async (
   next: NextFunction
 ) => {
   try {
-    const { chords } = req.body;
-    console.log("chords: ", chords);
+    const { backtrack } = req.body;
+    const username = req.user!.username;
+    console.log("backtrack: ", backtrack);
 
-    const newUser = await backtrackService.createBacktrack({
+    const backtrackData = await backtrackService.createBacktrack(
       username,
-      chords,
-    });
+      backtrack
+    );
 
-    res.json({ message: "악보 저장이 완료되었습니다.", chords });
+    res.json({ message: "악보 저장이 완료되었습니다.", backtrackData });
   } catch (error) {
     next(error);
   }

@@ -26,7 +26,8 @@ export interface Popup {
 }
 
 export interface Backtrack {
-  chords: string[][][];
+  username: string;
+  backtrack: string[][][];
   // measures: number;
   // bpm: number;
 }

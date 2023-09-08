@@ -6,14 +6,14 @@ export class BacktrackEntity {
   id: number;
 
   @Column()
-  name: string;
+  username: string;
 
-  @Column()
-  chords: string;
+  @Column("json", { array: true })
+  backtrack: string[][][];
 
-  constructor(id: number, name: string, chords: string) {
+  constructor(id: number, username: string, backtrack: string[][][]) {
     this.id = id;
-    this.name = name;
-    this.chords = chords;
+    this.username = username;
+    this.backtrack = backtrack;
   }
 }
