@@ -6,9 +6,9 @@ import UserProfile from "src/pages/UserProfile.vue";
 import TableList from "src/pages/TableList.vue";
 import Admin from "src/pages/Admin.vue";
 import Icons from "src/pages/Icons.vue";
-import Notifications from "src/pages/Notifications.vue";
+import Questions from "src/pages/Questions.vue";
 import Backtrack from "src/pages/BacktrackGenerator.vue";
-import { store } from "./store";
+import { store } from "../store/index";
 export const routes = [
   // {
   //   path: "/",
@@ -48,9 +48,9 @@ export const routes = [
       },
 
       {
-        path: "notifications",
-        name: "Notifications",
-        component: Notifications,
+        path: "/questions",
+        name: "Questions",
+        component: Questions,
       },
     ],
   },
