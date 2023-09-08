@@ -49,34 +49,32 @@
             <span
               v-for="(chordSegment, segmentIndex) in previousChordArray"
               :key="segmentIndex"
-              :class="getChordInSmallMeasure(chordSegment)"
+              :class="getChordInPreviousMeasure(chordSegment)"
             >
               {{ chordSegment }}
             </span>
           </div>
         </div>
-        <div id="abc-container" class="abc-container">
-          <div class="measure">
-            <!-- chordSegment를 순회하면서 현재와 다음 코드 배열을 표시합니다 -->
+
+        <div class="measure">
+          <span
+            v-for="(chordSegment, segmentIndex) in currentChordArray"
+            :key="segmentIndex"
+            :class="getChordInMeasure(chordSegment)"
+          >
+            {{ chordSegment }}
+          </span>
+        </div>
+        <!-- 다음 코드 배열을 작게 표시합니다 -->
+        <div v-if="nextChordArray">
+          <div class="next-measure">
             <span
-              v-for="(chordSegment, segmentIndex) in currentChordArray"
+              v-for="(chordSegment, segmentIndex) in nextChordArray"
               :key="segmentIndex"
-              :class="getChordInMeasure(chordSegment)"
+              :class="getChordInNextMeasure(chordSegment)"
             >
               {{ chordSegment }}
             </span>
-          </div>
-          <!-- 다음 코드 배열을 작게 표시합니다 -->
-          <div v-if="nextChordArray">
-            <div class="next-measure">
-              <span
-                v-for="(chordSegment, segmentIndex) in nextChordArray"
-                :key="segmentIndex"
-                :class="getChordInSmallMeasure(chordSegment)"
-              >
-                {{ chordSegment }}
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -125,9 +123,9 @@ export default {
       drum: null,
       transport: Tone.Transport,
 
-      rowIndex: 0,
-      colIndex: 0,
-      subColIndex: 0,
+      tableIndex: 0,
+      measureIndex: 0,
+      chordIndex: 0,
       previousChordArray: null,
       currentChordArray: [],
       nextChordArray: [],
@@ -140,30 +138,6 @@ export default {
     bpm() {
       return this.$store.state.bpm;
     },
-    // currentChordArray() {
-    //   if (
-    //     this.rowIndex >= 0 &&
-    //     this.rowIndex < this.$store.state.chordData.length &&
-    //     this.colIndex >= 0 &&
-    //     this.colIndex < this.$store.state.chordData[this.rowIndex].length
-    //   ) {
-    //     return this.$store.state.chordData[this.rowIndex][this.colIndex];
-    //   } else {
-    //     return [];
-    //   }
-    // },
-    // nextChordArray() {
-    //   if (
-    //     this.rowIndex + 1 >= 0 &&
-    //     this.rowIndex + 1 < this.$store.state.chordData.length &&
-    //     this.colIndex >= 0 &&
-    //     this.colIndex < this.$store.state.chordData[this.rowIndex + 1].length
-    //   ) {
-    //     return this.$store.state.chordData[this.rowIndex + 1][this.colIndex];
-    //   } else {
-    //     return [];
-    //   }
-    // },
   },
   created() {
     Tone.Transport.loop = false;
@@ -227,35 +201,33 @@ export default {
       };
       const backtrackData = this.$store.state.chordData;
 
-      let rowIndex = this.rowIndex;
-      let colIndex = this.colIndex;
-      let subColIndex = this.subColIndex;
+      let tableIndex = this.tableIndex;
+      let measureIndex = this.measureIndex;
+      let chordIndex = this.chordIndex;
 
       function playNextSound() {
-        if (rowIndex < backtrackData.length) {
-          const currentRow = backtrackData[rowIndex];
-          if (colIndex < currentRow.length) {
-            const currentCol = currentRow[colIndex];
-            if (subColIndex < currentCol.length) {
-              const sound = currentCol[subColIndex];
+        if (tableIndex < backtrackData.length) {
+          const currentRow = backtrackData[tableIndex];
+          if (measureIndex < currentRow.length) {
+            const currentCol = currentRow[measureIndex];
+            if (chordIndex < currentCol.length) {
+              const sound = currentCol[chordIndex];
               const soundArray = currentCol;
 
               console.log("현재 배열: ", soundArray);
 
               playSoundsSequentially(soundArray);
 
-              subColIndex++;
+              chordIndex++;
             } else {
               // 하위 배열이 모두 재생되면 다음 열로 이동
-              subColIndex = 0;
-              self.colIndex++;
-              self.updateNextChordArray([]);
-              self.updatePreviousChordArray();
+              chordIndex = 0;
+              self.measureIndex++;
             }
           } else {
             // 현재 행이 모두 재생되면 다음 행으로 이동
-            colIndex = 0;
-            this.rowIndex++;
+            measureIndex = 0;
+            self.tableIndex++;
           }
         } else {
           // 모든 음원 재생이 완료되면 종료
@@ -269,13 +241,30 @@ export default {
         if (Array.isArray(input)) {
           soundArray = input;
         } else {
-          console.error("잘못된 입력 형식입니다.");
+          console.error("잘못된 입력 형식입니다.", input);
           return;
         }
-        //1마디만 생성하는 경우
+
         if (index < soundArray.length) {
-          self.updateCurrentChordArray(backtrackData[rowIndex][colIndex]);
-          self.updateNextChordArray(backtrackData[rowIndex][colIndex + 1]);
+          console.log("여기1");
+
+          self.updateCurrentChordArray(backtrackData[tableIndex][measureIndex]);
+          // self.updateNextChordArray(
+          //   backtrackData[tableIndex][measureIndex + 1]
+          // );
+          if (measureIndex === 3 && soundArray.length === 4) {
+            console.log("여기");
+            // measureIndex = 0;
+
+            // tableIndex++;
+
+            self.updateNextChordArray(backtrackData[tableIndex + 1][0]);
+            // playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
+          } else {
+            self.updateNextChordArray(
+              backtrackData[tableIndex][measureIndex + 1]
+            );
+          }
 
           let chord = soundArray[index];
           if (chord.endsWith("#")) {
@@ -294,21 +283,27 @@ export default {
             console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
           }
         } else {
-          if (colIndex < backtrackData[rowIndex].length - 1) {
-            self.updateCurrentChordArray(backtrackData[rowIndex][colIndex]);
-            subColIndex = 0;
-            colIndex++;
+          if (measureIndex < backtrackData[tableIndex].length - 1) {
+            console.log("여기로감?");
+            self.updateCurrentChordArray(
+              backtrackData[tableIndex][measureIndex]
+            );
+            measureIndex++;
+            self.updatePreviousChordArray();
+            self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
+            playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
+          } else if (tableIndex < backtrackData.length - 1) {
+            console.log("3");
+            chordIndex = 0;
+            measureIndex = 0;
+            tableIndex++;
+            self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
+            self.updateCurrentChordArray(
+              backtrackData[tableIndex][measureIndex]
+            );
             self.updatePreviousChordArray();
 
-            playSoundsSequentially(backtrackData[rowIndex][colIndex]);
-          } else if (rowIndex < backtrackData.length - 1) {
-            subColIndex = 0;
-            colIndex = 0;
-            rowIndex++;
-            self.updateCurrentChordArray(backtrackData[rowIndex][colIndex]);
-            self.updatePreviousChordArray();
-
-            playSoundsSequentially(backtrackData[rowIndex][colIndex]);
+            playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
           } else {
             // 모든 음원 재생이 완료되면 종료
             console.log("모든 음원 재생 완료");
@@ -439,7 +434,44 @@ export default {
 
       return classes;
     },
-    getChordInSmallMeasure(chordSegment) {
+    getChordInPreviousMeasure(chordSegment) {
+      const classes = [];
+
+      if (
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "A#",
+          "B#",
+          "C#",
+          "D#",
+          "E#",
+          "F#",
+          "G#",
+          "Ab",
+          "Bb",
+          "Cb",
+          "Db",
+          "Eb",
+          "Fb",
+          "Gb",
+        ].includes(chordSegment)
+      ) {
+        classes.push("small-key-font");
+      } else if (chordSegment === "-") {
+        classes.push("blank-font");
+      } else {
+        classes.push("extends-font");
+      }
+
+      return classes;
+    },
+    getChordInNextMeasure(chordSegment) {
       const classes = [];
 
       if (
@@ -589,12 +621,6 @@ export default {
   font-style: normal;
 }
 
-/* .measure {
-  font-size: 200px;
-}
-.next-measure {
-  font-size: 100px;
-} */
 .key-font {
   font-family: "Font1";
   font-size: 300px;
