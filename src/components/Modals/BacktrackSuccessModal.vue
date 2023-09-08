@@ -15,34 +15,7 @@
         백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
         있습니다.
       </div>
-      <!-- <div class="sheet-music">
-        <div id="abc-container" class="abc-container">
-          <div v-for="measureChords in $store.state.chordData">
-            <div class="measure">
-              <div
-                class="chord-segment"
-                v-for="chords in measureChords"
-                :key="chords.join('-')"
-              >
-                <span
-                  class="chord-segment-item"
-                  v-for="chordSegment in chords"
-                  :key="chordSegment"
-                  style="padding: 0 30px"
-                >
-                  <span
-                    v-for="piece in chordSegment.split(' ')"
-                    :key="piece"
-                    :class="['chord-piece', getChordInMeasure(piece)]"
-                  >
-                    {{ piece }}
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
+
       <div class="sheet-music">
         <div v-if="previousChordArray">
           <div class="previous-measure">
@@ -78,32 +51,109 @@
           </div>
         </div>
       </div>
+      <v-card width="1500">
+        <v-toolbar @click="toggleCard" style="height: 150px; cursor: pointer">
+          <v-btn>
+            <span class="metronome-title">METRONOME</span>
+          </v-btn>
+        </v-toolbar>
 
-      <button
-        id="playButton"
-        @click="playAudio"
-        class="btn-play"
-        style="font-size: 3.5em"
-      >
-        음원 재생
-      </button>
-      <button
-        id="stopButton"
-        @click="stopAllAudio"
-        class="btn-stop"
-        style="font-size: 3.5em"
-      >
-        음원 정지
-      </button>
-      <button
-        id="closeButton"
-        type="button"
-        @click="closeAllModals"
-        class="btn-success"
-        style="font-size: 3.5em"
-      >
-        닫기
-      </button>
+        <v-card-text>
+          <v-row
+            :style="{ height: cardOpen ? '300px' : '0px' }"
+            class="mb-4"
+            justify="space-between"
+          >
+            <v-col class="text-left">
+              <span class="bpm font-weight-light" v-text="bpm"></span>
+              <span class="bpm font-weight-light me-1">BPM</span>
+              <v-fade-transition>
+                <v-avatar
+                  v-if="isPlaying"
+                  :color="color"
+                  :style="{
+                    animationDuration: animationDuration,
+                  }"
+                  class="mb-1 v-avatar--metronome"
+                  size="12"
+                ></v-avatar>
+              </v-fade-transition>
+            </v-col>
+            <v-col v-show="cardOpen" class="text-right">
+              <v-btn
+                :color="color"
+                theme="dark"
+                icon
+                elevation="0"
+                size="x-large"
+              >
+                <v-icon
+                  id="metronomeButton"
+                  size="x-large"
+                  @click="toggle"
+                  :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+                ></v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-slider
+            v-show="cardOpen"
+            v-model="bpm"
+            :color="color"
+            track-color="grey"
+            min="40"
+            max="218"
+            :step="1"
+            @change="updateBpm"
+          >
+            <template v-slot:prepend>
+              <v-btn
+                size="small"
+                variant="text"
+                icon="mdi-minus"
+                :color="color"
+                @click="decrement"
+              ></v-btn>
+            </template>
+
+            <template v-slot:append>
+              <v-btn
+                size="small"
+                variant="text"
+                icon="mdi-plus"
+                :color="color"
+                @click="increment"
+              ></v-btn>
+            </template>
+          </v-slider>
+        </v-card-text>
+      </v-card>
+      <div class="button-container">
+        <v-btn
+          id="playButton"
+          @click="playAudio"
+          class="me-5 text-none"
+          color="#4f545c"
+          variant="flat"
+          size="x-large"
+        >
+          음원 재생
+        </v-btn>
+        <v-btn id="stopButton" border class="text-none" variant="text">
+          음원 정지
+        </v-btn>
+        <v-btn
+          id="closeButton"
+          type="button"
+          @click="closeAllModals"
+          border
+          class="text-none"
+          variant="text"
+        >
+          닫기
+        </v-btn>
+      </div>
     </div>
   </v-dialog>
 </template>
@@ -116,10 +166,10 @@ export default {
     return {
       abcContent: "",
       audioElements: [],
-      metronomeInterval: null,
+
       isDrum: null,
       isUp: null,
-      metronome: null,
+      metronomeSequence: null,
       drum: null,
       transport: Tone.Transport,
 
@@ -129,14 +179,30 @@ export default {
       previousChordArray: null,
       currentChordArray: [],
       nextChordArray: [],
+      bpm: this.$store.state.bpm,
+      isPlaying: false,
+      cardOpen: false,
+      upSoundUrl: "midi/metronome/up.wav",
+      downSoundUrl: "midi/metronome/down.wav",
+      drumSoundUrl: "midi/Drummer.wav",
     };
   },
   computed: {
     isLogged() {
       return !!this.$store.state.loggedInNickname;
     },
-    bpm() {
-      return this.$store.state.bpm;
+    // bpm() {
+    //   return this.bpm;
+    // },
+    color() {
+      if (this.bpm < 100) return "indigo";
+      if (this.bpm < 125) return "teal";
+      if (this.bpm < 140) return "green";
+      if (this.bpm < 175) return "orange";
+      return "red";
+    },
+    animationDuration() {
+      return `${60 / this.bpm}s`;
     },
   },
   created() {
@@ -148,12 +214,30 @@ export default {
 
   // },
   methods: {
+    decrement() {
+      this.bpm--;
+    },
+    increment() {
+      this.bpm++;
+    },
+    toggle() {
+      this.isPlaying = !this.isPlaying;
+      if (this.isPlaying) {
+        this.startMetronome();
+      } else {
+        this.stopMetronome();
+      }
+    },
     closeAllModals() {
       this.$store.commit("toggleBacktrackSuccessModal", false);
     },
+    toggleCard() {
+      this.cardOpen = !this.cardOpen;
+    },
 
-    updatePreviousChordArray() {
-      this.previousChordArray = this.currentChordArray;
+    updatePreviousChordArray(newChordArray) {
+      // this.previousChordArray = this.currentChordArray;
+      this.previousChordArray = newChordArray;
     },
 
     updateCurrentChordArray(newChordArray) {
@@ -162,6 +246,46 @@ export default {
 
     updateNextChordArray(newChordArray) {
       this.nextChordArray = newChordArray;
+    },
+    updateBpm() {
+      Tone.Transport.bpm.value = this.bpm;
+      this.stopMetronome();
+      this.startMetronome();
+    },
+    stopMetronome() {
+      if (this.metronomeSequence) {
+        this.metronomeSequence.clear();
+        this.transport.stop();
+      }
+    },
+    startMetronome() {
+      Tone.start();
+
+      // const tempo = this.$store.state.bpm;
+      Tone.Transport.bpm.value = this.bpm;
+      this.metronomeSequence = new Tone.Sequence(
+        (time, note) => {
+          // "up" 또는 "down" 사운드 재생
+          if (note === "up" && !this.isUp) {
+            const upSound = new Tone.Player({
+              url: this.upSoundUrl,
+              autostart: true,
+            }).toDestination();
+            this.isUp = true;
+          } else if (note === "down") {
+            const downSound = new Tone.Player({
+              url: this.downSoundUrl,
+              autostart: true,
+            }).toDestination();
+            this.isUp = false;
+          }
+        },
+        ["up", "down", "down", "down"],
+        "4n"
+      );
+
+      this.metronomeSequence.start(0.09);
+      this.transport.start();
     },
 
     /** 재생 */
@@ -172,10 +296,6 @@ export default {
       const tempo = this.$store.state.bpm;
       Tone.Transport.bpm.value = tempo;
 
-      // .wav
-      const upSoundUrl = "midi/metronome/up.wav";
-      const downSoundUrl = "midi/metronome/down.wav";
-      const drumSoundUrl = "midi/Drummer.wav";
       const bassUrls = {
         Cb: "midi/bass/B.wav",
         C: "midi/bass/C.wav",
@@ -246,20 +366,21 @@ export default {
         }
 
         if (index < soundArray.length) {
-          console.log("여기1");
+          console.log("코드 바뀌는곳");
 
+          if (measureIndex !== 0) {
+            self.updatePreviousChordArray(
+              backtrackData[tableIndex][measureIndex - 1]
+            );
+          }
           self.updateCurrentChordArray(backtrackData[tableIndex][measureIndex]);
-          // self.updateNextChordArray(
-          //   backtrackData[tableIndex][measureIndex + 1]
-          // );
+
           if (measureIndex === 3 && soundArray.length === 4) {
-            console.log("여기");
-            // measureIndex = 0;
-
-            // tableIndex++;
-
-            self.updateNextChordArray(backtrackData[tableIndex + 1][0]);
-            // playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
+            if (backtrackData[tableIndex + 1] !== undefined) {
+              self.updateNextChordArray(backtrackData[tableIndex + 1][0]);
+            } else if (backtrackData[tableIndex + 1] === undefined) {
+              self.updateNextChordArray([]);
+            }
           } else {
             self.updateNextChordArray(
               backtrackData[tableIndex][measureIndex + 1]
@@ -284,16 +405,15 @@ export default {
           }
         } else {
           if (measureIndex < backtrackData[tableIndex].length - 1) {
-            console.log("여기로감?");
             self.updateCurrentChordArray(
               backtrackData[tableIndex][measureIndex]
             );
             measureIndex++;
-            self.updatePreviousChordArray();
+            console.log("마디 바뀌는곳");
+            // self.updatePreviousChordArray();
             self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
             playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
           } else if (tableIndex < backtrackData.length - 1) {
-            console.log("3");
             chordIndex = 0;
             measureIndex = 0;
             tableIndex++;
@@ -301,11 +421,13 @@ export default {
             self.updateCurrentChordArray(
               backtrackData[tableIndex][measureIndex]
             );
-            self.updatePreviousChordArray();
+            console.log("테이블 바뀌는곳");
+            self.updatePreviousChordArray(backtrackData[tableIndex - 1][3]);
 
             playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
           } else {
             // 모든 음원 재생이 완료되면 종료
+            stopSounds();
             console.log("모든 음원 재생 완료");
           }
         }
@@ -339,9 +461,8 @@ export default {
       }
 
       const drum = new Tone.Player({
-        url: drumSoundUrl,
+        url: this.drumSoundUrl,
         autostart: true,
-        console: console.log("drum: ", drumSoundUrl),
       }).toDestination();
 
       const metronome = new Tone.Sequence(
@@ -349,13 +470,13 @@ export default {
           // "up" 또는 "down" 사운드 재생
           if (note === "up" && !this.isUp) {
             const upSound = new Tone.Player({
-              url: upSoundUrl,
+              url: this.upSoundUrl,
               autostart: true,
             }).toDestination();
             this.isUp = true;
           } else if (note === "down") {
             const downSound = new Tone.Player({
-              url: downSoundUrl,
+              url: this.downSoundUrl,
               autostart: true,
             }).toDestination();
             this.isUp = false;
@@ -388,13 +509,6 @@ export default {
       });
       // 메트로놈 시작
       this.transport.start();
-    },
-
-    async sheetMusic() {
-      try {
-      } catch (error) {
-        console.error("Error to create Backtrack in:", error);
-      }
     },
 
     getChordInMeasure(chordSegment) {
@@ -523,83 +637,67 @@ export default {
   border-radius: 5px;
   background: #fefefe;
   width: 3000px;
-  min-height: 2000px;
+  height: 2200px;
   text-align: center;
 }
 
-/* .backtrack-success-modal h2 {
-  font-size: 1em;
-  margin-top: 100px;
-  margin-bottom: 1rem;
-} */
-/* .backtrack-success-modal div {
-  font-size: 1em;
-  margin-top: 100px;
-  margin-bottom: 1rem;
-} */
+.previous-measure,
+.measure,
+.next-measure {
+  position: absolute;
+  left: 50%; /* 가운데 정렬을 위해 왼쪽 위치를 50%로 설정 */
+  transform: translateX(
+    -50%
+  ); /* 가운데 정렬을 위해 자신의 너비의 반만큼 왼쪽으로 이동 */
+}
+
+.previous-measure {
+  top: 320px;
+  color: rgb(165, 165, 165);
+}
+
+.measure {
+  top: 40%;
+  transform: translate(-50%, -50%);
+}
+
+.next-measure {
+  bottom: 820px;
+  color: rgb(165, 165, 165);
+}
+
 .sheet-music {
-  width: 100%; /* 너비 조절 */
-  min-height: 1000px; /* 높이 조절 */
-  background-color: #f0f0f0; /* 배경색 설정 */
+  width: 100%;
+  height: 1000px;
+  background-color: #f0f0f0;
   margin-top: 50px;
   padding: 20px;
-  font-size: 200px; /* 글자 크기 설정 */
-  text-align: center; /* 가운데 정렬 설정 */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 그림자 설정 */
+  font-size: 200px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.btn-stop,
-.btn-success {
-  position: relative;
-  left: 50%;
-  padding: 1em 2.5em;
-  font-size: 3.5em;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  font-weight: 700;
-  color: #000;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  outline: none;
-  transform: translateX(-50%);
+#stopButton,
+#closeButton,
+#playButton {
+  position: fixed;
+  right: 60px;
+  bottom: 640px;
+  width: 450px;
+  height: 150px;
+  font-size: 4em;
 }
-.btn-play {
-  position: relative;
-  left: 50%;
-  padding: 1em 2.5em;
-  font-size: 3.5em;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  font-weight: 700;
-  color: #000;
-  background-color: #8bf29e;
-  border: none;
-  border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  outline: none;
-  transform: translateX(-50%);
+#playButton {
+  right: 940px;
+}
+#stopButton {
+  right: 510px;
 }
 
-.btn-stop:hover,
-.btn-play:hover,
-.btn-success:hover {
-  background-color: #155724;
-  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-  color: #fff;
-  transform: translate(-50%, -7px);
+.button-container {
+  margin-bottom: 100px;
 }
 
-.btn-stop:active,
-.btn-play:active,
-.btn-success:active {
-  transform: translate(-50%, -1px);
-}
 .abc-container {
   width: 100%;
   height: 100%;
@@ -642,5 +740,53 @@ export default {
   font-family: "Font2";
   font-size: 50px;
   margin-left: 50px;
+}
+
+@keyframes metronome-example {
+  from {
+    transform: scale(0.5);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.v-avatar--metronome {
+  animation-name: metronome-example;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+::v-deep .v-card {
+  margin-top: 50px;
+}
+::v-deep .v-card .v-card-text {
+  line-height: 300px;
+}
+::v-deep .v-toolbar-title__placeholder {
+  height: 100px;
+  font-size: 200px;
+  align-items: center;
+}
+::v-deep .v-btn--icon.v-btn--density-default {
+  width: 100px;
+  height: 100px;
+  font-size: 50px;
+}
+
+/* ::v-deep .v-toolbar:hover {
+  background-color: #cfcdcd;
+}  */
+.bpm {
+  font-size: 200px;
+  margin-left: 30px;
+}
+.metronome-title {
+  position: relative;
+  font-size: 70px;
+  padding: 50px 50px;
+  text-align: left;
+
+  /* height: 200px; */
 }
 </style>
