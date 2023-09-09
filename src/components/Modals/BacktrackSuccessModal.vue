@@ -5,15 +5,21 @@
     @opened="playBacktrack"
   >
     <div class="backtrack-success-modal">
-      <h2 style="font-size: 3em; margin-top: 100px">
-        <div v-if="isLogged">
+      <div v-if="isLogged">
+        <div class="logged-title">
           {{ $store.state.loggedInNickname }} 님의 백킹트랙
         </div>
-      </h2>
+        <div class="sheet-message" style="top: 180px">
+          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
+          있습니다.
+        </div>
+      </div>
 
-      <div style="font-size: 3em; margin-top: 100px">
-        백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
-        있습니다.
+      <div v-else>
+        <div class="sheet-message">
+          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
+          있습니다.
+        </div>
       </div>
 
       <div class="sheet-music">
@@ -51,10 +57,15 @@
           </div>
         </div>
       </div>
-      <v-card width="1500">
-        <v-toolbar @click="toggleCard" style="height: 150px; cursor: pointer">
-          <v-btn>
-            <span class="metronome-title">METRONOME</span>
+      <v-card max-width="1500">
+        <v-toolbar
+          @click="toggleCard"
+          style="height: 150px; width: 1500px; cursor: pointer"
+        >
+          <v-btn
+            style="width: 1500px; height: 150px; margin-top: 80px; right: 10px"
+          >
+            <span class="metronome-title">메트로놈</span>
           </v-btn>
         </v-toolbar>
 
@@ -64,7 +75,7 @@
             class="mb-4"
             justify="space-between"
           >
-            <v-col class="text-left">
+            <v-col class="text-left" v-show="cardOpen">
               <span class="bpm font-weight-light" v-text="bpm"></span>
               <span class="bpm font-weight-light me-1">BPM</span>
               <v-fade-transition>
@@ -105,7 +116,7 @@
             min="40"
             max="218"
             :step="1"
-            @change="updateBpm"
+            @click="updateBpm"
           >
             <template v-slot:prepend>
               <v-btn
@@ -144,23 +155,76 @@
           음원 정지
         </v-btn>
         <v-btn
-          id="closeButton"
+          id="saveButton"
           type="button"
-          @click="closeAllModals"
+          @click="saveBacktrack"
           border
           class="text-none"
           variant="text"
         >
-          닫기
+          악보 저장
         </v-btn>
       </div>
+      <v-btn
+        id="closeButton"
+        type="button"
+        @click="closeAllModals"
+        border
+        class="text-none"
+        variant="text"
+      >
+        닫기
+      </v-btn>
     </div>
+    <v-sheet
+      v-if="isBacktrackSuccess && isLogged"
+      elevation="12"
+      max-width="600"
+      rounded="lg"
+      width="100%"
+      class="pa-4 text-center mx-auto"
+    >
+      <v-icon
+        class="mb-5"
+        color="success"
+        icon="mdi-check-circle"
+        size="112"
+      ></v-icon>
+
+      <h2 class="text-h5 mb-6">You reconciled this account</h2>
+
+      <p class="mb-4 text-medium-emphasis text-body-2">
+        To see a report on this reconciliation, click
+        <a href="#" class="text-decoration-none text-info"
+          >View reconciliation report.</a
+        >
+
+        <br />
+
+        Otherwise, you're done!
+      </p>
+
+      <v-divider class="mb-4"></v-divider>
+
+      <div class="text-end">
+        <v-btn
+          class="text-none"
+          color="success"
+          rounded
+          variant="flat"
+          width="90"
+        >
+          Done
+        </v-btn>
+      </div>
+    </v-sheet>
   </v-dialog>
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 import * as Tone from "tone";
+import * as Toast from "../../plugins/toast";
 export default {
   data() {
     return {
@@ -185,6 +249,8 @@ export default {
       upSoundUrl: "midi/metronome/up.wav",
       downSoundUrl: "midi/metronome/down.wav",
       drumSoundUrl: "midi/Drummer.wav",
+
+      isBacktrackSuccess: false,
     };
   },
   computed: {
@@ -194,7 +260,12 @@ export default {
     // bpm() {
     //   return this.bpm;
     // },
+    // bpm() {
+    //   return this.$store.state.bpm;
+    // },
     color() {
+      this.$store.commit("setBpm", this.bpm);
+
       if (this.bpm < 100) return "indigo";
       if (this.bpm < 125) return "teal";
       if (this.bpm < 140) return "green";
@@ -236,7 +307,6 @@ export default {
     },
 
     updatePreviousChordArray(newChordArray) {
-      // this.previousChordArray = this.currentChordArray;
       this.previousChordArray = newChordArray;
     },
 
@@ -249,19 +319,23 @@ export default {
     },
     updateBpm() {
       Tone.Transport.bpm.value = this.bpm;
+
       this.stopMetronome();
-      this.startMetronome();
+
+      setTimeout(() => {
+        this.startMetronome();
+      }, 0.001);
     },
+
     stopMetronome() {
       if (this.metronomeSequence) {
         this.metronomeSequence.clear();
-        this.transport.stop();
+        // this.transport.stop();
       }
     },
     startMetronome() {
       Tone.start();
 
-      // const tempo = this.$store.state.bpm;
       Tone.Transport.bpm.value = this.bpm;
       this.metronomeSequence = new Tone.Sequence(
         (time, note) => {
@@ -285,7 +359,7 @@ export default {
       );
 
       this.metronomeSequence.start(0.09);
-      this.transport.start();
+      Tone.Transport.start();
     },
 
     /** 재생 */
@@ -293,10 +367,10 @@ export default {
       const self = this;
       Tone.start();
 
-      const tempo = this.$store.state.bpm;
-      Tone.Transport.bpm.value = tempo;
+      // const this.bpm = this.$store.state.bpm;
+      Tone.Transport.bpm.value = this.bpm;
 
-      const bassUrls = {
+      const chordLists = {
         Cb: "midi/bass/B.wav",
         C: "midi/bass/C.wav",
         Csharp: "midi/bass/Db.wav",
@@ -336,7 +410,7 @@ export default {
 
               console.log("현재 배열: ", soundArray);
 
-              playSoundsSequentially(soundArray);
+              playSoundsSequentially("bass", soundArray);
 
               chordIndex++;
             } else {
@@ -355,7 +429,7 @@ export default {
         }
       }
 
-      async function playSoundsSequentially(input, index = 0) {
+      async function playSoundsSequentially(type, input, index = 0) {
         let soundArray;
 
         if (Array.isArray(input)) {
@@ -388,21 +462,55 @@ export default {
           }
 
           let chord = soundArray[index];
+          if (type === "bass") {
+            chord = chord[0];
+          }
+
           if (chord.endsWith("#")) {
             chord = chord.replace("#", "sharp");
           }
 
-          const bassUrl = bassUrls[chord];
-          if (bassUrl) {
-            playSound(bassUrl);
+          console.log(type + ": ", chord);
 
-            // 다음 음원을 BPM에 따른 간격으로 재생
+          const playChord = chordLists[chord];
+          if (playChord) {
+            playSound(playChord);
+
             Tone.Transport.scheduleOnce(() => {
-              playSoundsSequentially(soundArray, index + 1);
-            }, `+${60 / tempo}`);
+              playSoundsSequentially(type, soundArray, index + 1);
+            }, `+${60 / self.bpm}`);
           } else {
             console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
           }
+
+          // let bassChord = soundArray[index][0];
+          // if (bassChord.endsWith("#")) {
+          //   bassChord = bassChord.replace("#", "sharp");
+          // }
+          // let instrumentChord = soundArray[index];
+          // if (instrumentChord.endsWith("#")) {
+          //   instrumentChord = instrumentChord.replace("#", "sharp");
+          // }
+          // console.log("bass: ", bassChord);
+          // console.log("inst: ", instrumentChord);
+
+          // const playBass = chordLists[bassChord];
+          // const playInstrument = chordLists[instrumentChord];
+          // if (playBass) {
+          //   playSound(playBass);
+
+          //   // 다음 음원을 BPM에 따른 간격으로 재생
+          //   Tone.Transport.scheduleOnce(() => {
+          //     playSoundsSequentially(soundArray, index + 1);
+          //   }, `+${60 / self.bpm}`);
+          // } else if (playInstrument) {
+          //   playSound(playInstrument);
+          //   Tone.Transport.scheduleOnce(() => {
+          //     playSoundsSequentially(soundArray, index + 1);
+          //   }, `+${60 / self.bpm}`);
+          // } else {
+          //   console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
+          // }
         } else {
           if (measureIndex < backtrackData[tableIndex].length - 1) {
             self.updateCurrentChordArray(
@@ -412,7 +520,10 @@ export default {
             console.log("마디 바뀌는곳");
             // self.updatePreviousChordArray();
             self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
-            playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
+            playSoundsSequentially(
+              "bass",
+              backtrackData[tableIndex][measureIndex]
+            );
           } else if (tableIndex < backtrackData.length - 1) {
             chordIndex = 0;
             measureIndex = 0;
@@ -424,7 +535,10 @@ export default {
             console.log("테이블 바뀌는곳");
             self.updatePreviousChordArray(backtrackData[tableIndex - 1][3]);
 
-            playSoundsSequentially(backtrackData[tableIndex][measureIndex]);
+            playSoundsSequentially(
+              "bass",
+              backtrackData[tableIndex][measureIndex]
+            );
           } else {
             // 모든 음원 재생이 완료되면 종료
             stopSounds();
@@ -465,28 +579,28 @@ export default {
         autostart: true,
       }).toDestination();
 
-      const metronome = new Tone.Sequence(
-        (time, note) => {
-          // "up" 또는 "down" 사운드 재생
-          if (note === "up" && !this.isUp) {
-            const upSound = new Tone.Player({
-              url: this.upSoundUrl,
-              autostart: true,
-            }).toDestination();
-            this.isUp = true;
-          } else if (note === "down") {
-            const downSound = new Tone.Player({
-              url: this.downSoundUrl,
-              autostart: true,
-            }).toDestination();
-            this.isUp = false;
-          }
-        },
-        ["up", "down", "down", "down"],
-        "4n"
-      );
+      // const metronome = new Tone.Sequence(
+      //   (time, note) => {
+      //     // "up" 또는 "down" 사운드 재생
+      //     if (note === "up" && !this.isUp) {
+      //       const upSound = new Tone.Player({
+      //         url: this.upSoundUrl,
+      //         autostart: true,
+      //       }).toDestination();
+      //       this.isUp = true;
+      //     } else if (note === "down") {
+      //       const downSound = new Tone.Player({
+      //         url: this.downSoundUrl,
+      //         autostart: true,
+      //       }).toDestination();
+      //       this.isUp = false;
+      //     }
+      //   },
+      //   ["up", "down", "down", "down"],
+      //   "4n"
+      // );
 
-      metronome.start(0.09);
+      // metronome.start(0.09);
       playNextSound();
       document.getElementById("playButton").addEventListener("click", () => {
         Tone.Transport.start();
@@ -496,14 +610,14 @@ export default {
       document.getElementById("stopButton").addEventListener("click", () => {
         stopSounds();
         drum.stop();
-        metronome.clear();
+        // metronome.clear();
 
         this.isDrum = false;
         this.transport.stop();
       });
       document.getElementById("closeButton").addEventListener("click", () => {
         drum.stop();
-        metronome.clear();
+        // metronome.clear();
         this.isDrum = false;
         this.transport.stop();
       });
@@ -622,6 +736,45 @@ export default {
 
       return classes;
     },
+    openLoginModal() {
+      this.$store.commit("toggleLoginModal", true);
+    },
+    async saveBacktrack() {
+      try {
+        if (!this.isLogged) {
+          Toast.customError("로그인한 사용자만 저장이 가능합니다.");
+          this.openLoginModal();
+          return;
+        }
+
+        const response = await axios.post(
+          "http://localhost:4000/api/backtrack",
+          {
+            backtrack: this.$store.state.chordData,
+            //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
+          },
+          { withCredentials: true }
+        );
+        if (response.status === 200) {
+          this.isBacktrackSuccess = true;
+        }
+      } catch (error) {
+        console.error("Error generating backtrack:", error);
+        if (error.response) {
+          if (
+            error.response.data.message.includes("필수 입력값이 누락되었습니다")
+          ) {
+            Toast.customError(
+              "악보를 구성해야 저장이 가능합니다. 악보를 확인해 주세요."
+            );
+          } else {
+            Toast.errorMessage(error);
+          }
+        } else {
+          Toast.customWarning("서버 응답을 받을 수 없습니다.");
+        }
+      }
+    },
   },
 };
 </script>
@@ -645,10 +798,8 @@ export default {
 .measure,
 .next-measure {
   position: absolute;
-  left: 50%; /* 가운데 정렬을 위해 왼쪽 위치를 50%로 설정 */
-  transform: translateX(
-    -50%
-  ); /* 가운데 정렬을 위해 자신의 너비의 반만큼 왼쪽으로 이동 */
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .previous-measure {
@@ -667,16 +818,23 @@ export default {
 }
 
 .sheet-music {
-  width: 100%;
+  width: 96%;
   height: 1000px;
   background-color: #f0f0f0;
   margin-top: 50px;
   padding: 20px;
   font-size: 200px;
   text-align: center;
+  justify-content: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 300px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
-
+#saveButton,
 #stopButton,
 #closeButton,
 #playButton {
@@ -693,6 +851,9 @@ export default {
 #stopButton {
   right: 510px;
 }
+#closeButton {
+  bottom: 200px;
+}
 
 .button-container {
   margin-bottom: 100px;
@@ -704,7 +865,21 @@ export default {
   font-size: 80px;
   /* transform: scale(3); */
 }
-
+.logged-title {
+  position: fixed;
+  font-size: 5em;
+  top: 70px;
+  left: 0;
+  right: 0;
+  /* bottom: 0; */
+}
+.sheet-message {
+  position: absolute;
+  font-size: 3em;
+  top: 70px;
+  left: 0;
+  right: 0;
+}
 @font-face {
   font-family: "Font1";
   src: url("../../assets/fonts/realbook.ttf");
@@ -758,10 +933,15 @@ export default {
   animation-direction: alternate;
 }
 ::v-deep .v-card {
-  margin-top: 50px;
+  /* position: fixed;
+  height: 600px;
+  bottom: 190px; */
+  top: 1340px;
 }
 ::v-deep .v-card .v-card-text {
   line-height: 300px;
+  margin-top: -40px;
+  padding: 50px;
 }
 ::v-deep .v-toolbar-title__placeholder {
   height: 100px;
@@ -774,9 +954,11 @@ export default {
   font-size: 50px;
 }
 
-/* ::v-deep .v-toolbar:hover {
-  background-color: #cfcdcd;
-}  */
+::v-deep .v-toolbar__content {
+  position: fixed;
+  max-width: 1500px;
+}
+
 .bpm {
   font-size: 200px;
   margin-left: 30px;
