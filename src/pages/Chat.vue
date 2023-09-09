@@ -11,6 +11,7 @@
           density="compact"
           icon="mdi-plus"
           size="medium"
+          @click="hideChat"
         ></v-btn>
       </v-col>
     </div>
@@ -28,6 +29,11 @@ import { useStore } from "vuex";
 import io from "socket.io-client";
 
 export default {
+  methods: {
+    hideChat() {
+      this.$emit("hide-chat");
+    },
+  },
   setup() {
     const store = useStore();
     const nickname = computed(() => store.state.loggedInNickname);

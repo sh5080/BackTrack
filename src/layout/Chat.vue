@@ -35,6 +35,7 @@
 
     <v-fade-transition hide-on-leave>
       <chat
+        @hide-chat="hideChat"
         v-if="isUserLoggedIn && dialog"
         append-icon="$close"
         elevation="16"
@@ -72,6 +73,9 @@ export default {
       } else {
         Toast.customError("로그인이 필요합니다.");
       }
+    },
+    hideChat() {
+      this.dialog = false;
     },
   },
 };
