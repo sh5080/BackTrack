@@ -137,6 +137,13 @@
                   <button class="next-button" @click="nextMeasure">
                     마디 넘기기
                   </button>
+                  <button
+                    class="generate-button"
+                    type="button"
+                    @click="generateBacktrack"
+                  >
+                    Backingtrack 생성하기
+                  </button>
                 </v-col>
               </div>
             </v-col>
@@ -679,7 +686,8 @@ export default {
         chordSegment === "Db" ||
         chordSegment === "Eb" ||
         chordSegment === "Fb" ||
-        chordSegment === "Gb"
+        chordSegment === "Gb" ||
+        chordSegment === "/"
       ) {
         classes.push("key-font");
       } else if (chordSegment === "-") {
@@ -699,7 +707,7 @@ export default {
     },
 
     registerComma() {
-      const comma = "-";
+      const comma = "/";
 
       let addedToExistingTable = false;
       let moveToNextMeasure = false;
@@ -751,7 +759,7 @@ export default {
         } else {
           if (currentMeasure.length < 4) {
             while (currentMeasure.length < 4) {
-              currentMeasure.push("-");
+              currentMeasure.push("/");
             }
           }
         }
@@ -906,32 +914,13 @@ export default {
             }
           }
         }
-        // const response = await axios.post(
-        //   "http://localhost:4000/api/backtrack",
-        //   {
-        //     bpm: this.selectedBpm,
-        //     measures: this.selectedMeasure,
-        //     chord: this.tables,
-        //   },
-        //   { withCredentials: true }
-        // );
+
         this.$store.commit("setChordData", this.tables);
         this.$store.commit("toggleBacktrackSuccessModal", true);
-        console.log(this.tables);
+
         Toast.alertMessage(
           "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
         );
-        // if (response) {
-        //   const filePath = response.data.filePath;
-        //   this.$store.commit("setBacktrackModalData", {
-        //     abcFilePath: filePath,
-        //   });
-        //   this.tables = [[]];
-        //   this.currentMeasureIndex = 0;
-        //   this.currentTableIndex = 0;
-
-        //   this.$store.commit("toggleBacktrackSuccessModal", true);
-        // }
       } catch (error) {
         console.error("Error generating backtrack:", error);
         if (error.response) {
@@ -1274,14 +1263,14 @@ export default {
   align-items: center;
 }
 .chord-list {
-  position: fixed;
+  position: absolute;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   overflow: hidden;
   margin-top: 80px;
   /* margin-bottom: -50px; */
-  padding: 50px 0px;
+  /* padding: 50px 0px; */
 }
 
 .chords {
@@ -1331,7 +1320,7 @@ export default {
 
 @font-face {
   font-family: "Font1";
-  src: url("../assets/fonts/realbook.ttf");
+  src: url("../assets/fonts/PetalumaScript.woff");
   font-weight: normal;
   font-style: normal;
 }

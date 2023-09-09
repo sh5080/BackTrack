@@ -4,7 +4,7 @@
       <v-col cols="1" style="display: flex; justify-content: flex-start">
         <div class="logo-button-container" @click="goToBacktrack">
           <img
-            src="/img/mainlogo1.png"
+            src="/img/mainlogo2.png"
             alt="Backtrack"
             style="
               margin-left: 50px;

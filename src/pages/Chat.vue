@@ -26,7 +26,6 @@ import ChatForm from "../components/ChatPlugin/ChatForm.vue";
 import Constant from "../constant";
 import { useStore } from "vuex";
 import io from "socket.io-client";
-import axios from "axios";
 
 export default {
   setup() {

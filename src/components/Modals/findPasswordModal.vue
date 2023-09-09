@@ -141,7 +141,7 @@ export default {
     },
     OpenFindUsernameModal() {
       this.$store.commit("toggleFindUsernameModal", true);
-      this.$store.commit("toggleFindPasswordModal", false);
+      // this.$store.commit("toggleFindPasswordModal", false);
     },
 
     hideFindPasswordModal() {

@@ -69,10 +69,11 @@ h6,
   text-transform: uppercase;
 }
 p {
-  font-size: 100px;
+  font-size: 80px;
   font-weight: 450;
   line-height: $line-height-general;
-  white-space: nowrap;
+  // white-space: nowrap;
+
   margin-left: 200px;
   height: 100px;
 }

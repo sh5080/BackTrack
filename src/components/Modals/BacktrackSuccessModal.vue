@@ -179,42 +179,46 @@
     <v-sheet
       v-if="isBacktrackSuccess && isLogged"
       elevation="12"
-      max-width="600"
+      style="z-index: 999; width: 3000px; height: 2200px"
       rounded="lg"
-      width="100%"
       class="pa-4 text-center mx-auto"
     >
       <v-icon
         class="mb-5"
         color="success"
         icon="mdi-check-circle"
-        size="112"
+        size="600"
+        style="margin-top: 500px"
       ></v-icon>
 
-      <h2 class="text-h5 mb-6">You reconciled this account</h2>
-
-      <p class="mb-4 text-medium-emphasis text-body-2">
-        To see a report on this reconciliation, click
-        <a href="#" class="text-decoration-none text-info"
-          >View reconciliation report.</a
-        >
-
-        <br />
-
-        Otherwise, you're done!
-      </p>
+      <h2 class="success-title mb-6">백킹트랙 저장에 성공했습니다.</h2>
+      <br />
+      <div class="success-message mb-4 text-medium-emphasis text-body-2">
+        저장된 백킹트랙은 마이페이지에서 확인할 수 있습니다.
+      </div>
 
       <v-divider class="mb-4"></v-divider>
 
       <div class="text-end">
         <v-btn
+          id="mypageButton"
           class="text-none"
           color="success"
-          rounded
-          variant="flat"
-          width="90"
+          border
+          variant="text"
+          @click="mypage"
         >
-          Done
+          마이페이지
+        </v-btn>
+        <v-btn
+          id="mainButton"
+          type="button"
+          @click="closeAllModals"
+          border
+          class="text-none"
+          variant="text"
+        >
+          닫기
         </v-btn>
       </div>
     </v-sheet>
@@ -249,8 +253,32 @@ export default {
       upSoundUrl: "midi/metronome/up.wav",
       downSoundUrl: "midi/metronome/down.wav",
       drumSoundUrl: "midi/Drummer.wav",
-
+      isSoundPlaying: false,
       isBacktrackSuccess: false,
+
+      chordLists: {
+        Cb: "midi/bass/B.wav",
+        C: "midi/bass/C.wav",
+        Csharp: "midi/bass/Db.wav",
+        Db: "midi/bass/Db.wav",
+        D: "midi/bass/D.wav",
+        Dsharp: "midi/bass/Eb.wav",
+        Eb: "midi/bass/Eb.wav",
+        E: "midi/bass/E.wav",
+        Esharp: "midi/bass/F.wav",
+        Fb: "midi/bass/E.wav",
+        F: "midi/bass/F.wav",
+        Fsharp: "midi/bass/Gb.wav",
+        Gb: "midi/bass/Gb.wav",
+        G: "midi/bass/G.wav",
+        Gsharp: "midi/bass/Ab.wav",
+        Ab: "midi/bass/Ab.wav",
+        A: "midi/bass/A.wav",
+        Asharp: "midi/bass/Bb.wav",
+        Bb: "midi/bass/Bb.wav",
+        B: "midi/bass/B.wav",
+        Bsharp: "midi/bass/C.wav",
+      },
     };
   },
   computed: {
@@ -302,6 +330,9 @@ export default {
     closeAllModals() {
       this.$store.commit("toggleBacktrackSuccessModal", false);
     },
+    mypage() {
+      this.$router.push("/user");
+    },
     toggleCard() {
       this.cardOpen = !this.cardOpen;
     },
@@ -319,12 +350,13 @@ export default {
     },
     updateBpm() {
       Tone.Transport.bpm.value = this.bpm;
+      if (this.isPlaying) {
+        this.stopMetronome();
 
-      this.stopMetronome();
-
-      setTimeout(() => {
-        this.startMetronome();
-      }, 0.001);
+        setTimeout(() => {
+          this.startMetronome();
+        }, 0.001);
+      }
     },
 
     stopMetronome() {
@@ -364,265 +396,239 @@ export default {
 
     /** 재생 */
     playAudio() {
-      const self = this;
-      Tone.start();
+      if (!this.isSoundPlaying) {
+        const self = this;
+        Tone.Transport.stop();
+        Tone.Transport.position = 0;
+        Tone.start();
 
-      // const this.bpm = this.$store.state.bpm;
-      Tone.Transport.bpm.value = this.bpm;
+        Tone.Transport.bpm.value = this.bpm;
 
-      const chordLists = {
-        Cb: "midi/bass/B.wav",
-        C: "midi/bass/C.wav",
-        Csharp: "midi/bass/Db.wav",
-        Db: "midi/bass/Db.wav",
-        D: "midi/bass/D.wav",
-        Dsharp: "midi/bass/Eb.wav",
-        Eb: "midi/bass/Eb.wav",
-        E: "midi/bass/E.wav",
-        Esharp: "midi/bass/F.wav",
-        Fb: "midi/bass/E.wav",
-        F: "midi/bass/F.wav",
-        Fsharp: "midi/bass/Gb.wav",
-        Gb: "midi/bass/Gb.wav",
-        G: "midi/bass/G.wav",
-        Gsharp: "midi/bass/Ab.wav",
-        Ab: "midi/bass/Ab.wav",
-        A: "midi/bass/A.wav",
-        Asharp: "midi/bass/Bb.wav",
-        Bb: "midi/bass/Bb.wav",
-        B: "midi/bass/B.wav",
-        Bsharp: "midi/bass/C.wav",
-      };
-      const backtrackData = this.$store.state.chordData;
+        const chordLists = {
+          Cb: "midi/bass/B.wav",
+          C: "midi/bass/C.wav",
+          Csharp: "midi/bass/Db.wav",
+          Db: "midi/bass/Db.wav",
+          D: "midi/bass/D.wav",
+          Dsharp: "midi/bass/Eb.wav",
+          Eb: "midi/bass/Eb.wav",
+          E: "midi/bass/E.wav",
+          Esharp: "midi/bass/F.wav",
+          Fb: "midi/bass/E.wav",
+          F: "midi/bass/F.wav",
+          Fsharp: "midi/bass/Gb.wav",
+          Gb: "midi/bass/Gb.wav",
+          G: "midi/bass/G.wav",
+          Gsharp: "midi/bass/Ab.wav",
+          Ab: "midi/bass/Ab.wav",
+          A: "midi/bass/A.wav",
+          Asharp: "midi/bass/Bb.wav",
+          Bb: "midi/bass/Bb.wav",
+          B: "midi/bass/B.wav",
+          Bsharp: "midi/bass/C.wav",
+          space: "",
+        };
+        const backtrackData = this.$store.state.chordData;
 
-      let tableIndex = this.tableIndex;
-      let measureIndex = this.measureIndex;
-      let chordIndex = this.chordIndex;
+        let tableIndex = this.tableIndex;
+        let measureIndex = this.measureIndex;
+        let chordIndex = this.chordIndex;
 
-      function playNextSound() {
-        if (tableIndex < backtrackData.length) {
-          const currentRow = backtrackData[tableIndex];
-          if (measureIndex < currentRow.length) {
-            const currentCol = currentRow[measureIndex];
-            if (chordIndex < currentCol.length) {
-              const sound = currentCol[chordIndex];
-              const soundArray = currentCol;
+        function playNextSound() {
+          if (tableIndex < backtrackData.length) {
+            const currentRow = backtrackData[tableIndex];
+            if (measureIndex < currentRow.length) {
+              const currentCol = currentRow[measureIndex];
+              if (chordIndex < currentCol.length) {
+                const sound = currentCol[chordIndex];
+                const soundArray = currentCol;
 
-              console.log("현재 배열: ", soundArray);
+                console.log("현재 배열: ", soundArray);
 
-              playSoundsSequentially("bass", soundArray);
+                playSoundsSequentially("bass", soundArray);
 
-              chordIndex++;
+                chordIndex++;
+              } else {
+                // 하위 배열이 모두 재생되면 다음 열로 이동
+                chordIndex = 0;
+                self.measureIndex++;
+              }
             } else {
-              // 하위 배열이 모두 재생되면 다음 열로 이동
-              chordIndex = 0;
-              self.measureIndex++;
+              // 현재 행이 모두 재생되면 다음 행으로 이동
+              measureIndex = 0;
+              self.tableIndex++;
             }
-          } else {
-            // 현재 행이 모두 재생되면 다음 행으로 이동
-            measureIndex = 0;
-            self.tableIndex++;
-          }
-        } else {
-          // 모든 음원 재생이 완료되면 종료
-          console.log("모든 음원 재생 완료");
-        }
-      }
-
-      async function playSoundsSequentially(type, input, index = 0) {
-        let soundArray;
-
-        if (Array.isArray(input)) {
-          soundArray = input;
-        } else {
-          console.error("잘못된 입력 형식입니다.", input);
-          return;
-        }
-
-        if (index < soundArray.length) {
-          console.log("코드 바뀌는곳");
-
-          if (measureIndex !== 0) {
-            self.updatePreviousChordArray(
-              backtrackData[tableIndex][measureIndex - 1]
-            );
-          }
-          self.updateCurrentChordArray(backtrackData[tableIndex][measureIndex]);
-
-          if (measureIndex === 3 && soundArray.length === 4) {
-            if (backtrackData[tableIndex + 1] !== undefined) {
-              self.updateNextChordArray(backtrackData[tableIndex + 1][0]);
-            } else if (backtrackData[tableIndex + 1] === undefined) {
-              self.updateNextChordArray([]);
-            }
-          } else {
-            self.updateNextChordArray(
-              backtrackData[tableIndex][measureIndex + 1]
-            );
-          }
-
-          let chord = soundArray[index];
-          if (type === "bass") {
-            chord = chord[0];
-          }
-
-          if (chord.endsWith("#")) {
-            chord = chord.replace("#", "sharp");
-          }
-
-          console.log(type + ": ", chord);
-
-          const playChord = chordLists[chord];
-          if (playChord) {
-            playSound(playChord);
-
-            Tone.Transport.scheduleOnce(() => {
-              playSoundsSequentially(type, soundArray, index + 1);
-            }, `+${60 / self.bpm}`);
-          } else {
-            console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
-          }
-
-          // let bassChord = soundArray[index][0];
-          // if (bassChord.endsWith("#")) {
-          //   bassChord = bassChord.replace("#", "sharp");
-          // }
-          // let instrumentChord = soundArray[index];
-          // if (instrumentChord.endsWith("#")) {
-          //   instrumentChord = instrumentChord.replace("#", "sharp");
-          // }
-          // console.log("bass: ", bassChord);
-          // console.log("inst: ", instrumentChord);
-
-          // const playBass = chordLists[bassChord];
-          // const playInstrument = chordLists[instrumentChord];
-          // if (playBass) {
-          //   playSound(playBass);
-
-          //   // 다음 음원을 BPM에 따른 간격으로 재생
-          //   Tone.Transport.scheduleOnce(() => {
-          //     playSoundsSequentially(soundArray, index + 1);
-          //   }, `+${60 / self.bpm}`);
-          // } else if (playInstrument) {
-          //   playSound(playInstrument);
-          //   Tone.Transport.scheduleOnce(() => {
-          //     playSoundsSequentially(soundArray, index + 1);
-          //   }, `+${60 / self.bpm}`);
-          // } else {
-          //   console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
-          // }
-        } else {
-          if (measureIndex < backtrackData[tableIndex].length - 1) {
-            self.updateCurrentChordArray(
-              backtrackData[tableIndex][measureIndex]
-            );
-            measureIndex++;
-            console.log("마디 바뀌는곳");
-            // self.updatePreviousChordArray();
-            self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
-            playSoundsSequentially(
-              "bass",
-              backtrackData[tableIndex][measureIndex]
-            );
-          } else if (tableIndex < backtrackData.length - 1) {
-            chordIndex = 0;
-            measureIndex = 0;
-            tableIndex++;
-            self.updateNextChordArray(backtrackData[tableIndex][measureIndex]);
-            self.updateCurrentChordArray(
-              backtrackData[tableIndex][measureIndex]
-            );
-            console.log("테이블 바뀌는곳");
-            self.updatePreviousChordArray(backtrackData[tableIndex - 1][3]);
-
-            playSoundsSequentially(
-              "bass",
-              backtrackData[tableIndex][measureIndex]
-            );
           } else {
             // 모든 음원 재생이 완료되면 종료
-            stopSounds();
             console.log("모든 음원 재생 완료");
           }
         }
-      }
 
-      let prevSound;
-      let currentSounds = [];
-      function stopSounds() {
-        // 현재 재생 중인 모든 음원을 중지
-        currentSounds.forEach((sound) => {
-          sound.stop();
-        });
-        currentSounds = [];
-      }
-      function playSound(soundUrl) {
-        console.log("현재 재생된 url: ", soundUrl);
+        async function playSoundsSequentially(type, input, index = 0) {
+          let soundArray;
 
-        stopSounds();
+          if (Array.isArray(input)) {
+            soundArray = input;
+          } else {
+            console.error("잘못된 입력 형식입니다.", input);
+            return;
+          }
 
-        const sound = new Tone.Player({
-          url: soundUrl,
+          if (index < soundArray.length) {
+            console.log("코드 바뀌는곳");
+
+            if (measureIndex !== 0) {
+              self.updatePreviousChordArray(
+                backtrackData[tableIndex][measureIndex - 1]
+              );
+            }
+            self.updateCurrentChordArray(
+              backtrackData[tableIndex][measureIndex]
+            );
+
+            if (measureIndex === 3 && soundArray.length === 4) {
+              if (backtrackData[tableIndex + 1] !== undefined) {
+                self.updateNextChordArray(backtrackData[tableIndex + 1][0]);
+              } else if (backtrackData[tableIndex + 1] === undefined) {
+                self.updateNextChordArray([]);
+              }
+            } else {
+              self.updateNextChordArray(
+                backtrackData[tableIndex][measureIndex + 1]
+              );
+            }
+
+            let chord = soundArray[index];
+            if (type === "bass") {
+              chord = chord[0];
+            }
+
+            if (chord.endsWith("#")) {
+              chord = chord.replace("#", "sharp");
+            }
+            if (chord.endsWith("/")) {
+              chord = chord.replace("/", "space");
+            }
+
+            console.log(type + ": ", chord);
+
+            if (chord === "space") {
+              // "space"인 경우 소리를 재생하지 않고 다음 단계로 넘어감
+              Tone.Transport.scheduleOnce(() => {
+                playSoundsSequentially(type, soundArray, index + 1);
+              }, `+${60 / self.bpm}`);
+            } else {
+              const playChord = chordLists[chord];
+              if (playChord) {
+                self.isSoundPlaying = true;
+                playSound(playChord);
+
+                Tone.Transport.scheduleOnce(() => {
+                  playSoundsSequentially(type, soundArray, index + 1);
+                }, `+${60 / self.bpm}`);
+              } else {
+                console.error(`음원 ${chord}의 URL을 찾을 수 없습니다.`);
+              }
+            }
+          } else {
+            if (measureIndex < backtrackData[tableIndex].length - 1) {
+              self.updateCurrentChordArray(
+                backtrackData[tableIndex][measureIndex]
+              );
+              measureIndex++;
+              console.log("마디 바뀌는곳");
+
+              self.updateNextChordArray(
+                backtrackData[tableIndex][measureIndex]
+              );
+              playSoundsSequentially(
+                "bass",
+                backtrackData[tableIndex][measureIndex]
+              );
+            } else if (tableIndex < backtrackData.length - 1) {
+              chordIndex = 0;
+              measureIndex = 0;
+              tableIndex++;
+              self.updateNextChordArray(
+                backtrackData[tableIndex][measureIndex]
+              );
+              self.updateCurrentChordArray(
+                backtrackData[tableIndex][measureIndex]
+              );
+              console.log("테이블 바뀌는곳");
+              self.updatePreviousChordArray(backtrackData[tableIndex - 1][3]);
+
+              playSoundsSequentially(
+                "bass",
+                backtrackData[tableIndex][measureIndex]
+              );
+            } else {
+              // 모든 음원 재생이 완료되면 종료
+              stopSounds();
+              console.log("모든 음원 재생 완료");
+            }
+          }
+        }
+
+        let prevSound;
+        let currentSounds = [];
+        function stopSounds() {
+          // 현재 재생 중인 모든 음원을 중지
+          currentSounds.forEach((sound) => {
+            sound.stop();
+          });
+          currentSounds = [];
+          self.isSoundPlaying = false;
+        }
+        function playSound(soundUrl) {
+          console.log("현재 재생된 url: ", soundUrl);
+          // self.isSoundPlaying = false;
+          // stopSounds();
+
+          const sound = new Tone.Player({
+            url: soundUrl,
+            autostart: true,
+          }).toDestination();
+
+          currentSounds.forEach((sound) => {
+            sound.stop();
+          });
+
+          prevSound = sound;
+          currentSounds.push(sound);
+        }
+
+        const drum = new Tone.Player({
+          url: this.drumSoundUrl,
           autostart: true,
         }).toDestination();
 
-        currentSounds.forEach((sound) => {
-          sound.stop();
+        playNextSound();
+        // document.getElementById("playButton").addEventListener("click", () => {
+
+        //   Tone.Transport.start();
+        // });
+
+        // 정지 버튼 클릭 이벤트 처리
+        document.getElementById("stopButton").addEventListener("click", () => {
+          stopSounds();
+          drum.stop();
+          // metronome.clear();
+
+          this.isDrum = false;
+          this.transport.stop();
         });
+        document.getElementById("closeButton").addEventListener("click", () => {
+          drum.stop();
+          // metronome.clear();
+          this.isDrum = false;
+          this.transport.stop();
+        });
+        // 악기 시작
+        this.transport.start();
 
-        prevSound = sound;
-        currentSounds.push(sound);
+        // this.isSoundPlaying = true;
       }
-
-      const drum = new Tone.Player({
-        url: this.drumSoundUrl,
-        autostart: true,
-      }).toDestination();
-
-      // const metronome = new Tone.Sequence(
-      //   (time, note) => {
-      //     // "up" 또는 "down" 사운드 재생
-      //     if (note === "up" && !this.isUp) {
-      //       const upSound = new Tone.Player({
-      //         url: this.upSoundUrl,
-      //         autostart: true,
-      //       }).toDestination();
-      //       this.isUp = true;
-      //     } else if (note === "down") {
-      //       const downSound = new Tone.Player({
-      //         url: this.downSoundUrl,
-      //         autostart: true,
-      //       }).toDestination();
-      //       this.isUp = false;
-      //     }
-      //   },
-      //   ["up", "down", "down", "down"],
-      //   "4n"
-      // );
-
-      // metronome.start(0.09);
-      playNextSound();
-      document.getElementById("playButton").addEventListener("click", () => {
-        Tone.Transport.start();
-      });
-
-      // 정지 버튼 클릭 이벤트 처리
-      document.getElementById("stopButton").addEventListener("click", () => {
-        stopSounds();
-        drum.stop();
-        // metronome.clear();
-
-        this.isDrum = false;
-        this.transport.stop();
-      });
-      document.getElementById("closeButton").addEventListener("click", () => {
-        drum.stop();
-        // metronome.clear();
-        this.isDrum = false;
-        this.transport.stop();
-      });
-      // 메트로놈 시작
-      this.transport.start();
     },
 
     getChordInMeasure(chordSegment) {
@@ -654,7 +660,7 @@ export default {
         ].includes(chordSegment)
       ) {
         classes.push("key-font");
-      } else if (chordSegment === "-") {
+      } else if (chordSegment === "/") {
         classes.push("blank-font");
       } else {
         classes.push("extends-font");
@@ -691,8 +697,8 @@ export default {
         ].includes(chordSegment)
       ) {
         classes.push("small-key-font");
-      } else if (chordSegment === "-") {
-        classes.push("blank-font");
+      } else if (chordSegment === "/") {
+        classes.push("small-blank-font");
       } else {
         classes.push("extends-font");
       }
@@ -728,8 +734,8 @@ export default {
         ].includes(chordSegment)
       ) {
         classes.push("small-key-font");
-      } else if (chordSegment === "-") {
-        classes.push("blank-font");
+      } else if (chordSegment === "/") {
+        classes.push("small-blank-font");
       } else {
         classes.push("extends-font");
       }
@@ -803,17 +809,19 @@ export default {
 }
 
 .previous-measure {
-  top: 320px;
+  /* top: 320px; */
+  top: -40px;
   color: rgb(165, 165, 165);
 }
 
 .measure {
-  top: 40%;
+  top: 50%;
   transform: translate(-50%, -50%);
 }
 
 .next-measure {
-  bottom: 820px;
+  /* bottom: 820px; */
+  bottom: 10px;
   color: rgb(165, 165, 165);
 }
 
@@ -834,6 +842,8 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
+#mypageButton,
+#mainButton,
 #saveButton,
 #stopButton,
 #closeButton,
@@ -851,8 +861,16 @@ export default {
 #stopButton {
   right: 510px;
 }
+#mypageButton,
+#mainButton,
 #closeButton {
   bottom: 200px;
+}
+#mypageButton {
+  right: 900px;
+}
+#mainButton {
+  right: 400px;
 }
 
 .button-container {
@@ -912,9 +930,16 @@ export default {
   bottom: 100px;
 }
 .blank-font {
-  font-family: "Font2";
-  font-size: 50px;
-  margin-left: 50px;
+  font-family: "Font1";
+  font-size: 250px;
+  padding: 0px 100px;
+  margin-bottom: 50px;
+}
+.small-blank-font {
+  font-family: "Font1";
+  font-size: 130px;
+  padding: 0px 100px;
+  margin-bottom: 30px;
 }
 
 @keyframes metronome-example {
@@ -970,5 +995,21 @@ export default {
   text-align: left;
 
   /* height: 200px; */
+}
+.success-title {
+  font-size: 6rem !important;
+  font-weight: 400;
+  line-height: 5rem;
+  letter-spacing: normal !important;
+  font-family: "Roboto", sans-serif !important;
+  text-transform: none !important;
+}
+.success-message {
+  font-size: 4rem !important;
+  font-weight: 400;
+  line-height: 3rem;
+  letter-spacing: normal !important;
+  font-family: "Roboto", sans-serif !important;
+  text-transform: none !important;
 }
 </style>
