@@ -2,9 +2,7 @@
   <div class="content">
     <div class="container-fluid">
       <div class="row">
-        <div class="col">
-          <user-card> </user-card>
-        </div>
+        <user-card> </user-card>
       </div>
     </div>
   </div>

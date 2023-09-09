@@ -53,4 +53,13 @@ export default {
   },
 };
 </script>
-<style></style>
+<style scoped>
+.card-body {
+  min-height: 2600px;
+}
+.card {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+</style>

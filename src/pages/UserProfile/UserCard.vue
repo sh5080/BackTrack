@@ -259,6 +259,30 @@
       <FindPassword />
     </v-dialog>
   </card>
+  <card
+    v-if="fetchedUserInfo"
+    class="card-backtrack"
+    :style="{ width: isFullScreen ? '93%' : '45%' }"
+  >
+    <div class="author">
+      <h4 class="title">백킹트랙</h4>
+      <div class="user-info">
+        <div class="info-item">
+          <span class="info-label">아이디</span>
+          <span class="info-value">{{ fetchedUserInfo.username }} </span>
+        </div>
+      </div>
+      <div class="fullscreen-button" @click="toggleFullScreen">
+        <i
+          :class="
+            isFullScreen
+              ? 'mdi mdi-arrow-collapse-right'
+              : 'mdi mdi-arrow-collapse-left'
+          "
+        ></i>
+      </div>
+    </div>
+  </card>
 </template>
 <script>
 import Card from "./Card.vue";
@@ -290,12 +314,16 @@ export default {
       emailIsValid: false,
       emailError: false,
       isShaking: false,
+      isFullScreen: false,
     };
   },
   created() {
     this.fetchUserInfo();
   },
   methods: {
+    toggleFullScreen() {
+      this.isFullScreen = !this.isFullScreen;
+    },
     openPassword() {
       this.passwordExpanded = !this.passwordExpanded;
     },
@@ -446,6 +474,26 @@ export default {
 };
 </script>
 <style scoped>
+.fullscreen-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  font-size: 70px;
+}
+
+.card-backtrack {
+  transition: width 0.3s;
+  position: fixed;
+  /* top: 0; */
+  right: 80px;
+  /* bottom: 0; */
+
+  z-index: 100;
+  width: 2750px;
+  flex-direction: row-reverse;
+}
+
 .error-shake-animation {
   animation: shake 0.5s;
 }
@@ -475,7 +523,7 @@ export default {
 }
 .author {
   margin-top: 20px;
-  padding: 50px 100px;
+  padding: 120px 100px;
 }
 
 .title {
