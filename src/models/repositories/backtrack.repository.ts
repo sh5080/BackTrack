@@ -19,7 +19,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async findBacktrack(username: string, backtrack: string) {
+  async getBacktrack(username: string) {
     try {
       if (!username) {
         throw new AppError(
@@ -29,11 +29,11 @@ export const BacktrackRepository = AppDataSource.getRepository(
         );
       }
 
-      const backtrackData = await this.findOne({
-        where: { username, backtrack },
+      const allBacktracks = await this.find({
+        where: { username },
       });
 
-      return backtrackData; // You might want to return the found data
+      return allBacktracks;
     } catch (error) {
       throw error;
     }

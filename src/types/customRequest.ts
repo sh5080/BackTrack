@@ -19,6 +19,7 @@ export interface CustomRequest extends Request {
     message: string;
   };
   query: {
+    page: string;
     username: string;
     code: string;
     filePath: string;
