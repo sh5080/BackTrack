@@ -21,7 +21,6 @@ export const saveSessionToRedis = async (
   const sessionExpire = new Date(koreanTime.getTime() + maxAge);
 
   const sessionData = JSON.stringify({
-    username: username,
     nickname: nickname,
     refreshToken: refreshToken,
     session_start_time: sessionStart,
