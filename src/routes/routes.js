@@ -120,8 +120,10 @@ axios.interceptors.response.use(
           errorMessage.includes("새 비밀번호와 비밀번호 확인이")
         ) {
           // 처리 로직 추가
-        } else if (errorMessage !== "비정상적인 접근입니다.") {
-          // alert(errorMessage);
+        } else if (errorMessage.includes("유효하지 않은")) {
+          store.dispatch("resetState");
+          router.push("/login");
+          alert("세션이 만료되었습니다. 다시 로그인해주세요.");
         } else {
           store.dispatch("resetState");
           router.push("/login");
