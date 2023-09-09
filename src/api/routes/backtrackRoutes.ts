@@ -8,6 +8,7 @@ const router = Router();
 /** 백킹트랙 생성 */
 router.post(
   "/",
+  validateToken,
   // validateRequestBody(["bpm", "measures", "chordPattern"]),
   backtrackController.createBacktrack
 );
