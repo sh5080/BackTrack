@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import * as authModel from "../models/authModel";
+
 import jwt from "jsonwebtoken";
 import config from "../config";
 import * as Type from "../types/type";
@@ -380,8 +380,8 @@ export const updatePassword = async (
  */
 export const deleteUser = async (username: string) => {
   try {
-    const deletedUser = await authModel.deleteUserByUsername(username);
-    return deletedUser;
+    // const deletedUser = await AuthRepository.deleteUserByUsername(username);
+    // return deletedUser;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
