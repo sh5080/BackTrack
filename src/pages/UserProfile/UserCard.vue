@@ -269,7 +269,24 @@
       <div class="user-info">
         <div class="info-item">
           <span class="info-label">목록</span>
-          <span class="info-value">{{ fetchedBacktrackInfo }} </span>
+          <v-data-table
+            :currentPage="currentPage"
+            :headers="headers"
+            :items="backtracks"
+            :items-per-page="itemsPerPage"
+            hide-default-footer
+            class="elevation-1"
+          >
+            <template v-slot:bottom>
+              <div class="text-center pt-2">
+                <v-pagination
+                  v-model="currentPage"
+                  :length="pageCount"
+                  @update:model-value="onPageChange"
+                ></v-pagination>
+              </div>
+            </template>
+          </v-data-table>
         </div>
       </div>
       <div class="fullscreen-button" @click="toggleFullScreen">
@@ -298,7 +315,22 @@ export default {
     return {
       fetchedUserInfo: null,
       fetchedBacktrackInfo: null,
+      totalItems: 0,
       currentPage: 1,
+      itemsPerPage: 10,
+      headers: [
+        {
+          align: "start",
+          key: "name",
+          sortable: false,
+        },
+        { title: "No", key: "id" },
+        { title: "제목", key: "title" },
+        { title: "날짜", key: "createdAt" },
+      ],
+      backtracks: [],
+      search: "",
+
       provider: "Backtrack",
       passwordExpanded: false,
       password: null,
@@ -321,9 +353,18 @@ export default {
   },
   created() {
     this.fetchUserInfo();
-    this.fetchBacktrackInfo(this.currentPage);
+    this.fetchBacktrackInfo();
+  },
+  computed: {
+    pageCount() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
   methods: {
+    onPageChange(newPage) {
+      this.currentPage = newPage;
+      this.fetchBacktrackInfo();
+    },
     toggleFullScreen() {
       this.isFullScreen = !this.isFullScreen;
     },
@@ -362,7 +403,6 @@ export default {
         );
         this.nicknameIsValid = true;
         this.nicknameMessage = response.data;
-        // localStorage.setItem("n_id", this.nickname);
         this.$router.go();
       } catch (error) {
         console.error("Failed to fetch user info:", error);
@@ -435,10 +475,13 @@ export default {
         console.error("Failed to fetch user info:", error);
       }
     },
-    async fetchBacktrackInfo(pageNumber) {
+    async fetchBacktrackInfo() {
       try {
+        if (!this.backtracks || this.backtracks.length === 0) {
+          this.fetchBacktrackPageNum();
+        }
         const response = await axios.get(
-          `http://localhost:4000/api/backtrack?page=${pageNumber}`,
+          `http://localhost:4000/api/backtrack?page=${this.currentPage}`,
 
           {
             withCredentials: true,
@@ -446,8 +489,25 @@ export default {
         );
 
         this.fetchedBacktrackInfo = response.data;
+
+        this.backtracks = this.fetchedBacktrackInfo.backtrackData;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
+      }
+    },
+    async fetchBacktrackPageNum() {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/backtrack/page`,
+
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.totalItems = response.data;
+      } catch (error) {
+        console.error("Failed to fetch BacktrackPage info:", error);
       }
     },
     async showFindPassword() {
