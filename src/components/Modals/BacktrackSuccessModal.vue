@@ -17,7 +17,7 @@
 
       <div v-else>
         <div class="sheet-message">
-          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
+          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생할 수
           있습니다.
         </div>
       </div>
@@ -186,6 +186,7 @@
                         v-model="title"
                         style="font-size: 130px; height: 300px"
                         label="제목*"
+                        hint="30자 이내로 입력 가능합니다."
                         persistent-hint
                         required
                       ></v-text-field>
@@ -366,6 +367,7 @@ export default {
       this.$store.commit("toggleBacktrackSuccessModal", false);
     },
     mypage() {
+      this.closeAllModals();
       this.$router.push("/user");
     },
     toggleCard() {
@@ -1060,7 +1062,7 @@ export default {
   height: 1000px;
 }
 .register-title {
-  font-size: 100px;
+  font-size: 80px;
 
   position: absolute;
   padding: 100px 100px;
@@ -1082,7 +1084,7 @@ export default {
   text-transform: none !important;
 }
 ::v-deep .v-text-field input.v-field__input {
-  font-size: 100px;
+  font-size: 70px;
 }
 ::v-deep
   .v-input--density-default
@@ -1091,8 +1093,16 @@ export default {
 .v-label.v-field-label {
   font-size: 40px;
 }
+::v-deep .v-messages {
+  font-size: 60px;
+  top: 40px;
+}
+
 ::v-deep .v-label {
-  font-size: 80px;
+  font-size: 70px;
+}
+::v-deep .v-input__details {
+  overflow: visible;
 }
 ::v-deep .v-text-field .v-field {
   margin-top: 300px;
