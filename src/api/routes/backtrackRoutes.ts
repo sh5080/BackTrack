@@ -13,6 +13,6 @@ router.post(
   backtrackController.createBacktrack
 );
 
-router.get("/:fileName", backtrackController.getBacktrack);
+router.get("/", validateToken, backtrackController.getBacktrack);
 
 export default router;
