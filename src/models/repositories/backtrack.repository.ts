@@ -9,13 +9,15 @@ export const BacktrackRepository = AppDataSource.getRepository(
   async createBacktrack(
     username: string,
     title: string,
-    backtrack: string[][][]
+    backtrack: string[][][],
+    createdAt: string
   ) {
     try {
       const userData = this.create({
         username,
         title,
         backtrack,
+        createdAt,
       });
 
       await this.save(userData);

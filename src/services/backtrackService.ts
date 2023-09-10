@@ -7,7 +7,23 @@ export const createBacktrack = async (
   backtrack: string[][][]
 ) => {
   try {
-    await BacktrackRepository.createBacktrack(username, title, backtrack);
+    const now = new Date(); // 현재 시간을 가져옴
+
+    // 한국 시간으로 변환
+    const krDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+
+    const year = krDate.getFullYear();
+    const month = String(krDate.getMonth() + 1).padStart(2, "0");
+    const day = String(krDate.getDate()).padStart(2, "0");
+
+    const createdAt = `${year}-${month}-${day}`;
+
+    await BacktrackRepository.createBacktrack(
+      username,
+      title,
+      backtrack,
+      createdAt
+    );
   } catch (error) {
     throw error;
   }
