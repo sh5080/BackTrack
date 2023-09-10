@@ -14,6 +14,14 @@ export const createBacktrack = async (
     const username = req.user!.username;
     console.log("backtrack: ", backtrack);
 
+    if (title.length > 30) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "제목은 30자 이내로 작성 가능합니다.",
+        400
+      );
+    }
+
     const backtrackData = await backtrackService.createBacktrack(
       username,
       title,
