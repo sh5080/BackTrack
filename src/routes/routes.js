@@ -117,9 +117,9 @@ axios.interceptors.response.use(
           errorMessage.includes("없는 사용자") ||
           errorMessage.includes("새로운") ||
           errorMessage.includes("간편로그인") ||
-          errorMessage.includes("새 비밀번호와 비밀번호 확인이")
+          errorMessage.includes("새 비밀번호와 비밀번호 확인이") ||
+          errorMessage.includes("제목은 20자 이내")
         ) {
-          // 처리 로직 추가
         } else if (errorMessage.includes("유효하지 않은")) {
           store.dispatch("resetState");
           router.push("/login");
