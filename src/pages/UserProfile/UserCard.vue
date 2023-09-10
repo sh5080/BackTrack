@@ -265,11 +265,11 @@
     :style="{ width: isFullScreen ? '93%' : '45%' }"
   >
     <div class="author">
-      <h4 class="title">백킹트랙</h4>
+      <h4 class="title">{{ fetchedUserInfo.nickname }} 님의 백킹트랙 관리</h4>
       <div class="user-info">
         <div class="info-item">
-          <span class="info-label">아이디</span>
-          <span class="info-value">{{ fetchedUserInfo.username }} </span>
+          <span class="info-label">목록</span>
+          <span class="info-value">{{ fetchedBacktrackInfo }} </span>
         </div>
       </div>
       <div class="fullscreen-button" @click="toggleFullScreen">
@@ -297,6 +297,8 @@ export default {
   data() {
     return {
       fetchedUserInfo: null,
+      fetchedBacktrackInfo: null,
+      currentPage: 1,
       provider: "Backtrack",
       passwordExpanded: false,
       password: null,
@@ -319,6 +321,7 @@ export default {
   },
   created() {
     this.fetchUserInfo();
+    this.fetchBacktrackInfo(this.currentPage);
   },
   methods: {
     toggleFullScreen() {
@@ -428,6 +431,21 @@ export default {
         );
         this.provider = localStorage.getItem("oauth");
         this.fetchedUserInfo = response.data;
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    },
+    async fetchBacktrackInfo(pageNumber) {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/backtrack?page=${pageNumber}`,
+
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.fetchedBacktrackInfo = response.data;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
