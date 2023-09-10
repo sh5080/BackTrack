@@ -16,7 +16,7 @@ export const createBacktrack = async (
 export const getBacktrack = async (
   username: string,
   page: number = 1,
-  pageSize: number = 5
+  pageSize: number = 10
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
@@ -26,6 +26,16 @@ export const getBacktrack = async (
     const paginatedBacktracks = allBacktracks.slice(startIndex, endIndex);
 
     return paginatedBacktracks;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getBacktrackPage = async (username: string) => {
+  try {
+    const page = await BacktrackRepository.getBacktrack(username);
+
+    return page.length;
   } catch (error) {
     throw error;
   }
