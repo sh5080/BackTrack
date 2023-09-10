@@ -83,7 +83,7 @@ export default {
 <style scoped>
 svg {
   cursor: pointer;
-  /* z-index: -1; */
+  z-index: 100;
   position: fixed;
 
   top: auto;
