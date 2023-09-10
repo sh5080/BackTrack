@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import { Application } from "express";
 import { saveChatToRedis, redisClient } from "../config/redis";
 
-const MESSAGE_COUNTER_KEY = "chat_id_counter";
 export function socketIoLoader(app: Application): Server {
   const httpServer = app.listen(3000);
   const io = new Server(httpServer, {
@@ -11,34 +10,42 @@ export function socketIoLoader(app: Application): Server {
       credentials: true,
     },
   });
+  interface ActiveUsers {
+    [userId: string]: string | null;
+  }
+
+  const activeUsers: ActiveUsers = {};
 
   io.on("connection", (socket) => {
     console.log("SocketIO is connected");
 
+    socket.emit("activeUsers", activeUsers);
+
     socket.on("chat", async (data) => {
-      const { nickname, message } = data;
-      console.log(`Received message from ${nickname}: ${message}`);
-
+      const { sender, receiver, message } = data;
       try {
-        const chatId = await redisClient.incr(MESSAGE_COUNTER_KEY);
-        const chatIdWithNickname = `${chatId}_${nickname}`;
-
-        await saveChatToRedis(chatIdWithNickname, message, 30 * 24 * 60 * 60); //30일
-        console.log(
-          "Redis saved successful ",
-          chatIdWithNickname,
-          ": ",
-          message
-        );
+        const chatKey = `${sender}_${receiver}`;
+        await saveChatToRedis(chatKey, message, 30 * 24 * 60 * 60);
+        console.log("Redis saved successful ", chatKey, ": ", message);
       } catch (error) {
         console.error("Error saving message to Redis:", error);
       }
 
-      io.emit("chat", message);
-    });
+      activeUsers[sender] = receiver;
+      activeUsers[receiver] = sender;
 
+      io.to(data.sender).emit("chat", message);
+      io.to(data.receiver).emit("chat", message);
+    });
     socket.on("disconnect", () => {
       console.log("User disconnected");
+
+      const partner = activeUsers[socket.id];
+      if (partner) {
+        activeUsers[socket.id] = null;
+        activeUsers[partner] = null;
+      }
+      io.emit("activeUsers", activeUsers);
     });
   });
 
