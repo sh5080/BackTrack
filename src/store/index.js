@@ -116,6 +116,9 @@ export const store = createStore({
     updatePreviewData({ commit }, data) {
       commit("setPreviewData", data);
     },
+    async loginState({ commit }) {
+      commit("toggleLoginModal", true);
+    },
 
     async resetState({ commit }) {
       commit("setIsAdmin", false);
