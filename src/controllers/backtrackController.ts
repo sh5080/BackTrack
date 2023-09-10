@@ -44,3 +44,17 @@ export const getBacktrack = async (
     next(error);
   }
 };
+
+export const getBacktrackPage = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const username = req.user!.username;
+    const page = await backtrackService.getBacktrackPage(username);
+    res.json(page);
+  } catch (error) {
+    next(error);
+  }
+};
