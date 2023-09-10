@@ -44,7 +44,7 @@
             {{ chordSegment }}
           </span>
         </div>
-        <!-- 다음 코드 배열을 작게 표시합니다 -->
+
         <div v-if="nextChordArray">
           <div class="next-measure">
             <span
@@ -149,21 +149,79 @@
           variant="flat"
           size="x-large"
         >
-          음원 재생
+          악보 재생
         </v-btn>
         <v-btn id="stopButton" border class="text-none" variant="text">
-          음원 정지
+          악보 정지
         </v-btn>
-        <v-btn
-          id="saveButton"
-          type="button"
-          @click="saveBacktrack"
-          border
-          class="text-none"
-          variant="text"
-        >
-          악보 저장
-        </v-btn>
+
+        <v-row justify="center">
+          <v-dialog v-model="dialog" persistent width="1024">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-if="isLogged"
+                id="saveButton"
+                type="button"
+                border
+                class="text-none"
+                variant="text"
+                color="success"
+                v-bind="props"
+              >
+                악보 저장
+              </v-btn>
+            </template>
+
+            <v-card class="register-container">
+              <v-card-title>
+                <span style="line-height: normal" class="register-title"
+                  >백킹트랙 제목을 입력해 주세요.</span
+                >
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="title"
+                        style="font-size: 130px; height: 300px"
+                        label="제목*"
+                        persistent-hint
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn
+                  id="saveButton1"
+                  type="button"
+                  border
+                  class="text-none"
+                  variant="text"
+                  color="success"
+                  @click="saveBacktrack"
+                >
+                  악보 저장하기
+                </v-btn>
+
+                <v-btn
+                  id="closeButton1"
+                  type="button"
+                  @click="dialog = false"
+                  border
+                  class="text-none"
+                  variant="text"
+                >
+                  닫기
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
       </div>
       <v-btn
         id="closeButton"
@@ -176,6 +234,7 @@
         닫기
       </v-btn>
     </div>
+
     <v-sheet
       v-if="isBacktrackSuccess && isLogged"
       elevation="12"
@@ -232,9 +291,6 @@ import * as Toast from "../../plugins/toast";
 export default {
   data() {
     return {
-      abcContent: "",
-      audioElements: [],
-
       isDrum: null,
       isUp: null,
       metronomeSequence: null,
@@ -255,30 +311,8 @@ export default {
       drumSoundUrl: "midi/Drummer.wav",
       isSoundPlaying: false,
       isBacktrackSuccess: false,
-
-      chordLists: {
-        Cb: "midi/bass/B.wav",
-        C: "midi/bass/C.wav",
-        Csharp: "midi/bass/Db.wav",
-        Db: "midi/bass/Db.wav",
-        D: "midi/bass/D.wav",
-        Dsharp: "midi/bass/Eb.wav",
-        Eb: "midi/bass/Eb.wav",
-        E: "midi/bass/E.wav",
-        Esharp: "midi/bass/F.wav",
-        Fb: "midi/bass/E.wav",
-        F: "midi/bass/F.wav",
-        Fsharp: "midi/bass/Gb.wav",
-        Gb: "midi/bass/Gb.wav",
-        G: "midi/bass/G.wav",
-        Gsharp: "midi/bass/Ab.wav",
-        Ab: "midi/bass/Ab.wav",
-        A: "midi/bass/A.wav",
-        Asharp: "midi/bass/Bb.wav",
-        Bb: "midi/bass/Bb.wav",
-        B: "midi/bass/B.wav",
-        Bsharp: "midi/bass/C.wav",
-      },
+      dialog: false,
+      title: "",
     };
   },
   computed: {
@@ -319,6 +353,7 @@ export default {
     increment() {
       this.bpm++;
     },
+
     toggle() {
       this.isPlaying = !this.isPlaying;
       if (this.isPlaying) {
@@ -752,10 +787,15 @@ export default {
           this.openLoginModal();
           return;
         }
+        if (this.title.length === 0) {
+          Toast.customError("제목을 입력해주세요.");
+          return;
+        }
 
         const response = await axios.post(
           "http://localhost:4000/api/backtrack",
           {
+            title: this.title,
             backtrack: this.$store.state.chordData,
             //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
           },
@@ -763,6 +803,7 @@ export default {
         );
         if (response.status === 200) {
           this.isBacktrackSuccess = true;
+          this.dialog = false;
         }
       } catch (error) {
         console.error("Error generating backtrack:", error);
@@ -842,37 +883,48 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
-#mypageButton,
-#mainButton,
+#saveButton1,
 #saveButton,
 #stopButton,
 #closeButton,
+#closeButton1,
 #playButton {
-  position: fixed;
+  position: absolute;
   right: 60px;
   bottom: 640px;
   width: 450px;
   height: 150px;
   font-size: 4em;
 }
+#saveButton {
+  right: 960px;
+}
 #playButton {
-  right: 940px;
+  right: 490px;
 }
-#stopButton {
-  right: 510px;
-}
-#mypageButton,
-#mainButton,
+
 #closeButton {
   bottom: 200px;
 }
-#mypageButton {
-  right: 900px;
-}
+#mypageButton,
 #mainButton {
-  right: 400px;
+  width: 450px;
+  height: 150px;
+  margin-top: 400px;
+  margin-right: 100px;
+  font-size: 4em;
 }
-
+#saveButton1 {
+  bottom: 100px;
+  right: 600px;
+}
+#closeButton1 {
+  bottom: 100px;
+  right: 80px;
+}
+.text-end {
+  margin-right: 10px !important;
+}
 .button-container {
   margin-bottom: 100px;
 }
@@ -968,6 +1020,9 @@ export default {
   margin-top: -40px;
   padding: 50px;
 }
+::v-deep .v-card .v-card-title {
+  line-height: none !important;
+}
 ::v-deep .v-toolbar-title__placeholder {
   height: 100px;
   font-size: 200px;
@@ -996,6 +1051,20 @@ export default {
 
   /* height: 200px; */
 }
+.register-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2500px;
+  height: 1000px;
+}
+.register-title {
+  font-size: 100px;
+
+  position: absolute;
+  padding: 100px 100px;
+}
 .success-title {
   font-size: 6rem !important;
   font-weight: 400;
@@ -1011,5 +1080,21 @@ export default {
   letter-spacing: normal !important;
   font-family: "Roboto", sans-serif !important;
   text-transform: none !important;
+}
+::v-deep .v-text-field input.v-field__input {
+  font-size: 100px;
+}
+::v-deep
+  .v-input--density-default
+  .v-field--variant-filled
+  .v-label.v-field-label--floating,
+.v-label.v-field-label {
+  font-size: 40px;
+}
+::v-deep .v-label {
+  font-size: 80px;
+}
+::v-deep .v-text-field .v-field {
+  margin-top: 300px;
 }
 </style>
