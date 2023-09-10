@@ -276,6 +276,7 @@
             :items-per-page="itemsPerPage"
             hide-default-footer
             class="elevation-1"
+            style="font-size: 50px"
           >
             <template v-slot:bottom>
               <div class="text-center pt-2">
@@ -326,7 +327,7 @@ export default {
         },
         { title: "No", key: "id" },
         { title: "제목", key: "title" },
-        { title: "날짜", key: "createdAt" },
+        { title: "생성일자", key: "createdAt" },
       ],
       backtracks: [],
       search: "",
@@ -562,12 +563,12 @@ export default {
 
 .card-backtrack {
   transition: width 0.3s;
-  position: fixed;
+  position: absolute;
   /* top: 0; */
-  right: 80px;
+  right: 370px;
   /* bottom: 0; */
 
-  z-index: 100;
+  z-index: 99;
   width: 2750px;
   flex-direction: row-reverse;
 }

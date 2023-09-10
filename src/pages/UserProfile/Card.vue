@@ -58,6 +58,7 @@ export default {
   min-height: 2600px;
 }
 .card {
+  position: relative;
   display: flex;
   justify-content: space-between;
   flex-direction: row-reverse;
