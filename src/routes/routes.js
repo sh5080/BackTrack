@@ -101,7 +101,7 @@ router.beforeEach((to, from, next) => {
   next();
 });
 import axios from "axios";
-
+let alerted = false;
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -120,14 +120,23 @@ axios.interceptors.response.use(
           errorMessage.includes("새 비밀번호와 비밀번호 확인이") ||
           errorMessage.includes("제목은 20자 이내")
         ) {
+          alerted = false;
         } else if (errorMessage.includes("유효하지 않은")) {
           store.dispatch("resetState");
-          router.push("/login");
-          alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+
+          store.dispatch("loginState");
+          if (!alerted) {
+            alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+            alerted = true;
+          }
         } else {
           store.dispatch("resetState");
-          router.push("/login");
-          alert("비정상적인 접근입니다.");
+
+          store.dispatch("loginState");
+          if (!alerted) {
+            alert("비정상적인 접근입니다.");
+            alerted = true;
+          }
         }
       }
     }
