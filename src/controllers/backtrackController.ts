@@ -2,9 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import * as backtrackService from "../services/backtrackService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
-import fs from "fs";
-import path from "path";
-import * as Type from "../types/type";
 
 /** Backtrack 생성 */
 export const createBacktrack = async (
@@ -13,12 +10,13 @@ export const createBacktrack = async (
   next: NextFunction
 ) => {
   try {
-    const { backtrack } = req.body;
+    const { title, backtrack } = req.body;
     const username = req.user!.username;
     console.log("backtrack: ", backtrack);
 
     const backtrackData = await backtrackService.createBacktrack(
       username,
+      title,
       backtrack
     );
 

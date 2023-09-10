@@ -6,10 +6,15 @@ import { AppError, CommonError } from "../../types/AppError";
 export const BacktrackRepository = AppDataSource.getRepository(
   BacktrackEntity
 ).extend({
-  async createBacktrack(username: string, backtrack: string[][][]) {
+  async createBacktrack(
+    username: string,
+    title: string,
+    backtrack: string[][][]
+  ) {
     try {
       const userData = this.create({
         username,
+        title,
         backtrack,
       });
 

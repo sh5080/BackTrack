@@ -3,10 +3,11 @@ import { BacktrackRepository } from "../models/repositories/backtrack.repository
 
 export const createBacktrack = async (
   username: string,
+  title: string,
   backtrack: string[][][]
 ) => {
   try {
-    await BacktrackRepository.createBacktrack(username, backtrack);
+    await BacktrackRepository.createBacktrack(username, title, backtrack);
   } catch (error) {
     throw error;
   }
