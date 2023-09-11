@@ -7,6 +7,8 @@ export const store = createStore({
     isAuthenticated: false,
     isAdmin: false,
     loggedInNickname: null,
+    activeUsers: null,
+    activeReceiver: null,
     showLoginModal: false,
     showRegisterModal: false,
     showRegisterSuccessModal: false,
@@ -83,9 +85,25 @@ export const store = createStore({
     setPreviewData(state, data) {
       state.previewData = data;
     },
+    addActiveUserByServer(state, data) {
+      state.activeUsers = data;
+    },
+    clearActiveUser(state) {
+      state.activeUsers = null;
+    },
+    addReceiver(state, user) {
+      state.activeReceiver = user;
+    },
   },
 
   actions: {
+    startChat({ commit }, { sender, receiver }) {
+      commit("addActiveUserByServer", { sender, receiver });
+    },
+    endChat({ commit }) {
+      commit("clearActiveUser");
+    },
+
     async fetchSessionData({ commit }) {
       try {
         const response = await axios.get(
@@ -140,5 +158,8 @@ export const store = createStore({
   },
   getters: {
     getPreviewData: (state) => state.previewData,
+    isAdmin(state) {
+      return state.isAdmin;
+    },
   },
 });
