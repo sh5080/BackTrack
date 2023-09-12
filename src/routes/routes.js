@@ -118,7 +118,9 @@ axios.interceptors.response.use(
           errorMessage.includes("새로운") ||
           errorMessage.includes("간편로그인") ||
           errorMessage.includes("새 비밀번호와 비밀번호 확인이") ||
-          errorMessage.includes("제목은 20자 이내")
+          errorMessage.includes("제목은 20자 이내") ||
+          errorMessage.includes("닉네임") ||
+          errorMessage.includes("아이디")
         ) {
           alerted = false;
         } else if (errorMessage.includes("유효하지 않은")) {
