@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import * as mypageService from "../services/mypageService";
 import * as authService from "../services/authService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
@@ -23,13 +24,7 @@ export const getUserInfo = async (
         404
       );
     }
-    // if (username !== req.user!.username) {
-    //   throw new AppError(
-    //     CommonError.UNAUTHORIZED_ACCESS,
-    //     "비정상적인 접근입니다.",
-    //     403
-    //   );
-    // }
+
     const resultData = {
       username: userData.username,
       nickname: userData.nickname,
@@ -51,14 +46,8 @@ export const updateUserInfo = async (
   try {
     const { username } = req.user!;
     const { email, nickname } = req.body;
-    // if (username !== req.user!.username) {
-    //   throw new AppError(
-    //     CommonError.UNAUTHORIZED_ACCESS,
-    //     "비정상적인 접근입니다.",
-    //     403
-    //   );
-    // }
-    const updatedUserData = await authService.updateUser(
+
+    const updatedUserData = await mypageService.updateUser(
       username,
       nickname,
       email
@@ -67,8 +56,6 @@ export const updateUserInfo = async (
     if (nickname && email === undefined) {
       const sessionData = await getSessionFromRedis(username);
       if (sessionData) {
-        // const parsedSessionData = JSON.parse(sessionData);
-        // sessionData.nickname = nickname;
         await saveSessionToRedis(
           username,
           nickname,
@@ -94,14 +81,7 @@ export const updatePassword = async (
   try {
     const { username } = req.user!;
     const { password, newPassword, newPasswordConfirm } = req.body;
-    console.log(req.body);
-    // if (username !== req.user!.username) {
-    //   throw new AppError(
-    //     CommonError.UNAUTHORIZED_ACCESS,
-    //     "비정상적인 접근입니다.",
-    //     403
-    //   );
-    // }
+
     const userData = await authService.getUser(username);
     if (
       userData?.oauth_provider === "KAKAO" ||
@@ -147,7 +127,7 @@ export const updatePassword = async (
       String(newPassword),
       saltRounds
     );
-    const updatedUserData = await authService.updatePassword(
+    const updatedUserData = await mypageService.updatePassword(
       username,
       password,
       hashedNewPassword
@@ -170,7 +150,7 @@ export const deleteUserInfo = async (
 ) => {
   try {
     const { username: currentUser } = req.user!;
-    const deletedUserData = await authService.deleteUser(currentUser);
+    const deletedUserData = await mypageService.deleteUser(currentUser);
 
     if (deletedUserData === undefined) {
       throw new AppError(
