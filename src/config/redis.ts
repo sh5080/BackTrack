@@ -44,15 +44,29 @@ export const getSessionFromRedis = async (username: string) => {
   }
 };
 const MESSAGE_COUNTER_KEY = "chat_id_counter";
-export const saveChatToRedis = async (
+export const createChatToRedis = async (
   roomName: string,
   messageData: string,
   expirationInSeconds: number
 ) => {
   const chatId = await redisClient.incr(MESSAGE_COUNTER_KEY);
   const chatKey = `chat:${chatId}_${roomName}`;
+
   await redisClient.rpush(chatKey, messageData);
   await redisClient.expire(chatKey, expirationInSeconds);
+};
+
+export const saveChatUserToRedis = async (username: string) => {
+  // await redisClient.set("chatUser", username, "EX", 3600000);
+  await redisClient.rpush("chatUsers", username);
+  await redisClient.expire("chatUsers", 30 * 24 * 60 * 60);
+};
+export const getAllChatUsersFromRedis = async () => {
+  // const keys = await redisClient.keys("chatUser");
+  // const values = await Promise.all(keys.map((key) => redisClient.get(key)));
+  const users = await redisClient.lrange("chatUsers", 0, -1);
+
+  return users;
 };
 
 export const getChatFromRedis = async (messageId: string) => {
