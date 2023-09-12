@@ -59,10 +59,22 @@
       >
         {{ usernameMessage }}
       </div>
+
       <div class="input-reg3">
-        <label for="nickname" style="font-size: 4em; margin-top: 100px"
-          >닉네임</label
-        >
+        <div>
+          <label for="nickname" style="font-size: 4em; margin-top: 100px"
+            >닉네임</label
+          >
+          <button
+            @click="checkNickname"
+            class="btn-check"
+            type="button"
+            :class="{ 'btn-success': nicknameIsValid }"
+            style="font-size: 3em; left: 74%"
+          >
+            중복확인
+          </button>
+        </div>
         <input
           class="form-control"
           type="text"
@@ -76,6 +88,25 @@
             margin-bottom: 20px;
           "
         />
+      </div>
+      <div
+        class="alert_nickname alert-warning alert-dismissible fade show error-shake-animation"
+        role="alert"
+        v-if="nicknameError"
+        :class="{ 'error-shake-animation': isShaking }"
+        style="font-size: 3em; text-align: center"
+      >
+        <div class="error-message">
+          {{ nicknameErrorMessage }}
+        </div>
+      </div>
+      <div
+        class="alert_correct alert-success alert-dismissible fade show"
+        role="alert"
+        v-if="nicknameIsValid"
+        style="font-size: 3em; text-align: center; margin-bottom: -152px"
+      >
+        {{ nicknameMessage }}
       </div>
       <div class="input-reg">
         <label for="password" style="font-size: 4em; margin-top: 140px"
@@ -191,11 +222,15 @@ export default {
       emailErrorMessage: "",
       usernameError: false,
       usernameErrorMessage: "",
+      nicknameError: false,
+      nicknameErrorMessage: "",
       passwordError: false,
       passwordErrorMessage: "",
       isShaking: false,
       usernameIsValid: false,
       usernameMessage: "",
+      nicknameIsValid: false,
+      nicknameMessage: "",
     };
   },
 
@@ -309,7 +344,7 @@ export default {
     async checkUsername() {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/auth/check`,
+          `http://localhost:4000/api/auth/check/username`,
           {
             params: { username: this.username },
           },
@@ -328,16 +363,44 @@ export default {
         this.usernameErrorMessage = error.response.data.message;
         setTimeout(() => {
           this.isShaking = false;
-          // this.usernameIsValid = false;
           this.usernameError = false;
         }, 1000);
       }
     },
+    async checkNickname() {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/auth/check/nickname`,
+          {
+            params: { nickname: this.nickname },
+          },
+          { withCredentials: true }
+        );
+
+        this.nicknameIsValid = true;
+
+        this.nicknameMessage = response.data.message;
+      } catch (error) {
+        this.nicknameIsValid = false;
+        this.isShaking = true;
+        console.error("Error checking nickname availability:", error);
+
+        this.nicknameError = true;
+        this.nicknameErrorMessage = error.response.data.message;
+        setTimeout(() => {
+          this.isShaking = false;
+          this.nicknameError = false;
+        }, 1000);
+      }
+    },
+
     ...mapMutations(["setAuthenticated"]),
     async register() {
       if (
         this.usernameIsValid &&
-        this.usernameMessage === "사용 가능한 아이디입니다."
+        this.usernameMessage === "사용 가능한 아이디입니다." &&
+        this.nicknameIsValid &&
+        this.nicknameMessage === "사용 가능한 닉네임입니다."
       ) {
         try {
           const response = await axios.post(
@@ -372,7 +435,7 @@ export default {
       } else {
         this.isShaking = true;
         this.emailError = true;
-        this.emailErrorMessage = "아이디 중복확인이 필요합니다.";
+        this.emailErrorMessage = "아이디 및 닉네임 중복확인이 필요합니다.";
         setTimeout(() => {
           this.isShaking = false;
           this.emailError = false;
@@ -530,6 +593,10 @@ export default {
 .alert_username {
   font-size: 0.9rem;
   margin-bottom: -72px;
+}
+.alert_nickname {
+  font-size: 0.9rem;
+  margin-bottom: -152px;
 }
 .alert_password {
   font-size: 0.9rem;
