@@ -1,6 +1,11 @@
 import { Server } from "socket.io";
 import { Application } from "express";
-import { createChatToRedis, redisClient } from "../config/redis";
+import {
+  createChatToRedis,
+  getAllChatUsersFromRedis,
+  redisClient,
+  saveChatUserToRedis,
+} from "../config/redis";
 
 export function socketIoLoader(app: Application): Server {
   const httpServer = app.listen(3000);
@@ -10,12 +15,14 @@ export function socketIoLoader(app: Application): Server {
       credentials: true,
     },
   });
-  interface ActiveUsers {
-    [userId: string]: string | null;
+
+  interface ActiveUsers extends Array<string> {}
+  interface AllMessageData {
+    messages: string[];
   }
 
-  const activeUsers: ActiveUsers = {};
-
+  let activeUsers: ActiveUsers = [];
+  const allMessageData: AllMessageData = { messages: [] };
   io.on("connection", (socket) => {
     console.log("SocketIO is connected");
 
@@ -31,40 +38,40 @@ export function socketIoLoader(app: Application): Server {
         const [cursor1, keys1] = await redisClient.scan(
           0,
           "MATCH",
-          `chat:*_${receiver}`
+          `chat:*_${chatKey1}`
         );
         const [cursor2, keys2] = await redisClient.scan(
           0,
           "MATCH",
-          `chat:*_${sender}`
+          `chat:*_${chatKey2}`
         );
 
         console.log("chatKey1: ", chatKey1);
         console.log("keys1: ", keys1);
         if (keys1.length > 0 || keys2.length > 0) {
-          // 채팅방이 이미 존재하는 경우, 기존 채팅방에 메시지 추가
+          // 채팅방이 이미 존재하는 경우, 기존 채팅방에서 대화 내용 가져오기
           console.log("기존 채팅방 존재함");
-          const chatKey = keys1.length > 0 ? chatKey1 : chatKey2;
+          const chatKey = keys1.length > 0 ? keys1[0] : keys2[0]; // 첫 번째 매치된 채팅방 키 가져오기
           await redisClient.rpush(chatKey, messageString);
-          console.log(
-            "Message added to existing chat room",
-            chatKey,
-            ": ",
-            message
-          );
+          const chatMessages = await redisClient.lrange(chatKey, 0, -1); // 모든 대화 내용 가져오기
+
+          console.log("Chat messages:", chatMessages);
+          allMessageData.messages = chatMessages;
         } else {
           // 채팅방이 존재하지 않는 경우, 새로운 채팅방 생성
           console.log("신규 채팅방 생성");
           await createChatToRedis(chatKey1, messageString, 30 * 24 * 60 * 60);
+          await saveChatUserToRedis(chatKey1);
           console.log("New chat room created", chatKey1, ": ", messageString);
         }
       } catch (error) {
         console.error("Error saving message to Redis:", error);
       }
+      const allUsername = await getAllChatUsersFromRedis();
 
-      activeUsers["originSender"] = sender;
-      activeUsers["originReceiver"] = receiver;
-
+      const exceptAdmin = allUsername.map((user) => user.split("_")[0]);
+      console.log("exceptAdmin", exceptAdmin);
+      activeUsers = exceptAdmin;
       io.to(data.sender).emit("chat", message);
       io.to(data.receiver).emit("chat", message);
     });
@@ -72,12 +79,17 @@ export function socketIoLoader(app: Application): Server {
     socket.on("disconnect", () => {
       console.log("User disconnected");
 
-      const partner = activeUsers[socket.id];
-      if (partner) {
-        activeUsers[socket.id] = null;
-        activeUsers[partner] = null;
-      }
+      // const partner = activeUsers[socket.id];
+      // if (partner) {
+      //   activeUsers[socket.id] = null;
+      //   activeUsers[partner] = null;
+      // }
+      // io.emit("activeUsers", activeUsers);
+      // io.emit("messageData", allMessageData);
+
+      console.log("activeUsers: ", activeUsers);
       io.emit("activeUsers", activeUsers);
+      io.emit("messageData", allMessageData);
     });
   });
 
