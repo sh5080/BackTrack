@@ -281,7 +281,6 @@
       <h4 class="title">{{ fetchedUserInfo.nickname }} 님의 백킹트랙 관리</h4>
       <div class="user-info">
         <div class="info-item">
-          <span class="info-label">생성된 백킹트랙 목록</span>
           <v-data-table
             :currentPage="currentPage"
             :headers="headers"
@@ -289,15 +288,32 @@
             :items-per-page="itemsPerPage"
             hide-default-footer
             class="elevation-1"
-            style="font-size: 50px; margin-top: 100px"
-            @click="showBacktrackData"
+            style="
+              font-size: 50px;
+              margin-top: 100px;
+              max-height: 1775px;
+              height: 1775px;
+            "
           >
+            <template v-slot:item.id="{ item }">
+              {{ item.columns.id }}
+            </template>
+            <template v-slot:item.title="{ item }">
+              <span @click="showBacktrackData(item)">{{
+                item.selectable.title
+              }}</span>
+            </template>
+            <template v-slot:item.createdAt="{ item }">
+              {{ item.columns.createdAt }}
+            </template>
             <template v-slot:bottom>
               <div class="text-center pt-2">
                 <v-pagination
                   v-model="currentPage"
                   :length="pageCount"
                   @update:model-value="onPageChange"
+                  size="x-large"
+                  class="page"
                 ></v-pagination>
               </div>
             </template>
@@ -340,11 +356,6 @@ export default {
       currentPage: 1,
       itemsPerPage: 10,
       headers: [
-        {
-          align: "start",
-          key: "name",
-          sortable: false,
-        },
         { title: "No", key: "id" },
         { title: "제목", key: "title" },
         { title: "생성일자", key: "createdAt" },
@@ -406,14 +417,13 @@ export default {
       const shouldContinue = window.confirm("정말 회원탈퇴 하시겠습니까?");
       return shouldContinue;
     },
-    async showBacktrackData(event) {
-      const item = event.target.textContent;
+    async showBacktrackData(item) {
       try {
         const response = await axios.get(
           `http://localhost:4000/api/backtrack/data`,
           {
             params: {
-              title: item,
+              title: item.selectable.title,
             },
             withCredentials: true,
           }
@@ -640,6 +650,7 @@ export default {
   z-index: 99;
   width: 2750px;
   flex-direction: row-reverse;
+  max-height: 2600px;
 }
 
 .error-shake-animation {
@@ -752,18 +763,20 @@ export default {
   background: none;
   color: rgb(43, 4, 234);
 }
-::v-deep
-  .v-table
-  .v-table__wrapper
-  > table
-  > tbody
-  > tr:not(:last-child)
-  > td:hover {
-  background-color: #f0f0f0;
+::v-deep .v-data-table__tr:hover {
+  color: #a7a8c8;
   cursor: pointer;
 }
 
 ::v-deep .v-data-table__td .v-data-table-column--align-start {
   max-width: 10px;
+}
+::v-deep .v-data-table__tr {
+  height: 138px;
+}
+::v-deep .v-pagination .v-btn {
+  font-size: 50px;
+  width: 100px;
+  height: 100px;
 }
 </style>
