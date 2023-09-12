@@ -17,4 +17,6 @@ router.get("/", validateToken, backtrackController.getBacktrack);
 
 router.get("/page", validateToken, backtrackController.getBacktrackPage);
 
+router.get("/data", validateToken, backtrackController.getBacktrackData);
+
 export default router;

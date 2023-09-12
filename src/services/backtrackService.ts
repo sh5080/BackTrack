@@ -56,3 +56,16 @@ export const getBacktrackPage = async (username: string) => {
     throw error;
   }
 };
+
+export const getBacktrackData = async (username: string, title: string) => {
+  try {
+    const backtrackData = await BacktrackRepository.getBacktrackData(
+      username,
+      title
+    );
+
+    return backtrackData;
+  } catch (error) {
+    throw error;
+  }
+};

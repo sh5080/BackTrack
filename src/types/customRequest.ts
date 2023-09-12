@@ -23,5 +23,6 @@ export interface CustomRequest extends Request {
     username: string;
     code: string;
     nickname: string;
+    title: string;
   };
 }

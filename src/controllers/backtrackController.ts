@@ -66,3 +66,21 @@ export const getBacktrackPage = async (
     next(error);
   }
 };
+
+export const getBacktrackData = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const username = req.user!.username;
+    const { title } = req.query;
+    const backtrackData = await backtrackService.getBacktrackData(
+      username,
+      title
+    );
+    res.json({ message: "악보 불러오기가 완료되었습니다.", backtrackData });
+  } catch (error) {
+    next(error);
+  }
+};
