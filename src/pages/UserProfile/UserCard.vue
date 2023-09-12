@@ -255,6 +255,19 @@
         </div>
       </div>
     </div>
+    <div class="info-delete">
+      <span class="info-label"
+        >탈퇴를 원하시면 회원탈퇴 버튼을 클릭해주세요.</span
+      >
+      <button
+        style="margin-left: 480px"
+        class="generate-button"
+        type="button"
+        @click="deleteUser"
+      >
+        회원탈퇴
+      </button>
+    </div>
     <v-dialog v-model="$store.state.showFindPasswordModal">
       <FindPassword />
     </v-dialog>
@@ -268,7 +281,7 @@
       <h4 class="title">{{ fetchedUserInfo.nickname }} 님의 백킹트랙 관리</h4>
       <div class="user-info">
         <div class="info-item">
-          <span class="info-label">목록</span>
+          <span class="info-label">생성된 백킹트랙 목록</span>
           <v-data-table
             :currentPage="currentPage"
             :headers="headers"
@@ -276,7 +289,7 @@
             :items-per-page="itemsPerPage"
             hide-default-footer
             class="elevation-1"
-            style="font-size: 50px"
+            style="font-size: 50px; margin-top: 100px"
           >
             <template v-slot:bottom>
               <div class="text-center pt-2">
@@ -306,6 +319,7 @@
 import Card from "./Card.vue";
 import FindPassword from "../../components/Modals/findPasswordModal.vue";
 import axios from "axios";
+import * as Toast from "../../plugins/toast";
 export default {
   props: ["userInfo"],
   components: {
@@ -380,6 +394,32 @@ export default {
     },
     closeNickname() {
       this.nicknameExpanded = !this.nicknameExpanded;
+    },
+    async confirmAction() {
+      const shouldContinue = window.confirm("정말 회원탈퇴 하시겠습니까?");
+      return shouldContinue;
+    },
+    async deleteUser() {
+      try {
+        const shouldContinue = await this.confirmAction();
+        if (!shouldContinue) {
+          return;
+        }
+
+        const response = await axios.delete(
+          `http://localhost:4000/api/mypage/`,
+
+          {
+            withCredentials: true,
+          }
+        );
+        Toast.alertMessage("회원탈퇴가 완료되었습니다.");
+        setTimeout(() => {
+          this.$router.push("/");
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to delete user info:", error);
+      }
     },
     async changeNickname() {
       try {
@@ -623,10 +663,19 @@ export default {
   margin-bottom: 10px;
   border-top: 1px solid #ccc;
 }
+.info-delete {
+  padding: 120px 100px;
+  position: absolute;
+  margin-top: 550px;
+
+  border-top: 1px solid #ccc;
+  align-items: flex-end;
+  color: rgb(124, 123, 122);
+}
 
 .info-label {
   display: inline-block;
-  width: 600px;
+  min-width: 600px;
   font-size: 75px;
   font-weight: 400;
   margin-top: 70px;
