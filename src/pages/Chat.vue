@@ -1,11 +1,14 @@
 <template>
   <div class="chat">
     <div class="chat__header">
-      <span class="chat__header__greetings">
-        안녕하세요. {{ nickname }}님!
-      </span>
+      <v-row
+        style="justify-content: space-between; padding: 30px 20px"
+        class="justify-between align-center"
+      >
+        <span class="chat__header__greetings">
+          안녕하세요. {{ nickname }}님!
+        </span>
 
-      <v-col cols="auto">
         <v-btn
           style="color: #999999; transform: rotate(45deg)"
           tonal
@@ -14,30 +17,49 @@
           size="medium"
           @click="hideChat"
         ></v-btn>
-      </v-col>
-    </div>
-    <v-card v-if="isAdmin" class="mx-auto" width="1200">
-      <v-list v-model:closed="open">
-        <v-list-group value="Users">
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              prepend-icon="mdi-account-circle"
-              title="현재 채팅 요청 온 사용자"
-            ></v-list-item>
-          </template>
+      </v-row>
+      <v-row>
+        <v-card v-if="isAdmin" class="mx-auto" width="100%">
+          <v-row>
+            <v-col cols="6">
+              <v-list v-model:closed="open">
+                <v-list-group value="Users">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item
+                      ref="activatorItem"
+                      v-bind="props"
+                      prepend-icon="mdi-account-circle"
+                      title="현재 채팅 요청 온 사용자"
+                    ></v-list-item>
+                  </template>
 
-          <v-list-item
-            v-for="(sender, receiver) in activeUsers"
-            :key="sender"
-            :title="receiver"
-            prepend-icon="mdi-account"
-            @click="startChat(receiver, sender)"
-          >
-          </v-list-item>
-        </v-list-group>
-      </v-list>
-    </v-card>
+                  <v-list-item
+                    v-for="user in activeUsers"
+                    :key="user"
+                    :title="user"
+                    prepend-icon="mdi-account"
+                    @click="startChat(user)"
+                  >
+                  </v-list-item>
+                </v-list-group>
+              </v-list>
+            </v-col>
+            <v-col cols="6">
+              <v-chip
+                v-if="chip"
+                size="x-large"
+                class="ma-2"
+                closable
+                @click:close="chip = false"
+              >
+                {{ receiver }}
+              </v-chip>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-row>
+    </div>
+
     <chat-list :messages="messageData"></chat-list>
     <chat-form @submitMessage="sendMessage"></chat-form>
   </div>
@@ -53,24 +75,21 @@ import io from "socket.io-client";
 import * as Toast from "../plugins/toast";
 export default {
   data: () => ({
-    open: ["Users"],
-    chip: true,
+    open: false,
+    chip: false,
     receiver: null,
   }),
   methods: {
     hideChat() {
       this.$emit("hide-chat");
     },
-    startChat(originReceiver, originSender) {
-      console.log("originSender: ", originSender);
-      console.log("originReceiver: ", originReceiver);
-
-      // this.$store.dispatch("startChat", {
-      //   sender: this.nickname,
-      //   receiver: sender,
-      // });
-      this.$store.commit("addReceiver", originSender);
-      // this.receiver = originSender;
+    startChat(user) {
+      console.log("Selected user: ", user);
+      this.$store.commit("addReceiver", user);
+      this.receiver = user;
+      this.chip = true;
+      this.open = false;
+      this.$refs.activatorItem.$el.click();
     },
   },
   setup() {
@@ -81,7 +100,7 @@ export default {
     const pushmessageData = (data) => {
       store.commit(Constant.PUSH_message_DATA, data);
     };
-    const socket = io("http://localhost:3000");
+    const socket = io("http://localhost:3000/");
     const sendMessage = async (message) => {
       //사용자인 경우
       if (!store.state.isAdmin) {
@@ -114,7 +133,11 @@ export default {
       }
     };
     socket.on("activeUsers", (data) => {
+      console.log(data);
       store.commit("addActiveUserByServer", data);
+    });
+    socket.on("messageData", (data) => {
+      store.commit("setChatData", data);
     });
     onMounted(() => {
       socket.on("chat", (data) => {
@@ -127,9 +150,7 @@ export default {
       });
     });
 
-    onBeforeUnmount(() => {
-      // 컴포넌트 해제 시 처리할 내용을 추가할 수 있습니다.
-    });
+    onBeforeUnmount(() => {});
 
     return {
       nickname,
@@ -177,11 +198,11 @@ export default {
   background: #ffffff;
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
   border-radius: 24px 24px 0px 0px;
-  padding: 1.8rem;
+  padding: 30px 50px;
   font-size: 60px;
   font-weight: 700;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -189,10 +210,8 @@ export default {
   color: #292929;
   margin-top: 20px;
 }
-::v-deep .v-list {
-  top: 1000px;
-  position: fixed;
-  right: 1000px;
+::v-deep .v-chip__close {
+  font-size: 50px;
 }
 ::v-deep .v-list-item {
   font-size: 70px;
@@ -201,5 +220,12 @@ export default {
 ::v-deep .v-list-item-title {
   font-size: 50px;
   line-height: 50px;
+}
+::v-deep .v-chip {
+  padding: 0px 60px;
+  height: 100px;
+  max-width: 150%;
+  font-size: 60px;
+  text-align: center;
 }
 </style>
