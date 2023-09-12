@@ -106,6 +106,30 @@ export const getUsername = async (
   }
 };
 
+/**닉네임 중복검사 */
+
+export const getNickname = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { nickname } = req.query;
+    await authService.getNickname(nickname);
+
+    if (nickname.length < 2 || nickname.length > 15) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "닉네임은 2자 이상 15자 이내로 설정해야 합니다.",
+        400
+      );
+    }
+    res.status(200).json({ message: "사용 가능한 닉네임입니다." });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /** 로그인 */
 export const login = async (
   req: CustomRequest,

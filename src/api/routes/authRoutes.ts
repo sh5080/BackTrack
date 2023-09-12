@@ -18,7 +18,10 @@ router.post(
   authController.signup
 );
 /** [회원가입] 아이디 중복검사 */
-router.get("/check", authController.getUsername);
+router.get("/check/username", authController.getUsername);
+
+/** [회원가입] 닉네임 중복검사 */
+router.get("/check/nickname", authController.getNickname);
 
 /** [인증] 로그인 */
 router.post(

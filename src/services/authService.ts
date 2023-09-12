@@ -72,6 +72,38 @@ export const getUsername = async (username: string): Promise<boolean> => {
 };
 
 /**
+ * 회원가입시 아이디 중복검사
+ */
+
+export const getNickname = async (nickname: string) => {
+  try {
+    const existingUser = await AuthRepository.findUser(
+      undefined,
+      undefined,
+      nickname
+    );
+    if (existingUser) {
+      throw new AppError(
+        CommonError.DUPLICATE_ENTRY,
+        "이미 사용중인 닉네임입니다.",
+        400
+      );
+    }
+    return existingUser;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    } else {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "닉네임 중복검사에 실패했습니다.",
+        500
+      );
+    }
+  }
+};
+
+/**
  * 사용자 로그인
  */
 export const loginUser = async (
