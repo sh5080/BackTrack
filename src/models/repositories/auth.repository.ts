@@ -102,4 +102,19 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
 
     return newUser;
   },
+
+  async deleteUserByUsername(username: string) {
+    const existingUser = await this.findOne({
+      where: { username },
+    });
+    if (!existingUser) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "해당 사용자를 찾을 수 없습니다.",
+        404
+      );
+    }
+    const deletedUser = await this.remove(existingUser);
+    return deletedUser;
+  },
 });

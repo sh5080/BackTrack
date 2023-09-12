@@ -160,8 +160,8 @@ export const deleteUserInfo = async (
       );
     }
 
-    const { name, username, email } = deletedUserData;
-    const responseData = { name, username, email };
+    const { nickname, username, email } = deletedUserData;
+    const responseData = { nickname, username, email };
     res.clearCookie("token").status(200).json(responseData);
   } catch (error) {
     next(error);

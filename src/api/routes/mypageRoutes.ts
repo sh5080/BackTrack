@@ -29,4 +29,7 @@ router.put(
   mypageController.updatePassword
 );
 
+/** [사용자] 회원 탈퇴 */
+router.delete("/", validateToken, mypageController.deleteUserInfo);
+
 export default router;
