@@ -290,6 +290,7 @@
             hide-default-footer
             class="elevation-1"
             style="font-size: 50px; margin-top: 100px"
+            @click="showBacktrackData"
           >
             <template v-slot:bottom>
               <div class="text-center pt-2">
@@ -314,10 +315,14 @@
       </div>
     </div>
   </card>
+  <v-dialog v-model="$store.state.showBacktrackModal">
+    <BacktrackModal />
+  </v-dialog>
 </template>
 <script>
 import Card from "./Card.vue";
 import FindPassword from "../../components/Modals/findPasswordModal.vue";
+import BacktrackModal from "../../components/Modals/BacktrackModal.vue";
 import axios from "axios";
 import * as Toast from "../../plugins/toast";
 export default {
@@ -325,6 +330,7 @@ export default {
   components: {
     Card,
     FindPassword,
+    BacktrackModal,
   },
   data() {
     return {
@@ -395,9 +401,32 @@ export default {
     closeNickname() {
       this.nicknameExpanded = !this.nicknameExpanded;
     },
+
     async confirmAction() {
       const shouldContinue = window.confirm("정말 회원탈퇴 하시겠습니까?");
       return shouldContinue;
+    },
+    async showBacktrackData(event) {
+      const item = event.target.textContent;
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/backtrack/data`,
+          {
+            params: {
+              title: item,
+            },
+            withCredentials: true,
+          }
+        );
+        const backtrackData = response.data.backtrackData;
+
+        if (backtrackData) {
+          this.$store.commit("toggleBacktrackModal", true);
+          this.$store.commit("setChordData", backtrackData.backtrack);
+        }
+      } catch (error) {
+        console.error("Error fetching item details:", error);
+      }
     },
     async deleteUser() {
       try {
@@ -446,7 +475,7 @@ export default {
         this.nicknameMessage = response.data;
         this.$router.go();
       } catch (error) {
-        console.error("Failed to fetch user info:", error);
+        console.error("Failed to fetch nickname info:", error);
         this.isShaking = true;
         this.nicknameIsValid = false;
         this.nicknameError = true;
@@ -722,5 +751,19 @@ export default {
   left: 1700px;
   background: none;
   color: rgb(43, 4, 234);
+}
+::v-deep
+  .v-table
+  .v-table__wrapper
+  > table
+  > tbody
+  > tr:not(:last-child)
+  > td:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+::v-deep .v-data-table__td .v-data-table-column--align-start {
+  max-width: 10px;
 }
 </style>
