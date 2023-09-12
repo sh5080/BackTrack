@@ -55,7 +55,7 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
 
     return existingUser;
   },
-  async findUser(username?: string, email?: string) {
+  async findUser(username?: string, email?: string, nickname?: string) {
     try {
       if (username && email) {
         const user = await this.findOne({ where: { username, email } });
@@ -73,7 +73,9 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
         return user;
       } else if (email) {
         const user = await this.findOne({ where: { email } });
-
+        return user;
+      } else if (nickname) {
+        const user = await this.findOne({ where: { nickname } });
         return user;
       } else {
         throw new AppError(
