@@ -8,7 +8,7 @@
       <div v-if="isLogged">
         <div class="logged-title">
           {{ $store.state.loggedInNickname }} 님의 백킹트랙
-          {{ $store.state.backtrackTitle.title.title }}
+          {{ $store.state.backtrackTitle.title }}
         </div>
         <div class="sheet-message" style="top: 180px">
           만들어진 백킹트랙을 재생할 수 있습니다.
@@ -199,7 +199,7 @@
                   class="text-none"
                   variant="text"
                   color="success"
-                  @click="saveBacktrack"
+                  @click="savePost"
                 >
                   게시하기
                 </v-btn>
@@ -219,6 +219,16 @@
           </v-dialog>
         </v-row>
       </div>
+      <v-btn
+        id="deleteButton"
+        type="button"
+        @click="deleteBacktrack"
+        border
+        class="text-none"
+        variant="text"
+      >
+        삭제하기
+      </v-btn>
       <v-btn
         id="closeButton"
         type="button"
@@ -246,10 +256,10 @@
         style="margin-top: 500px"
       ></v-icon>
 
-      <h2 class="success-title mb-6">백킹트랙 저장에 성공했습니다.</h2>
+      <h2 class="success-title mb-6">게시글 업로드 성공했습니다.</h2>
       <br />
       <div class="success-message mb-4 text-medium-emphasis text-body-2">
-        저장된 백킹트랙은 마이페이지에서 확인할 수 있습니다.
+        저장된 백킹트랙은 게시판과 마이페이지에서 확인할 수 있습니다.
       </div>
 
       <v-divider class="mb-4"></v-divider>
@@ -265,6 +275,7 @@
         >
           마이페이지
         </v-btn>
+
         <v-btn
           id="mainButton"
           type="button"
@@ -771,22 +782,22 @@ export default {
     openLoginModal() {
       this.$store.commit("toggleLoginModal", true);
     },
-    async saveBacktrack() {
+    async savePost() {
       try {
         if (!this.isLogged) {
           Toast.customError("로그인한 사용자만 저장이 가능합니다.");
           this.openLoginModal();
           return;
         }
-        if (this.title.length === 0) {
-          Toast.customError("제목을 입력해주세요.");
+        if (this.description.length === 0) {
+          Toast.customError("소개글을 입력해주세요.");
           return;
         }
-        // console.log("여기: ", this.backtrackData);
+
         const id = this.backtrackData.id;
-        console.log("1: ", id);
-        const response = await axios.patch(
-          `http://localhost:4000/api/backtrack/update`,
+
+        const response = await axios.post(
+          `http://localhost:4000/api/post`,
           {
             description: this.description,
             //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
@@ -817,6 +828,32 @@ export default {
         } else {
           Toast.customWarning("서버 응답을 받을 수 없습니다.");
         }
+      }
+    },
+    async deleteBacktrack() {
+      try {
+        console.log("여기!");
+        const id = this.backtrackData.id;
+        if (!id) {
+          Toast.customError("이미 삭제되었거나 없는 백킹트랙입니다.");
+        }
+        const response = await axios.delete(
+          `http://localhost:4000/api/backtrack`,
+
+          {
+            withCredentials: true,
+            params: {
+              backtrackId: id,
+            },
+          }
+        );
+
+        if (response) {
+          Toast.alertMessage("삭제되었습니다.");
+          this.$store.commit("toggleBacktrackModal", false);
+        }
+      } catch (error) {
+        console.error("Error to delete backtrack:", error);
       }
     },
   },
@@ -880,6 +917,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
+#deleteButton,
 #saveButton1,
 #uploadButton,
 #stopButton,
@@ -896,6 +934,7 @@ export default {
 #uploadButton {
   right: 960px;
 }
+
 #playButton {
   right: 490px;
 }
@@ -903,6 +942,11 @@ export default {
 #closeButton {
   bottom: 200px;
 }
+#deleteButton {
+  bottom: 200px;
+  right: 530px;
+}
+
 #mypageButton,
 #mainButton {
   width: 450px;
