@@ -67,7 +67,7 @@ export const getBacktrackPage = async (
   }
 };
 
-export const getBacktrackData = async (
+export const getAllBacktrackData = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
@@ -94,7 +94,7 @@ export const updateBacktrack = async (
   try {
     const { description } = req.body;
     const username = req.user!.username;
-
+    const { backtrackId } = req.query;
     if (description.length > 30) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -104,6 +104,7 @@ export const updateBacktrack = async (
     }
 
     const newBacktrackData = await backtrackService.updateBacktrack(
+      backtrackId,
       username,
       description
     );

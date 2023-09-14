@@ -1,5 +1,6 @@
 import * as Type from "../types/type";
 import { BacktrackRepository } from "../models/repositories/backtrack.repository";
+import { AppError, CommonError } from "../types/AppError";
 
 export const createBacktrack = async (
   username: string,
@@ -62,10 +63,30 @@ export const getBacktrackData = async (username: string, title: string) => {
 };
 
 export const updateBacktrack = async (
+  backtrackId: string,
   username: string,
   description: string
 ) => {
   try {
+    const backtrackData = await BacktrackRepository.getOneBacktrackData(
+      parseInt(backtrackId)
+    );
+
+    if (!backtrackData) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "백킹트랙을 찾을 수 없습니다.",
+        400
+      );
+    }
+    if (backtrackData.username !== username) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "사용자의 백킹트랙이 아닙니다.",
+        400
+      );
+    }
+
     const now = new Date(); // 현재 시간을 가져옴
 
     // 한국 시간으로 변환
@@ -77,7 +98,11 @@ export const updateBacktrack = async (
 
     const updatedAt = `${year}-${month}-${day}`;
 
-    await BacktrackRepository.updateBacktrack(username, description, updatedAt);
+    await BacktrackRepository.updateBacktrackById(
+      parseInt(backtrackId),
+      description,
+      updatedAt
+    );
   } catch (error) {
     throw error;
   }
