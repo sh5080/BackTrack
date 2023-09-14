@@ -60,8 +60,8 @@ export const getBacktrackPage = async (
 ) => {
   try {
     const username = req.user!.username;
-    const page = await backtrackService.getBacktrackPage(username);
-    res.json(page);
+    const { totalPage } = await backtrackService.getBacktrack(username);
+    res.json(totalPage);
   } catch (error) {
     next(error);
   }
@@ -80,6 +80,35 @@ export const getBacktrackData = async (
       title
     );
     res.json({ message: "악보 불러오기가 완료되었습니다.", backtrackData });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** Backtrack 업데이트(게시글 추가) */
+export const updateBacktrack = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { description } = req.body;
+    const username = req.user!.username;
+
+    if (description.length > 30) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "소개는 200자 이내로 작성 가능합니다.",
+        400
+      );
+    }
+
+    const newBacktrackData = await backtrackService.updateBacktrack(
+      username,
+      description
+    );
+
+    res.json({ message: "악보 저장이 완료되었습니다.", newBacktrackData });
   } catch (error) {
     next(error);
   }
