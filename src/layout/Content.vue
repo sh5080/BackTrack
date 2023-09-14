@@ -24,6 +24,8 @@ import Main from "../pages/Main.vue";
 import Backtrack from "../pages/BacktrackGenerator.vue";
 import Questions from "../pages/Questions.vue";
 import Board from "../pages/Board.vue";
+import User from "../pages/UserProfile.vue";
+import Admin from "../pages/Admin.vue";
 export default {
   computed: {
     showComponent() {
@@ -42,9 +44,12 @@ export default {
           components.push(Board);
         } else if (child.name === "Questions") {
           components.push(Questions);
+        } else if (child.name === "User" && this.$store.state.isAuthenticated) {
+          components.push(User);
+        } else if (child.name === "Admin" && this.$store.state.isAdmin) {
+          components.push(Admin);
         }
       }
-
       return components;
     },
   },
@@ -63,6 +68,9 @@ export default {
       if (filePath === "src/pages/BacktrackGenerator.vue") {
         filePath = "src/pages/Backtrack.vue";
       }
+      if (filePath === "src/pages/UserProfile.vue") {
+        filePath = "src/pages/User.vue";
+      }
 
       if (filePath && filePath.includes("/")) {
         const componentName = filePath.split("/").pop().split(".")[0];
@@ -71,16 +79,15 @@ export default {
     },
     scrollToComponent() {
       const componentName = this.$route.name;
-      console.log("name: ", componentName);
 
       if (componentName) {
         const componentId = this.getComponentName(componentName);
+
         const componentData = document.querySelector(`#${componentId}`);
 
-        console.log("data: ", componentData);
-
         if (componentData) {
-          componentData.scrollIntoView({ behavior: "smooth" });
+          const yOffset = componentData.getBoundingClientRect().top;
+          window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
         }
       }
     },
@@ -109,8 +116,9 @@ export default {
 .component-style {
   height: 2500px;
   max-height: 2500px;
-  /* overflow-y: auto; */
+  overflow-y: auto;
   margin-top: 300px;
   border: 10px solid #000;
+  /* padding: 100px 300px; */
 }
 </style>
