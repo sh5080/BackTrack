@@ -54,9 +54,6 @@ export default {
 };
 </script>
 <style scoped>
-.card-body {
-  min-height: 2600px;
-}
 .card {
   position: relative;
   display: flex;
