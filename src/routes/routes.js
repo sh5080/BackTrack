@@ -1,25 +1,27 @@
 import { createRouter, createWebHistory } from "vue-router";
 import DashboardLayout from "../layout/DashboardLayout.vue";
+// import DashboardContent from "../layout/Content.vue";
 import NotFound from "../pages/NotFoundPage.vue";
-import LoginModal from "src/components/Modals/LoginModal.vue";
+import Main from "src/pages/Main.vue";
 import UserProfile from "src/pages/UserProfile.vue";
 import TableList from "src/pages/TableList.vue";
 import Admin from "src/pages/Admin.vue";
+import Board from "src/pages/Board.vue";
 import Icons from "src/pages/Icons.vue";
 import Questions from "src/pages/Questions.vue";
 import Backtrack from "src/pages/BacktrackGenerator.vue";
 import { store } from "../store/index";
 export const routes = [
-  // {
-  //   path: "/",
-  //   component: DashboardLayout,
-  //   redirect: "",
-  // },
   {
     path: "/",
+    name: "Home",
     component: DashboardLayout,
-    redirect: "",
     children: [
+      {
+        path: "main",
+        name: "Main",
+        component: Main,
+      },
       {
         path: "backtrack",
         name: "Backtrack",
@@ -29,44 +31,37 @@ export const routes = [
         path: "user",
         name: "User",
         component: UserProfile,
-        redirect: "",
       },
+      {
+        path: "board",
+        name: "Board",
+        component: Board,
+      },
+
       {
         path: "table-list",
         name: "Table List",
         component: TableList,
       },
-      {
-        path: "/admin",
-        name: "Admin",
-        component: Admin,
-      },
+
       {
         path: "icons",
         name: "Icons",
         component: Icons,
       },
-
       {
-        path: "/questions",
+        path: "questions",
         name: "Questions",
         component: Questions,
       },
+      {
+        path: "admin",
+        name: "Admin",
+        component: Admin,
+      },
     ],
   },
-  {
-    path: "/main",
-    name: "main",
-    component: DashboardLayout,
-    redirect: "",
-  },
-  {
-    path: "/login",
-    name: "login",
-    component: LoginModal,
-    redirect: "",
-  },
-  // { path: "/:pathMatch(.*)*", component: NotFound },
+  // ... 나머지 라우터 설정 ...
 ];
 
 export const router = createRouter({
@@ -74,11 +69,11 @@ export const router = createRouter({
   routes,
   linkActiveClass: "nav-item active",
   scrollBehavior: (to) => {
-    if (to.hash) {
-      return { el: to.hash };
-    } else {
-      return { top: 0, left: 0 };
-    }
+    // if (to.hash) {
+    //   return { el: to.hash };
+    // } else {
+    //   return { top: 0, left: 0 };
+    // }
   },
 });
 
