@@ -8,17 +8,10 @@
       <div v-if="isLogged">
         <div class="logged-title">
           {{ $store.state.loggedInNickname }} 님의 백킹트랙
+          {{ $store.state.backtrackTitle.title.title }}
         </div>
         <div class="sheet-message" style="top: 180px">
-          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
-          있습니다.
-        </div>
-      </div>
-
-      <div v-else>
-        <div class="sheet-message">
-          백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생할 수
-          있습니다.
+          만들어진 백킹트랙을 재생할 수 있습니다.
         </div>
       </div>
 
@@ -160,7 +153,7 @@
             <template v-slot:activator="{ props }">
               <v-btn
                 v-if="isLogged"
-                id="saveButton"
+                id="uploadButton"
                 type="button"
                 border
                 class="text-none"
@@ -168,28 +161,30 @@
                 color="success"
                 v-bind="props"
               >
-                악보 저장
+                게시판 업로드
               </v-btn>
             </template>
 
             <v-card class="register-container">
               <v-card-title>
-                <span style="line-height: normal" class="register-title"
-                  >백킹트랙 제목을 입력해 주세요.</span
+                <span style="line-height: normal" class="register-title">
+                  {{ $store.state.backtrackTitle.title }}의 짧은 소개를
+                  남겨주세요.</span
                 >
               </v-card-title>
               <v-card-text>
                 <v-container>
                   <v-row>
                     <v-col cols="12">
-                      <v-text-field
-                        v-model="title"
-                        style="font-size: 130px; height: 300px"
-                        label="제목*"
-                        hint="30자 이내로 입력 가능합니다."
+                      <v-textarea
+                        v-model="description"
+                        style="font-size: 130px; height: 600px"
+                        label="소개글*"
+                        hint="200자 이내로 입력 가능합니다."
                         persistent-hint
                         required
-                      ></v-text-field>
+                        rows="4"
+                      ></v-textarea>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -206,7 +201,7 @@
                   color="success"
                   @click="saveBacktrack"
                 >
-                  악보 저장하기
+                  게시하기
                 </v-btn>
 
                 <v-btn
@@ -237,7 +232,7 @@
     </div>
 
     <v-sheet
-      v-if="isBacktrackSuccess && isLogged"
+      v-if="isBacktrack && isLogged"
       elevation="12"
       style="z-index: 999; width: 3000px; height: 2200px"
       rounded="lg"
@@ -297,7 +292,8 @@ export default {
       metronomeSequence: null,
       drum: null,
       transport: Tone.Transport,
-
+      title: this.$store.state.backtrackTitle.title,
+      backtrackData: this.$store.state.backtrackTitle,
       tableIndex: 0,
       measureIndex: 0,
       chordIndex: 0,
@@ -311,9 +307,9 @@ export default {
       downSoundUrl: "midi/metronome/down.wav",
       drumSoundUrl: "midi/Drummer.wav",
       isSoundPlaying: false,
-      isBacktrackSuccess: false,
+      isBacktrack: false,
       dialog: false,
-      title: "",
+      description: "",
     };
   },
   computed: {
@@ -641,30 +637,23 @@ export default {
         }).toDestination();
 
         playNextSound();
-        // document.getElementById("playButton").addEventListener("click", () => {
-
-        //   Tone.Transport.start();
-        // });
 
         // 정지 버튼 클릭 이벤트 처리
         document.getElementById("stopButton").addEventListener("click", () => {
           stopSounds();
           drum.stop();
-          // metronome.clear();
 
           this.isDrum = false;
           this.transport.stop();
         });
         document.getElementById("closeButton").addEventListener("click", () => {
           drum.stop();
-          // metronome.clear();
+
           this.isDrum = false;
           this.transport.stop();
         });
         // 악기 시작
         this.transport.start();
-
-        // this.isSoundPlaying = true;
       }
     },
 
@@ -793,18 +782,24 @@ export default {
           Toast.customError("제목을 입력해주세요.");
           return;
         }
-
-        const response = await axios.post(
-          "http://localhost:4000/api/backtrack",
+        // console.log("여기: ", this.backtrackData);
+        const id = this.backtrackData.id;
+        console.log("1: ", id);
+        const response = await axios.patch(
+          `http://localhost:4000/api/backtrack/update`,
           {
-            title: this.title,
-            backtrack: this.$store.state.chordData,
+            description: this.description,
             //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
           },
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            params: {
+              backtrackId: id,
+            },
+          }
         );
         if (response.status === 200) {
-          this.isBacktrackSuccess = true;
+          this.isBacktrack = true;
           this.dialog = false;
         }
       } catch (error) {
@@ -886,7 +881,7 @@ export default {
   margin-right: auto;
 }
 #saveButton1,
-#saveButton,
+#uploadButton,
 #stopButton,
 #closeButton,
 #closeButton1,
@@ -898,7 +893,7 @@ export default {
   height: 150px;
   font-size: 4em;
 }
-#saveButton {
+#uploadButton {
   right: 960px;
 }
 #playButton {
@@ -917,12 +912,12 @@ export default {
   font-size: 4em;
 }
 #saveButton1 {
-  bottom: 100px;
-  right: 600px;
+  bottom: 10px;
+  right: 550px;
 }
 #closeButton1 {
-  bottom: 100px;
-  right: 80px;
+  bottom: 10px;
+  right: 65px;
 }
 .text-end {
   margin-right: 10px !important;
@@ -943,6 +938,7 @@ export default {
   top: 70px;
   left: 0;
   right: 0;
+
   /* bottom: 0; */
 }
 .sheet-message {
@@ -1106,5 +1102,9 @@ export default {
 }
 ::v-deep .v-text-field .v-field {
   margin-top: 300px;
+}
+
+::v-deep .v-textarea .v-field__input {
+  font-size: 80px;
 }
 </style>
