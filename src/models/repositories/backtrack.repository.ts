@@ -74,20 +74,4 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async updateBacktrackById(
-    backtrackId: number,
-    description: string,
-    updatedAt: string
-  ) {
-    try {
-      const userData = this.update(
-        { id: backtrackId },
-        { description, createdAt: updatedAt }
-      );
-
-      return userData;
-    } catch (error) {
-      throw error;
-    }
-  },
 });
