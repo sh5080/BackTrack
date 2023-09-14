@@ -116,6 +116,9 @@ export default {
   border-radius: 10px;
   width: 93%;
   box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  z-index: 9;
+  top: 0;
 }
 .categories {
   display: flex;
