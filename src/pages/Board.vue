@@ -1,0 +1,23 @@
+<template>
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <ItemCard />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import ItemCard from "./Card/ItemCard.vue";
+
+export default {
+  components: {
+    ItemCard,
+  },
+};
+</script>
+
+<style scoped></style>
