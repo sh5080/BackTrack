@@ -302,8 +302,8 @@
                   height: 1775px;
                 "
               >
-                <template v-slot:item.id="{ item }">
-                  {{ item.columns.id }}
+                <template v-slot:item.id="{ item, index }">
+                  {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </template>
                 <template v-slot:item.title="{ item }">
                   <span @click="showBacktrackData(item)">{{
