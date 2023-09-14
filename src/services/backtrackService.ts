@@ -61,3 +61,33 @@ export const getBacktrackData = async (username: string, title: string) => {
     throw error;
   }
 };
+
+export const deleteBacktrack = async (
+  backtrackId: string,
+  username: string
+) => {
+  try {
+    const backtrackData = await BacktrackRepository.getOneBacktrackData(
+      parseInt(backtrackId)
+    );
+
+    if (!backtrackData) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "백킹트랙을 찾을 수 없습니다.",
+        400
+      );
+    }
+    if (backtrackData.username !== username) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "사용자의 백킹트랙이 아닙니다.",
+        400
+      );
+    }
+
+    await BacktrackRepository.deleteBacktrackById(parseInt(backtrackId));
+  } catch (error) {
+    throw error;
+  }
+};

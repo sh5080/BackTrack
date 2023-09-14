@@ -12,11 +12,13 @@ router.post(
   // validateRequestBody(["bpm", "measures", "chordPattern"]),
   backtrackController.createBacktrack
 );
-
+/** 백킹트랙 조회 */
 router.get("/", validateToken, backtrackController.getBacktrack);
-
+/** 백킹트랙 페이지 조회 */
 router.get("/page", validateToken, backtrackController.getBacktrackPage);
 
 router.get("/data", validateToken, backtrackController.getAllBacktrackData);
 
+/** 백킹트랙 삭제 */
+router.delete("/", validateToken, backtrackController.deleteBacktrack);
 export default router;

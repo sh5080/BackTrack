@@ -74,4 +74,19 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
+  async deleteBacktrackById(backtrackId: number) {
+    try {
+      const backtrackData = await this.findOne({ where: { id: backtrackId } });
+
+      if (!backtrackData) {
+        throw `Post with backtrackId ${backtrackId} not found`;
+      }
+
+      const userData = await this.remove(backtrackData);
+
+      return userData;
+    } catch (error) {
+      throw error;
+    }
+  },
 });

@@ -84,3 +84,24 @@ export const getAllBacktrackData = async (
     next(error);
   }
 };
+
+/** 백킹트랙 삭제 */
+export const deleteBacktrack = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const username = req.user!.username;
+    const { backtrackId } = req.query;
+
+    const deletedData = await backtrackService.deleteBacktrack(
+      backtrackId,
+      username
+    );
+
+    res.json({ message: "게시글 삭제가 완료되었습니다.", deletedData });
+  } catch (error) {
+    next(error);
+  }
+};
