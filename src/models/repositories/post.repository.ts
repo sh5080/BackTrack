@@ -23,16 +23,25 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
     }
   },
 
-  async updateBacktrackById(
-    backtrackId: number,
-    description: string,
-    updatedAt: string
-  ) {
+  async getPost() {
     try {
-      const userData = this.update(
-        { id: backtrackId },
-        { description, createdAt: updatedAt }
-      );
+      const allPosts = await this.find({});
+
+      return allPosts;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async deletePostById(backtrackId: number) {
+    try {
+      const postData = await this.findOne({ where: { backtrackId } });
+
+      if (!postData) {
+        throw `Post with backtrackId ${backtrackId} not found`;
+      }
+
+      const userData = await this.remove(postData);
 
       return userData;
     } catch (error) {

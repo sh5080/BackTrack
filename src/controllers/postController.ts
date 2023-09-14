@@ -32,3 +32,43 @@ export const createPost = async (
     next(error);
   }
 };
+
+/** 게시글 조회 */
+export const getPost = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const page = req.query.page;
+    const postData = await postService.getPost(parseInt(page));
+    if (postData.paginatedPosts.length < 1) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "조회된 게시글이 없습니다.",
+        400
+      );
+    }
+    res.json({ message: "게시글 조회 완료되었습니다.", postData });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** 게시글 삭제 */
+export const deletePost = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const username = req.user!.username;
+    const { backtrackId } = req.query;
+
+    const deletedData = await postService.deletePost(backtrackId, username);
+
+    res.json({ message: "게시글 생성이 완료되었습니다.", deletedData });
+  } catch (error) {
+    next(error);
+  }
+};

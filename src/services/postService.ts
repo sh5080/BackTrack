@@ -48,3 +48,45 @@ export const createPost = async (
     throw error;
   }
 };
+
+export const getPost = async (page: number = 1, pageSize: number = 10) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allPosts = await PostRepository.getPost();
+
+    const paginatedPosts = allPosts.slice(startIndex, endIndex);
+    const totalPage = allPosts.length;
+
+    return { paginatedPosts, totalPage };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deletePost = async (backtrackId: string, username: string) => {
+  try {
+    const backtrackData = await BacktrackRepository.getOneBacktrackData(
+      parseInt(backtrackId)
+    );
+    console.log(backtrackData);
+    if (!backtrackData) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "백킹트랙을 찾을 수 없습니다.",
+        400
+      );
+    }
+    if (backtrackData.username !== username) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "사용자의 백킹트랙이 아닙니다.",
+        400
+      );
+    }
+
+    await PostRepository.deletePostById(parseInt(backtrackId));
+  } catch (error) {
+    throw error;
+  }
+};
