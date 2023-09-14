@@ -60,7 +60,7 @@
 </template>
 <script>
 import LTable from "src/components/Table.vue";
-import Card from "./UserProfile/Card.vue";
+import Card from "./Card/Card.vue";
 const tableColumns = ["Id", "Name", "Salary", "Country", "City"];
 const tableData = [
   {

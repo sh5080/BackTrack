@@ -624,7 +624,7 @@
   </div>
 </template>
 <script>
-import Card from "./UserProfile/Card.vue";
+import Card from "./Card/Card.vue";
 export default {
   components: {
     Card,

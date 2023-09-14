@@ -135,7 +135,7 @@
   </div>
 </template>
 <script>
-import Card from "./UserProfile/Card.vue";
+import Card from "./Card/Card.vue";
 import PopupPreview from "../components/Modals/PopupPreviewModal.vue";
 import axios from "axios";
 import * as Toast from "../plugins/toast";

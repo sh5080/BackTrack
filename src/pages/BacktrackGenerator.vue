@@ -300,10 +300,6 @@
             </v-col>
           </div>
         </v-col>
-
-        <v-col cols="12">
-          <div class="input-group4"></div>
-        </v-col>
       </v-row>
     </form>
   </div>
@@ -313,8 +309,6 @@
 import axios from "axios";
 import * as Toast from "../plugins/toast";
 import BacktrackSuccessModal from "../components/Modals/BacktrackSuccessModal.vue";
-// import HeaderSection from "@/components/HeaderSection.vue";
-// import Login from "@/components/LoginModal.vue";
 
 export default {
   components: {
@@ -957,7 +951,7 @@ export default {
 
 .backtrack-generator {
   width: 100%;
-  height: 100%;
+  max-height: 2500px;
   padding: 20px 0px;
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1189,7 +1183,7 @@ export default {
   flex-wrap: wrap;
   cursor: pointer;
   background: linear-gradient(to top, #00b869, #03c75a);
-  z-index: 100;
+  z-index: 1;
 }
 .generate-button {
   position: relative;
