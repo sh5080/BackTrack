@@ -14,8 +14,6 @@ router.post(
 );
 /** 백킹트랙 조회 */
 router.get("/", validateToken, backtrackController.getBacktrack);
-/** 백킹트랙 페이지 조회 */
-router.get("/page", validateToken, backtrackController.getBacktrackPage);
 
 router.get("/data", validateToken, backtrackController.getAllBacktrackData);
 
