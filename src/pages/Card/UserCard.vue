@@ -567,9 +567,6 @@ export default {
     },
     async fetchBacktrackInfo() {
       try {
-        if (!this.backtracks || this.backtracks.length === 0) {
-          this.fetchBacktrackPageNum();
-        }
         const response = await axios.get(
           `http://localhost:4000/api/backtrack?page=${this.currentPage}`,
 
@@ -582,25 +579,12 @@ export default {
 
         this.backtracks =
           this.fetchedBacktrackInfo.backtrackData.paginatedBacktracks;
+        this.totalItems = this.fetchedBacktrackInfo.backtrackData.totalPage;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
     },
-    async fetchBacktrackPageNum() {
-      try {
-        const response = await axios.get(
-          `http://localhost:4000/api/backtrack/page`,
 
-          {
-            withCredentials: true,
-          }
-        );
-
-        this.totalItems = response.data;
-      } catch (error) {
-        console.error("Failed to fetch BacktrackPage info:", error);
-      }
-    },
     async showFindPassword() {
       try {
         if (
