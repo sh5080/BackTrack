@@ -17,6 +17,8 @@ export class PostEntity {
   @Column({ name: "created_at" })
   createdAt: string;
 
+  title: string | undefined;
+
   constructor(
     id: number,
     backtrackId: number,
