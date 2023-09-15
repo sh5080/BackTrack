@@ -49,7 +49,7 @@ export const createPost = async (
   }
 };
 
-export const getPost = async (page: number = 1, pageSize: number = 10) => {
+export const getPost = async (page: number = 1, pageSize: number = 6) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
