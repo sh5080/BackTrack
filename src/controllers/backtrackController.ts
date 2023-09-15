@@ -66,7 +66,6 @@ export const getBacktrackDetail = async (
     const username = req.user!.username;
     const { id } = req.query;
     const backtrackData = await backtrackService.getBacktrackDetail(
-      username,
       parseInt(id)
     );
     res.json({ message: "악보 불러오기가 완료되었습니다.", backtrackData });

@@ -45,18 +45,10 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async getBacktrackDetail(username: string, id: number) {
+  async getBacktrackDetail(id: number) {
     try {
-      if (!username) {
-        throw new AppError(
-          CommonError.RESOURCE_NOT_FOUND,
-          "사용자 정보를 찾을 수 없습니다.",
-          404
-        );
-      }
-
       const backtrackData = await this.findOne({
-        where: { username, id },
+        where: { id },
       });
 
       return backtrackData;
