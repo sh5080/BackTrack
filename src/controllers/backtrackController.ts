@@ -57,17 +57,17 @@ export const getBacktrack = async (
   }
 };
 
-export const getAllBacktrackData = async (
+export const getBacktrackDetail = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const username = req.user!.username;
-    const { title } = req.query;
-    const backtrackData = await backtrackService.getBacktrackData(
+    const { id } = req.query;
+    const backtrackData = await backtrackService.getBacktrackDetail(
       username,
-      title
+      parseInt(id)
     );
     res.json({ message: "악보 불러오기가 완료되었습니다.", backtrackData });
   } catch (error) {

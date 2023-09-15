@@ -15,7 +15,7 @@ router.post(
 /** 백킹트랙 조회 */
 router.get("/", validateToken, backtrackController.getBacktrack);
 
-router.get("/data", validateToken, backtrackController.getAllBacktrackData);
+router.get("/detail", validateToken, backtrackController.getBacktrackDetail);
 
 /** 백킹트랙 삭제 */
 router.delete("/", validateToken, backtrackController.deleteBacktrack);

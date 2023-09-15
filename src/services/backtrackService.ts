@@ -49,11 +49,11 @@ export const getBacktrack = async (
   }
 };
 
-export const getBacktrackData = async (username: string, title: string) => {
+export const getBacktrackDetail = async (username: string, id: number) => {
   try {
-    const backtrackData = await BacktrackRepository.getBacktrackData(
+    const backtrackData = await BacktrackRepository.getBacktrackDetail(
       username,
-      title
+      id
     );
 
     return backtrackData;
@@ -67,10 +67,10 @@ export const deleteBacktrack = async (
   username: string
 ) => {
   try {
-    const backtrackData = await BacktrackRepository.getOneBacktrackData(
+    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+      username,
       parseInt(backtrackId)
     );
-
     if (!backtrackData) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,

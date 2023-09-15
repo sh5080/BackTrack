@@ -45,7 +45,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async getBacktrackData(username: string, title: string) {
+  async getBacktrackDetail(username: string, id: number) {
     try {
       if (!username) {
         throw new AppError(
@@ -56,7 +56,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       }
 
       const backtrackData = await this.findOne({
-        where: { username, title },
+        where: { username, id },
       });
 
       return backtrackData;
@@ -65,15 +65,6 @@ export const BacktrackRepository = AppDataSource.getRepository(
     }
   },
 
-  async getOneBacktrackData(backtrackId: number) {
-    try {
-      const backtrackData = await this.findOne({ where: { id: backtrackId } });
-
-      return backtrackData;
-    } catch (error) {
-      throw error;
-    }
-  },
   async deleteBacktrackById(backtrackId: number) {
     try {
       const backtrackData = await this.findOne({ where: { id: backtrackId } });
