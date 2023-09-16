@@ -72,3 +72,35 @@ export const deletePost = async (
     next(error);
   }
 };
+export const addLikeToPost = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, userId } = req.body;
+
+    await postService.addLikeToPost(postId, userId);
+
+    return res.json({ message: "Like added successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeLikeFromPost = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+
+    await postService.removeLikeFromPost(parseInt(postId), parseInt(userId));
+
+    return res.json({ message: "Like added successfully." });
+  } catch (error) {
+    next(error);
+  }
+};

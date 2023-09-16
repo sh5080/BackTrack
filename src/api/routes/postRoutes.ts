@@ -16,4 +16,15 @@ router.get("/", postController.getPost);
 
 /** 게시글 삭제 */
 router.delete("/", validateToken, postController.deletePost);
+
+/** 좋아요 추가 */
+router.post("/like", validateToken, postController.addLikeToPost);
+
+/** 좋아요 취소 */
+router.delete(
+  "/:postId/like",
+  validateToken,
+  postController.removeLikeFromPost
+);
+
 export default router;

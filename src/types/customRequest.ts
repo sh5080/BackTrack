@@ -17,6 +17,9 @@ export interface CustomRequest extends Request {
     nickname: string;
     image: string;
     message: string;
+
+    postId: number;
+    userId: number;
   };
   query: {
     page: string;

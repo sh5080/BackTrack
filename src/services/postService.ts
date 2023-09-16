@@ -2,6 +2,7 @@ import * as Type from "../types/type";
 import { BacktrackRepository } from "../models/repositories/backtrack.repository";
 import { AppError, CommonError } from "../types/AppError";
 import { PostRepository } from "../models/repositories/post.repository";
+import { LikedPostsRepository } from "../models/repositories/liked_posts.repository";
 
 export const createPost = async (
   backtrackId: string,
@@ -92,6 +93,26 @@ export const deletePost = async (backtrackId: string, username: string) => {
     }
 
     await PostRepository.deletePostById(parseInt(backtrackId));
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 좋아요 추가
+export const addLikeToPost = async (postId: number, userId: number) => {
+  try {
+    await LikedPostsRepository.addLikeToPost(postId, userId);
+    return { message: "Like added successfully." };
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 좋아요 삭제
+export const removeLikeFromPost = async (postId: number, userId: number) => {
+  try {
+    await LikedPostsRepository.deleteLikedPostById(postId, userId);
+    return { message: "Like removed successfully." };
   } catch (error) {
     throw error;
   }
