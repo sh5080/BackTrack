@@ -1,37 +1,60 @@
 <template>
-  <v-card class="mx-auto" max-width="2000">
+  <v-card class="mx-auto" max-width="">
     <v-container fluid>
+      <h4
+        class="title"
+        style="
+          font-size: 90px;
+          margin-bottom: 80px;
+          font-weight: 500;
+          padding: 50px 100px;
+        "
+      >
+        게시판
+      </h4>
       <v-row dense>
-        <v-col v-for="card in cards" :key="card.title" :cols="card.flex">
+        <v-col
+          v-for="post in posts"
+          :key="post.id"
+          :items-per-page="itemsPerPage"
+          cols="12"
+          sm="6"
+          md="4"
+          lg="4"
+          style="padding: 100px"
+        >
           <v-card>
             <v-img
-              :src="card.src"
+              :src="post.imageSrc"
               class="align-end"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="1000px"
+              height="800px"
               cover
             >
               <v-card-title
                 class="text-white"
-                v-text="card.title"
+                v-text="post.title"
               ></v-card-title>
             </v-img>
-            <v-card-subtitle class="pt-4"> Number 10 </v-card-subtitle>
+
+            <v-card-subtitle class="pt-4">
+              {{ post.title }}
+            </v-card-subtitle>
 
             <v-card-text>
-              <div>Whitehaven Beach</div>
-
-              <div>Whitsunday Island, Whitsunday Islands</div>
+              <div v-text="post.description"></div>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-
+              {{ post.likesCount }}
               <v-btn
                 size="x-large"
-                color="surface-variant"
+                :color="post.isLiked ? 'pink' : 'surface-variant'"
                 variant="text"
                 icon="mdi-heart"
-              ></v-btn>
+                @click="toggleLike(post.id)"
+              >
+              </v-btn>
 
               <v-btn
                 size="x-large"
@@ -48,31 +71,90 @@
               ></v-btn>
             </v-card-actions>
           </v-card>
+
+          <div class="text-center pt-2"></div>
         </v-col>
       </v-row>
     </v-container>
+    <div class="text-center pt-2">
+      <v-pagination
+        v-model="currentPage"
+        :length="pageCount"
+        @update:model-value="onPageChange"
+        size="x-large"
+        class="page"
+      ></v-pagination>
+    </div>
   </v-card>
 </template>
 <script>
+import axios from "axios";
+import * as Toast from "../../plugins/toast";
 export default {
-  data: () => ({
-    cards: [
-      {
-        title: "Pre-fab homes",
-        src: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-        flex: 12,
-      },
-      {
-        title: "Favorite road trips",
-        src: "https://cdn.vuetifyjs.com/images/cards/road.jpg",
-        flex: 6,
-      },
-      {
-        title: "Best airlines",
-        src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
-        flex: 6,
-      },
-    ],
-  }),
+  data() {
+    return {
+      posts: [],
+      currentPage: 1,
+      itemsPerPage: 6,
+      totalItems: null,
+      totalLikedCount: null,
+    };
+  },
+  computed: {
+    pageCount() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+  },
+  created() {
+    this.fetchPosts();
+    // this.fetchBacktrackInfo();
+  },
+  methods: {
+    onPageChange(newPage) {
+      this.currentPage = newPage;
+      this.fetchPosts();
+    },
+    async fetchPosts() {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/post?page=${this.currentPage}`,
+
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.posts = response.data.postData.paginatedPosts;
+        this.totalItems = response.data.postData.totalPage;
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    },
+    async toggleLike(item) {
+      try {
+        if (!this.isLogged) {
+          Toast.customError("로그인한 사용자만 좋아요 가능합니다.");
+          return;
+        }
+        const response = await axios.post(
+          `http://localhost:4000/api/post/like/`,
+          { postId: item },
+          {
+            withCredentials: true,
+          }
+        );
+
+        this.totalLikedCount = response.data;
+      } catch (error) {
+        console.error("Failed to toggleLike:", error);
+      }
+    },
+  },
 };
 </script>
+
+<style scoped>
+::v-deep .v-card-text {
+  font-size: 3rem;
+}
+</style>
