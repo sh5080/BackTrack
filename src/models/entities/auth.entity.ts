@@ -25,6 +25,13 @@ export class AuthEntity {
   @Column({ default: 1 })
   activated?: number;
 
+  @Column({
+    name: "liked_posts",
+    type: "json",
+    nullable: true,
+  })
+  likedPosts!: number[];
+
   constructor(
     id: number,
     username: string,
