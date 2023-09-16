@@ -78,11 +78,12 @@ export const addLikeToPost = async (
   next: NextFunction
 ) => {
   try {
-    const { postId, userId } = req.body;
+    const username = req.user!.username;
+    const { postId } = req.body;
 
-    await postService.addLikeToPost(postId, userId);
+    const result = await postService.addLikeToPost(username, postId);
 
-    return res.json({ message: "Like added successfully." });
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
