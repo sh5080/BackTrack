@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
+import { PostEntity } from "./post.entity";
+import { LikedEntity } from "./liked.entity";
 
 @Entity({ name: "user" })
 export class AuthEntity {
@@ -25,12 +35,14 @@ export class AuthEntity {
   @Column({ default: 1 })
   activated?: number;
 
-  @Column({
-    name: "liked_posts",
-    type: "json",
-    nullable: true,
-  })
-  likedPosts!: number[];
+  // @OneToMany(() => PostEntity, (post) => post.likedUsers)
+  // @ManyToMany(() => PostEntity, (post) => post.likedUsers)
+  // @ManyToMany(() => PostEntity)
+  // @JoinTable()
+  // @OneToMany(() => LikedEntity, (liked) => liked.user)
+  // likedPosts!: LikedEntity[];
+  @OneToMany(() => PostEntity, (post) => post.user)
+  likedPosts!: PostEntity[];
 
   constructor(
     id: number,

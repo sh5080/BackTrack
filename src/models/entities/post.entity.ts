@@ -1,5 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
+import { AuthEntity } from "./auth.entity";
+import { LikedEntity } from "./liked.entity";
 @Entity({ name: "post" })
 export class PostEntity {
   @PrimaryGeneratedColumn()
@@ -18,6 +28,28 @@ export class PostEntity {
   createdAt: string;
 
   title: string | undefined;
+  // @ManyToOne(() => AuthEntity, (user) => user.likedPosts)
+  // @JoinColumn({ name: "liked_users", referencedColumnName: "id" })
+  // likedUsers!: AuthEntity[];
+  // @OneToMany(() => LikedEntity, (liked) => liked.post)
+  // likedUsers!: LikedEntity[];
+  @ManyToOne(() => AuthEntity, (user) => user.likedPosts)
+  @JoinColumn({ name: "userId" })
+  user!: AuthEntity;
+
+  @ManyToMany(() => AuthEntity, (user) => user.likedPosts)
+  @JoinTable({
+    name: "liked_entity",
+    joinColumn: {
+      name: "postId",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "userId",
+      referencedColumnName: "id",
+    },
+  })
+  likedUsers!: AuthEntity[];
 
   constructor(
     id: number,
