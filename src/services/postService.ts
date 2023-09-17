@@ -109,10 +109,10 @@ export const addLikeToPost = async (username: string, postId: number) => {
 };
 
 // 좋아요 삭제
-export const removeLikeFromPost = async (postId: number, userId: number) => {
+export const removeLikeFromPost = async (username: string, postId: number) => {
   try {
-    // await LikedPostsRepository.deleteLikedPostById(postId, userId);
-    return { message: "Like removed successfully." };
+    const result = await PostRepository.removeLikeFromPost(username, postId);
+    return result;
   } catch (error) {
     throw error;
   }

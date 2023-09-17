@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as postController from "../../controllers/postController";
 import { validateRequestBody } from "../middlewares/validateRequest";
 import { validateToken } from "../middlewares/jwt";
-
+import transactionMiddleware from "../middlewares/transactionHandler";
 const router = Router();
 
 /** 게시글 업로드 */
@@ -21,10 +21,6 @@ router.delete("/", validateToken, postController.deletePost);
 router.post("/like", validateToken, postController.addLikeToPost);
 
 /** 좋아요 취소 */
-router.delete(
-  "/:postId/like",
-  validateToken,
-  postController.removeLikeFromPost
-);
+router.delete("/like", validateToken, postController.removeLikeFromPost);
 
 export default router;

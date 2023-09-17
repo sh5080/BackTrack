@@ -114,4 +114,56 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
       throw error;
     }
   },
+  async removeLikeFromPost(username: string, id: number) {
+    const connect = AppDataSource.createQueryRunner();
+    await connect.connect();
+    await connect.startTransaction();
+    try {
+      console.log("Remove Like Transaction started");
+      const post = await this.findOne({ where: { id: id } });
+      if (!post) {
+        throw new AppError(
+          CommonError.RESOURCE_NOT_FOUND,
+          "해당 게시물을 찾을 수 없습니다.",
+          404
+        );
+      }
+
+      const user = await AuthRepository.findOne({
+        where: { username: username },
+      });
+
+      if (!user) {
+        throw new AppError(
+          CommonError.RESOURCE_NOT_FOUND,
+          "해당 사용자를 찾을 수 없습니다.",
+          404
+        );
+      }
+
+      if (!user.likedPosts) {
+        user.likedPosts = [];
+      }
+
+      const alreadyLikedIndex = user.likedPosts.indexOf(post.id);
+      if (alreadyLikedIndex !== -1) {
+        await connect.commitTransaction();
+        await connect.release();
+        user.likedPosts.splice(alreadyLikedIndex, 1);
+
+        await AuthRepository.save(user);
+
+        post.likesCount -= 1;
+        await this.save(post);
+        console.log("Remove Like Transaction committed");
+        return post.likesCount;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      await connect.rollbackTransaction();
+      await connect.release();
+      throw error;
+    }
+  },
 });
