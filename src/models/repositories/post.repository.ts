@@ -51,12 +51,12 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
     }
   },
 
-  //트랜잭션 미들웨어 처리 혹은 특정 위치에서 별도로 호출하여 처리할지 고민중 ..
   async addLikeToPost(username: string, id: number) {
-    // const connect = AppDataSource.createQueryRunner();
-    // await connect.connect();
-    // await connect.startTransaction();
+    const connect = AppDataSource.createQueryRunner();
+    await connect.connect();
+    await connect.startTransaction();
     try {
+      console.log("Transaction started");
       const post = await this.findOne({ where: { id: id } });
       if (!post) {
         throw new AppError(
@@ -95,22 +95,22 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
 
       const alreadyLiked = user.likedPosts.includes(post.id);
       if (!alreadyLiked) {
-        // await connect.commitTransaction();
-        // await connect.release();
+        await connect.commitTransaction();
+        await connect.release();
         user.likedPosts.push(post.id);
 
         await AuthRepository.save(user);
 
         post.likesCount += 1;
         await this.save(post);
-
+        console.log("Transaction committed");
         return post.likesCount;
       } else {
         return null;
       }
     } catch (error) {
-      // await connect.rollbackTransaction();
-      // await connect.release();
+      await connect.rollbackTransaction();
+      await connect.release();
       throw error;
     }
   },
