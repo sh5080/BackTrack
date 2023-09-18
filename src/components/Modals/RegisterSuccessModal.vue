@@ -2,7 +2,7 @@
   <v-dialog v-model="$store.state.showRegisterSuccessModal" persistent="">
     <div class="success-modal">
       <h2 class="mb-3" style="font-size: 6em; margin-top: 400px">
-        {{ $store.state.loggedInUsername }} 님
+        {{ $store.state.loggedInNickname }} 님
       </h2>
 
       <div style="font-size: 3em; margin-top: 100px">
