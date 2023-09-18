@@ -83,7 +83,7 @@ export const addLikeToPost = async (
 
     const result = await postService.addLikeToPost(username, postId);
 
-    return res.status(200).json(result);
+    return res.status(200).json(`likesCount: ${result}`);
   } catch (error) {
     next(error);
   }
@@ -99,8 +99,8 @@ export const removeLikeFromPost = async (
     const { postId } = req.body;
 
     const result = await postService.removeLikeFromPost(username, postId);
-
-    return res.status(200).json(result);
+    console.log(result);
+    return res.status(200).json(`likesCount: ${result}`);
   } catch (error) {
     next(error);
   }

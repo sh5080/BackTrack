@@ -4,7 +4,6 @@ import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 import { BacktrackRepository } from "./backtrack.repository";
 import { AuthRepository } from "./auth.repository";
-import { LikedEntity } from "../entities/liked.entity";
 
 export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   async createPost(
@@ -170,18 +169,16 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
 
   // 좋아요 추가
   async addLikeToPost(username: string, id: number) {
+    const connect = AppDataSource.createQueryRunner();
+    await connect.connect();
+    await connect.startTransaction();
     try {
-      const likedRepository = AppDataSource.getRepository(LikedEntity);
       const user = await AuthRepository.findOne({
         where: { username },
-        relations: ["likedPosts"],
       });
       const post = await PostRepository.findOne({
         where: { id },
-        relations: ["likedUsers"],
       });
-      console.log("user: ", user);
-      console.log("post: ", post);
       if (!user || !post) {
         throw new AppError(
           CommonError.RESOURCE_NOT_FOUND,
@@ -190,31 +187,42 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         );
       }
 
-      // user.likedPosts.push(post.id);
+      if (!user.likedPosts) {
+        user.likedPosts = [];
+      }
 
-      // await AuthRepository.save(user);
+      if (!post.likedUsers) {
+        post.likedUsers = [];
+      }
 
-      const likedEntry = new LikedEntity();
-      likedEntry.user = user;
-      likedEntry.post = post;
+      const alreadyLiked = user.likedPosts.includes(post.id);
+      if (!alreadyLiked) {
+        user.likedPosts.push(post.id);
+        post.likedUsers.push(user.id);
+        post.likesCount += 1;
 
-      await likedRepository.save(likedEntry);
-      return user;
+        await AuthRepository.save(user);
+        await PostRepository.save(post);
+        return post;
+      } else return null;
     } catch (error) {
+      await connect.rollbackTransaction();
+      await connect.release();
       throw error;
     }
   },
 
   // 좋아요 취소
   async removeLikeFromPost(username: string, id: number) {
+    const connect = AppDataSource.createQueryRunner();
+    await connect.connect();
+    await connect.startTransaction();
     try {
       const user = await AuthRepository.findOne({
         where: { username },
-        relations: ["likedPosts"],
       });
       const post = await PostRepository.findOne({
         where: { id },
-        relations: ["likedBy"],
       });
 
       if (!user || !post) {
@@ -224,15 +232,24 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
           404
         );
       }
-
-      // user.likedPosts = user.likedPosts.filter(
-      //   (likedPost) => likedPost.id !== post.id
-      // );
-      console.log("remove in user: ", user);
-      console.log("remove in post: ", post);
-      await AuthRepository.save(user);
-      return user.likedPosts.length;
+      const alreadyLiked = user.likedPosts.includes(post.id);
+      if (alreadyLiked) {
+        user.likedPosts = user.likedPosts.filter(
+          (likedPost) => likedPost !== post.id
+        );
+        post.likedUsers = post.likedUsers.filter(
+          (likedUser) => likedUser !== user.id
+        );
+        post.likesCount -= 1;
+        console.log("user: ", user);
+        console.log("post: ", post);
+        await AuthRepository.save(user);
+        await PostRepository.save(post);
+        return post;
+      } else return null;
     } catch (error) {
+      await connect.rollbackTransaction();
+      await connect.release();
       throw error;
     }
   },

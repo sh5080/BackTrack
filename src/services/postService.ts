@@ -100,9 +100,10 @@ export const deletePost = async (backtrackId: string, username: string) => {
 // 좋아요 추가
 export const addLikeToPost = async (username: string, postId: number) => {
   try {
-    const result = await PostRepository.addLikeToPost(username, postId);
-
-    return result;
+    const postData = await PostRepository.addLikeToPost(username, postId);
+    if (postData === null) {
+      return null;
+    } else return postData.likesCount;
   } catch (error) {
     throw error;
   }
@@ -111,8 +112,10 @@ export const addLikeToPost = async (username: string, postId: number) => {
 // 좋아요 삭제
 export const removeLikeFromPost = async (username: string, postId: number) => {
   try {
-    const result = await PostRepository.removeLikeFromPost(username, postId);
-    return result;
+    const postData = await PostRepository.removeLikeFromPost(username, postId);
+    if (postData === null) {
+      return null;
+    } else return postData.likesCount;
   } catch (error) {
     throw error;
   }

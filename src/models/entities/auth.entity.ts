@@ -39,11 +39,12 @@ export class AuthEntity {
   likedPosts: number[];
 
   @ManyToMany(() => PostEntity, (post) => post.likedUsers)
-  @JoinTable({
-    // name: "liked",
-    joinColumn: { name: "user_id", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "post_id", referencedColumnName: "id" },
-  })
+  @JoinTable()
+  //   {
+  //   // name: "liked",
+  //   joinColumn: { name: "user_id", referencedColumnName: "id" },
+  //   inverseJoinColumn: { name: "post_id", referencedColumnName: "id" },
+  // }
   likedUsers!: PostEntity[];
 
   constructor(
