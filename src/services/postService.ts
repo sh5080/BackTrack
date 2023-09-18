@@ -62,7 +62,10 @@ export const getPost = async (page: number = 1, pageSize: number = 6) => {
         backtrackId
       );
       const title = backtrackData?.title;
+      const username = backtrackData?.username;
+
       post.title = title;
+      post.author = username;
     }
     return { paginatedPosts, totalPage };
   } catch (error) {
@@ -103,7 +106,7 @@ export const addLikeToPost = async (username: string, postId: number) => {
     const postData = await PostRepository.addLikeToPost(username, postId);
     if (postData === null) {
       return null;
-    } else return postData.likesCount;
+    } else return postData.likedUsers.length;
   } catch (error) {
     throw error;
   }
@@ -115,7 +118,7 @@ export const removeLikeFromPost = async (username: string, postId: number) => {
     const postData = await PostRepository.removeLikeFromPost(username, postId);
     if (postData === null) {
       return null;
-    } else return postData.likesCount;
+    } else return postData.likedUsers.length;
   } catch (error) {
     throw error;
   }

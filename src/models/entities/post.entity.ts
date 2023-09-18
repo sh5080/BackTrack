@@ -9,6 +9,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { AuthEntity } from "./auth.entity";
+import { BacktrackEntity } from "./backtrack.entity";
 @Entity({ name: "post" })
 export class PostEntity {
   @PrimaryGeneratedColumn()
@@ -20,9 +21,6 @@ export class PostEntity {
   @Column()
   description: string;
 
-  @Column({ name: "likes_count", nullable: true })
-  likesCount: number;
-
   @Column({ name: "liked_users", nullable: true, type: "json" })
   likedUsers: number[];
 
@@ -30,22 +28,25 @@ export class PostEntity {
   createdAt: string;
 
   title: string | undefined;
+  author: string | undefined;
 
   @ManyToMany(() => AuthEntity, (user) => user.likedUsers)
   likedPosts!: AuthEntity[];
+
+  @ManyToOne(() => BacktrackEntity, (backtrack) => backtrack.posts)
+  @JoinColumn({ name: "backtrack_id", referencedColumnName: "id" })
+  backtrack!: BacktrackEntity;
 
   constructor(
     id: number,
     backtrackId: number,
     description: string,
-    likesCount: number,
     createdAt: string,
     likedUsers: number[]
   ) {
     this.id = id;
     this.backtrackId = backtrackId;
     this.description = description;
-    this.likesCount = likesCount;
     this.createdAt = createdAt;
     this.likedUsers = likedUsers;
   }
