@@ -6,9 +6,9 @@ import {
   JoinTable,
   JoinColumn,
   OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { PostEntity } from "./post.entity";
-import { LikedEntity } from "./liked.entity";
 
 @Entity({ name: "user" })
 export class AuthEntity {
@@ -35,14 +35,16 @@ export class AuthEntity {
   @Column({ default: 1 })
   activated?: number;
 
-  // @OneToMany(() => PostEntity, (post) => post.likedUsers)
-  // @ManyToMany(() => PostEntity, (post) => post.likedUsers)
-  // @ManyToMany(() => PostEntity)
-  // @JoinTable()
-  // @OneToMany(() => LikedEntity, (liked) => liked.user)
-  // likedPosts!: LikedEntity[];
-  @OneToMany(() => PostEntity, (post) => post.user)
-  likedPosts!: PostEntity[];
+  @Column({ name: "liked_posts", nullable: true, type: "json" })
+  likedPosts: number[];
+
+  @ManyToMany(() => PostEntity, (post) => post.likedUsers)
+  @JoinTable({
+    // name: "liked",
+    joinColumn: { name: "user_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "post_id", referencedColumnName: "id" },
+  })
+  likedUsers!: PostEntity[];
 
   constructor(
     id: number,
@@ -50,7 +52,8 @@ export class AuthEntity {
     nickname: string,
     password: string,
     email: string,
-    oauth_provider: string
+    oauth_provider: string,
+    likedPosts: number[]
   ) {
     this.id = id;
     this.username = username;
@@ -58,5 +61,6 @@ export class AuthEntity {
     this.password = password;
     this.email = email;
     this.oauth_provider = oauth_provider;
+    this.likedPosts = likedPosts;
   }
 }
