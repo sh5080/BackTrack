@@ -21,9 +21,10 @@
           sm="6"
           md="4"
           lg="4"
-          style="padding: 100px"
+          style="padding: 100px; width: 1000px"
+          class="d-flex justify-center"
         >
-          <v-card>
+          <v-card style="width: 1000px">
             <v-img
               :src="post.imageSrc"
               class="align-end"
@@ -33,13 +34,18 @@
             >
             </v-img>
 
-            <v-card-subtitle class="pt-4">
-              {{ post.title }}
+            <v-card-subtitle class="pt-4" style="height: 50px">
             </v-card-subtitle>
-
             <v-card-text>
-              <div v-text="post.description"></div>
+              <div v-text="post.title"></div>
             </v-card-text>
+
+            <v-card-subtitle
+              class="pt-4"
+              style="font-size: 2.4rem; line-height: 4rem"
+            >
+              {{ post.author }}
+            </v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
               <div
@@ -47,30 +53,35 @@
                 ref="likesCount"
                 v-bind:id="'likes-count-' + post.id"
               >
-                {{ post.likesCount }}
+                {{ post.likedUsers ? post.likedUsers.length : "" }}
               </div>
-              <v-btn
-                size="x-large"
-                :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
-                variant="text"
-                icon="mdi-heart"
-                @click="toggleLike(post.id)"
-              >
-              </v-btn>
+              <div>
+                <v-btn
+                  size="x-large"
+                  :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
+                  variant="text"
+                  icon="mdi-heart"
+                  @click="toggleLike(post.id)"
+                  class="card-btn"
+                >
+                </v-btn>
+                <!-- 
+                <v-btn
+                  size="x-large"
+                  color="surface-variant"
+                  variant="text"
+                  icon="mdi-bookmark"
+                  class="card-btn"
+                ></v-btn> -->
 
-              <v-btn
-                size="x-large"
-                color="surface-variant"
-                variant="text"
-                icon="mdi-bookmark"
-              ></v-btn>
-
-              <v-btn
-                size="x-large"
-                color="surface-variant"
-                variant="text"
-                icon="mdi-share-variant"
-              ></v-btn>
+                <!-- <v-btn
+                  size="x-large"
+                  color="surface-variant"
+                  variant="text"
+                  icon="mdi-share-variant"
+                  class="card-btn"
+                ></v-btn> -->
+              </div>
             </v-card-actions>
           </v-card>
 
@@ -109,7 +120,6 @@ export default {
   },
   created() {
     this.fetchPosts();
-    // this.fetchBacktrackInfo();
   },
   methods: {
     onPageChange(newPage) {
@@ -136,17 +146,18 @@ export default {
         console.error("Failed to fetch user info:", error);
       }
     },
-    toggleLike(postId) {
+    async toggleLike(postId) {
       if (!this.$store.state.isAuthenticated) {
-        Toast.customError("로그인한 사용자만 좋아요 가능합니다.");
+        Toast.customError("로그인 이후 가능한 서비스입니다.");
         return;
       }
       const liked = this.isLiked(postId);
       if (liked) {
-        this.removeLike(postId);
+        await this.removeLike(postId);
       } else {
-        this.addLike(postId);
+        await this.addLike(postId);
       }
+      this.$store.commit("updateLikedPosts", postId);
     },
     async addLike(postId) {
       const response = await axios.post(
@@ -159,7 +170,7 @@ export default {
       const likesCountElement = document.querySelector(
         `#likes-count-${postId}`
       );
-      if (!response.data.includes(null)) {
+      if (response.data.likesCount !== null) {
         if (likesCountElement) {
           const currentLikesCount = parseInt(
             likesCountElement.textContent.trim()
@@ -183,7 +194,7 @@ export default {
       const likesCountElement = document.querySelector(
         `#likes-count-${postId}`
       );
-      if (!response.data.includes(null)) {
+      if (response.data.likesCount !== null) {
         if (likesCountElement) {
           const currentLikesCount = parseInt(
             likesCountElement.textContent.trim()
@@ -202,6 +213,16 @@ export default {
 
 <style scoped>
 ::v-deep .v-card-text {
-  font-size: 3rem;
+  font-size: 3.5rem;
+}
+
+.card-btn {
+  width: 100px;
+  height: 100px;
+  font-size: 40px;
+  padding: 10px 60px;
+}
+.likes-count {
+  font-size: 50px;
 }
 </style>
