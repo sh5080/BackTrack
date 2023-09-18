@@ -96,9 +96,12 @@ export const removeLikeFromPost = async (
 ) => {
   try {
     const username = req.user!.username;
-    const { postId } = req.body;
+    const { postId } = req.params;
+    const result = await postService.removeLikeFromPost(
+      username,
+      parseInt(postId)
+    );
 
-    const result = await postService.removeLikeFromPost(username, postId);
     console.log(result);
     return res.status(200).json(`likesCount: ${result}`);
   } catch (error) {

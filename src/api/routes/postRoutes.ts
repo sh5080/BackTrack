@@ -21,6 +21,10 @@ router.delete("/", validateToken, postController.deletePost);
 router.post("/like", validateToken, postController.addLikeToPost);
 
 /** 좋아요 취소 */
-router.delete("/like", validateToken, postController.removeLikeFromPost);
+router.delete(
+  "/like/:postId",
+  validateToken,
+  postController.removeLikeFromPost
+);
 
 export default router;
