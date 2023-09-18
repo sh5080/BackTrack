@@ -8,7 +8,7 @@
       <div v-if="isLogged">
         <div class="logged-title">
           {{ $store.state.loggedInNickname }} 님의 백킹트랙
-          {{ $store.state.backtrackTitle.title }}
+          {{ $store.state.backtrackData.title }}
         </div>
         <div class="sheet-message" style="top: 180px">
           만들어진 백킹트랙을 재생할 수 있습니다.
@@ -168,7 +168,7 @@
             <v-card class="register-container">
               <v-card-title>
                 <span style="line-height: normal" class="register-title">
-                  {{ $store.state.backtrackTitle.title }}의 짧은 소개를
+                  {{ $store.state.backtrackData.title }}의 짧은 소개를
                   남겨주세요.</span
                 >
               </v-card-title>
@@ -266,17 +266,6 @@
 
       <div class="text-end">
         <v-btn
-          id="mypageButton"
-          class="text-none"
-          color="success"
-          border
-          variant="text"
-          @click="mypage"
-        >
-          마이페이지
-        </v-btn>
-
-        <v-btn
           id="mainButton"
           type="button"
           @click="closeAllModals"
@@ -303,8 +292,10 @@ export default {
       metronomeSequence: null,
       drum: null,
       transport: Tone.Transport,
-      title: this.$store.state.backtrackTitle.title,
-      backtrackData: this.$store.state.backtrackTitle,
+      // title: this.$store.state.backtrackTitle.title,
+      // backtrackData: this.$store.state.backtrackTitle,
+      title: this.$store.state.backtrackData.title,
+      backtrackData: this.$store.state.backtrackData,
       tableIndex: 0,
       measureIndex: 0,
       chordIndex: 0,
@@ -327,12 +318,7 @@ export default {
     isLogged() {
       return !!this.$store.state.loggedInNickname;
     },
-    // bpm() {
-    //   return this.bpm;
-    // },
-    // bpm() {
-    //   return this.$store.state.bpm;
-    // },
+
     color() {
       this.$store.commit("setBpm", this.bpm);
 
@@ -372,11 +358,9 @@ export default {
     },
     closeAllModals() {
       this.$store.commit("toggleBacktrackModal", false);
+      this.$router.go();
     },
-    mypage() {
-      this.closeAllModals();
-      this.$router.push("/user");
-    },
+
     toggleCard() {
       this.cardOpen = !this.cardOpen;
     },
