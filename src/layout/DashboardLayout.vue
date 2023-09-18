@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <side-bar>
+    <side-bar style="z-index: 10">
       <sidebar-link to="/backtrack">
         <i class="nc-icon nc-note-03"></i>
         <p>백킹트랙</p>
@@ -9,7 +9,7 @@
         <i class="nc-icon nc-circle-09"></i>
         <p>회원정보</p>
       </sidebar-link>
-      <sidebar-link to="/list">
+      <sidebar-link to="/board">
         <i class="nc-icon nc-grid-45"></i>
         <p>게시판</p>
       </sidebar-link>
@@ -31,11 +31,14 @@
         <p>관리자</p>
       </sidebar-link>
     </side-bar>
-    <header-section></header-section>
-    <div class="main-panel">
-      <chat> </chat>
-      <dashboard-content> </dashboard-content>
-      <content-footer></content-footer>
+    <div class="content-wrapper">
+      <header-section style="z-index: 9"></header-section>
+
+      <div class="main-panel">
+        <chat> </chat>
+        <dashboard-content> </dashboard-content>
+        <content-footer></content-footer>
+      </div>
     </div>
   </div>
 </template>
@@ -70,3 +73,4 @@ export default defineComponent({
   },
 });
 </script>
+<style></style>
