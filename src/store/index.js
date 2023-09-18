@@ -9,6 +9,7 @@ export const store = createStore({
     loggedInNickname: null,
     activeUsers: null,
     activeReceiver: null,
+    chatData: null,
     showLoginModal: false,
     showRegisterModal: false,
     showRegisterSuccessModal: false,
@@ -17,6 +18,7 @@ export const store = createStore({
     showGoogleLoginModal: false,
     showKakaoLoginModal: false,
     showBacktrackSuccessModal: false,
+    showBacktrackModal: false,
     showPopupPreviewModal: false,
     chordData: null,
     bpm: 60,
@@ -28,6 +30,7 @@ export const store = createStore({
 
     //
     backtrackModalData: null,
+    likedPosts: [],
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -66,18 +69,22 @@ export const store = createStore({
     toggleBacktrackSuccessModal(state, value) {
       state.showBacktrackSuccessModal = value;
     },
+    toggleBacktrackModal(state, value) {
+      state.showBacktrackModal = value;
+    },
     togglePopupPreviewModal(state, value) {
       state.showPopupPreviewModal = value;
     },
     setChordData(state, value) {
       state.chordData = value;
     },
+
     setAudioPlaying(state, value) {
       state.isAudioPlaying = value;
     },
     //
-    setBacktrackModalData(state, value) {
-      state.backtrackModalData = value;
+    setBacktrackData(state, value) {
+      state.backtrackData = value;
     },
     setBpm(state, bpm) {
       state.bpm = bpm;
@@ -93,6 +100,22 @@ export const store = createStore({
     },
     addReceiver(state, user) {
       state.activeReceiver = user;
+    },
+    setChatData(state, chat) {
+      state.chatData = chat;
+    },
+    setLikes(state, value) {
+      state.likedPosts = value;
+    },
+    updateLikedPosts(state, postId) {
+      if (state.likedPosts) {
+        const index = state.likedPosts.indexOf(postId);
+        if (index !== -1) {
+          state.likedPosts.splice(index, 1);
+        } else {
+          state.likedPosts.push(postId);
+        }
+      }
     },
   },
 
@@ -140,7 +163,7 @@ export const store = createStore({
 
     async resetState({ commit }) {
       commit("setIsAdmin", false);
-      commit("toggleLoginModal", false);
+      // commit("toggleLoginModal", false);
       commit("toggleRegisterModal", false);
       commit("toggleRegisterSuccessModal", false);
       commit("toggleFindUsernameModal", false);
