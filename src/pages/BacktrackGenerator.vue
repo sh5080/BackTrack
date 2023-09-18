@@ -1,6 +1,17 @@
 <template>
   <div class="backtrack-generator">
     <form @submit.prevent>
+      <h4
+        class="title"
+        style="
+          font-size: 90px;
+          margin-bottom: 80px;
+          font-weight: 500;
+          padding: 50px 100px;
+        "
+      >
+        백킹트랙 생성
+      </h4>
       <v-row>
         <v-col cols="4">
           <v-col>
