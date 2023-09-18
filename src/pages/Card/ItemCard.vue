@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto" max-width="">
+  <v-card class="mx-auto" width="">
     <v-container fluid>
       <h4
         class="title"
@@ -31,10 +31,6 @@
               height="800px"
               cover
             >
-              <v-card-title
-                class="text-white"
-                v-text="post.title"
-              ></v-card-title>
             </v-img>
 
             <v-card-subtitle class="pt-4">
@@ -46,10 +42,16 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              {{ post.likesCount }}
+              <div
+                class="likes-count"
+                ref="likesCount"
+                v-bind:id="'likes-count-' + post.id"
+              >
+                {{ post.likesCount }}
+              </div>
               <v-btn
                 size="x-large"
-                :color="post.isLiked ? 'pink' : 'surface-variant'"
+                :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
                 variant="text"
                 icon="mdi-heart"
                 @click="toggleLike(post.id)"
@@ -114,6 +116,10 @@ export default {
       this.currentPage = newPage;
       this.fetchPosts();
     },
+    isLiked(postId) {
+      const likedPosts = this.$store.state.likedPosts || [];
+      return likedPosts.includes(postId);
+    },
     async fetchPosts() {
       try {
         const response = await axios.get(
@@ -130,23 +136,64 @@ export default {
         console.error("Failed to fetch user info:", error);
       }
     },
-    async toggleLike(item) {
-      try {
-        if (!this.isLogged) {
-          Toast.customError("로그인한 사용자만 좋아요 가능합니다.");
-          return;
+    toggleLike(postId) {
+      if (!this.$store.state.isAuthenticated) {
+        Toast.customError("로그인한 사용자만 좋아요 가능합니다.");
+        return;
+      }
+      const liked = this.isLiked(postId);
+      if (liked) {
+        this.removeLike(postId);
+      } else {
+        this.addLike(postId);
+      }
+    },
+    async addLike(postId) {
+      const response = await axios.post(
+        `http://localhost:4000/api/post/like/`,
+        { postId: postId },
+        {
+          withCredentials: true,
         }
-        const response = await axios.post(
-          `http://localhost:4000/api/post/like/`,
-          { postId: item },
-          {
-            withCredentials: true,
-          }
-        );
+      );
+      const likesCountElement = document.querySelector(
+        `#likes-count-${postId}`
+      );
+      if (!response.data.includes(null)) {
+        if (likesCountElement) {
+          const currentLikesCount = parseInt(
+            likesCountElement.textContent.trim()
+          );
+          likesCountElement.textContent = isNaN(currentLikesCount)
+            ? 1
+            : currentLikesCount + 1;
+        } else {
+          console.error(`Likes count element for post ${postId} not found`);
+        }
+      }
+    },
+    async removeLike(postId) {
+      const response = await axios.delete(
+        `http://localhost:4000/api/post/like/${postId}`,
 
-        this.totalLikedCount = response.data;
-      } catch (error) {
-        console.error("Failed to toggleLike:", error);
+        {
+          withCredentials: true,
+        }
+      );
+      const likesCountElement = document.querySelector(
+        `#likes-count-${postId}`
+      );
+      if (!response.data.includes(null)) {
+        if (likesCountElement) {
+          const currentLikesCount = parseInt(
+            likesCountElement.textContent.trim()
+          );
+          likesCountElement.textContent = isNaN(currentLikesCount)
+            ? ""
+            : currentLikesCount - 1;
+        } else {
+          console.error(`Likes count element for post ${postId} not found`);
+        }
       }
     },
   },
