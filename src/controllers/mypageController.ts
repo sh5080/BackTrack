@@ -29,10 +29,52 @@ export const getUserInfo = async (
       username: userData.username,
       nickname: userData.nickname,
       email: userData.email,
+      likedPosts: userData.likedPosts,
     };
 
     res.status(200).json(resultData);
   } catch (error) {
+    next(error);
+  }
+};
+
+export const getLikesInfo = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const page = req.query.page;
+    const { username } = req.user!;
+    const userData = await authService.getUser(username);
+    const pageSize = 10;
+    if (!userData) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "비정상적인 접근입니다.",
+        404
+      );
+    }
+    const likedPostArray = userData.likedPosts;
+    const filteredLikedPostTitles = await mypageService.getPaginatedLikedPosts(
+      likedPostArray,
+      parseInt(page),
+      pageSize
+    );
+
+    if (filteredLikedPostTitles.length < 1) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "조회된 게시글이 없습니다.",
+        400
+      );
+    }
+
+    res.json({
+      filteredLikedPostTitles,
+    });
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 };

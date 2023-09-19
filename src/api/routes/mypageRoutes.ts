@@ -7,6 +7,9 @@ const router = Router();
 // /** [마이페이지] 회원정보 조회 */
 router.get("/userInfo", validateToken, mypageController.getUserInfo);
 
+// /** [마이페이지] 좋아요 조회 */
+router.get("/userInfo/likes", validateToken, mypageController.getLikesInfo);
+
 /** [사용자] 닉네임 변경 */
 router.put(
   "/userInfo/nickname",

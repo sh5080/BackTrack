@@ -49,12 +49,12 @@ export const createPost = async (
   }
 };
 
-export const getPost = async (page: number = 1, pageSize: number = 6) => {
+export const getPost = async (page: number = 1, pageSize: number = 8) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const allPosts = await PostRepository.getPost();
-    const totalPage = allPosts.length;
+    const totalItemsCount = allPosts.length;
     const paginatedPosts = allPosts.slice(startIndex, endIndex);
     for (const post of paginatedPosts) {
       const backtrackId = post.backtrackId;
@@ -67,7 +67,22 @@ export const getPost = async (page: number = 1, pageSize: number = 6) => {
       post.title = title;
       post.author = username;
     }
-    return { paginatedPosts, totalPage };
+    return { paginatedPosts, totalItemsCount };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getOnePost = async (id: number) => {
+  try {
+    const post = await PostRepository.getOnePost(id);
+    const backtrackId = post.backtrackId;
+    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+      backtrackId
+    );
+    const title = backtrackData?.title;
+    post.title = title;
+    return post;
   } catch (error) {
     throw error;
   }
@@ -78,7 +93,6 @@ export const deletePost = async (backtrackId: string, username: string) => {
     const backtrackData = await BacktrackRepository.getBacktrackDetail(
       parseInt(backtrackId)
     );
-    console.log(backtrackData);
     if (!backtrackData) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,

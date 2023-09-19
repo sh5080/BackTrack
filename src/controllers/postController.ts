@@ -33,7 +33,7 @@ export const createPost = async (
   }
 };
 
-/** 게시글 조회 */
+/** 게시글 전체 조회 */
 export const getPost = async (
   req: CustomRequest,
   res: Response,
@@ -42,6 +42,7 @@ export const getPost = async (
   try {
     const page = req.query.page;
     const postData = await postService.getPost(parseInt(page));
+    console.log("?:", postData);
     if (postData.paginatedPosts.length < 1) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
@@ -50,6 +51,22 @@ export const getPost = async (
       );
     }
     res.json({ message: "게시글 조회 완료되었습니다.", postData });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** 게시글 특정 조회 */
+export const getOnePost = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const postData = await postService.getOnePost(parseInt(id));
+
+    res.json({ postData });
   } catch (error) {
     next(error);
   }

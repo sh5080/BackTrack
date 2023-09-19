@@ -34,6 +34,17 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
       throw error;
     }
   },
+  async getOnePost(id: number) {
+    try {
+      const post = await this.findOne({ where: { id } });
+      if (!post) {
+        throw `Post ${id} not found`;
+      }
+      return post;
+    } catch (error) {
+      throw error;
+    }
+  },
 
   async deletePostById(id: number) {
     try {

@@ -7,6 +7,7 @@ import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
 import * as nodemailer from "../config/nodemailer";
 import { AppDataSource } from "../loaders/dbLoader";
+import * as postService from "./postService";
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = config.jwt.REFRESH_TOKEN_SECRET;
@@ -172,4 +173,23 @@ export const deleteUser = async (username: string) => {
       );
     }
   }
+};
+
+export const getPaginatedLikedPosts = async (
+  likedPostArray: number[],
+  page: number,
+  pageSize: number
+) => {
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedLikedPosts = likedPostArray.slice(startIndex, endIndex);
+
+  const likedPostTitles = await Promise.all(
+    paginatedLikedPosts.map(async (postId) => {
+      const post = await postService.getOnePost(postId);
+      return post ? { [postId]: post.title } : null;
+    })
+  );
+
+  return likedPostTitles.filter((title) => title !== null);
 };
