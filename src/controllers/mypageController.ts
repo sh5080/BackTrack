@@ -69,9 +69,10 @@ export const getLikesInfo = async (
         400
       );
     }
-
+    const totalItems = likedPostArray.length;
     res.json({
       filteredLikedPostTitles,
+      totalItems,
     });
   } catch (error) {
     console.error(error);
