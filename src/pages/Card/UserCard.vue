@@ -256,7 +256,7 @@
               <span class="info-value">{{ this.provider }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">내가 좋아요 한 게시글</span>
+              <span class="info-label">좋아요 한 게시글</span>
               <span class="info-value"></span>
               <button
                 class="generate-button"
@@ -321,17 +321,17 @@
                   {{ item.columns.createdAt }}
                 </template>
                 <template v-slot:bottom>
-                  <div class="text-center pt-2">
-                    <v-pagination
-                      v-model="currentPage"
-                      :length="pageCount"
-                      @update:model-value="onPageChange"
-                      size="x-large"
-                      class="page"
-                    ></v-pagination>
-                  </div>
+                  <div class="text-center pt-2"></div>
                 </template>
               </v-data-table>
+              <v-pagination
+                v-model="currentPage"
+                :length="pageCount"
+                @update:model-value="onPageChange"
+                size="x-large"
+                class="page"
+                style="margin-top: 50px"
+              ></v-pagination>
             </div>
           </div>
         </div>
