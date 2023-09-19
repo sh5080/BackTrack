@@ -268,17 +268,7 @@
           variant="text"
           @click="mypage"
         >
-          마이페이지
-        </v-btn>
-        <v-btn
-          id="mainButton"
-          type="button"
-          @click="closeAllModals"
-          border
-          class="text-none"
-          variant="text"
-        >
-          닫기
+          확인
         </v-btn>
       </div>
     </v-sheet>
@@ -368,7 +358,7 @@ export default {
     },
     mypage() {
       this.closeAllModals();
-      this.$router.push("/user");
+      this.$router.go();
     },
     toggleCard() {
       this.cardOpen = !this.cardOpen;
