@@ -48,9 +48,13 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   },
   async getMyPosts(ids: number[]) {
     try {
-      const posts = await this.find({
-        where: { backtrackId: In(ids) },
-      });
+      // const posts = await this.find({
+      //   where: { backtrackId: In(ids) },
+      // });
+      const posts = await this.createQueryBuilder("post")
+        .innerJoinAndSelect("post.backtrack", "backtrack")
+        .where("post.backtrackId IN (:...ids)", { ids })
+        .getMany();
 
       return posts;
     } catch (error) {
