@@ -188,12 +188,12 @@ export const getMyPostsInfo = async (
     const allBacktracks = await BacktrackRepository.getBacktrack(username);
     const ids = allBacktracks.map((backtrack) => backtrack.id);
     const posts = await PostRepository.getMyPosts(ids);
-
+    const totalItems = posts.length;
     const paginatedMyPosts = posts.slice(startIndex, endIndex);
     if (paginatedMyPosts.length === 0) {
       return null;
     }
-    return paginatedMyPosts;
+    return { paginatedMyPosts, totalItems };
   } catch (error) {
     throw error;
   }
