@@ -255,6 +255,17 @@
               <span class="info-label">현재 로그인방식</span>
               <span class="info-value">{{ this.provider }}</span>
             </div>
+            <div class="info-item">
+              <span class="info-label">내가 좋아요 한 게시글</span>
+              <span class="info-value"></span>
+              <button
+                class="generate-button"
+                type="button"
+                @click="openLikedPost"
+              >
+                바로가기
+              </button>
+            </div>
           </div>
 
           <div class="info-delete">
@@ -276,12 +287,8 @@
         </v-dialog>
       </card>
     </v-col>
-    <v-col cols="6">
-      <card
-        v-if="fetchedUserInfo"
-        class="card-backtrack"
-        :style="{ width: isFullScreen ? '93%' : '45%' }"
-      >
+    <v-col cols="5">
+      <card v-if="fetchedUserInfo" class="card-backtrack">
         <div class="author">
           <h4 class="title">
             {{ fetchedUserInfo.nickname }} 님의 백킹트랙 관리
@@ -327,19 +334,13 @@
               </v-data-table>
             </div>
           </div>
-          <div class="fullscreen-button" @click="toggleFullScreen">
-            <i
-              :class="
-                isFullScreen
-                  ? 'mdi mdi-arrow-collapse-right'
-                  : 'mdi mdi-arrow-collapse-left'
-              "
-            ></i>
-          </div>
         </div>
       </card>
     </v-col>
   </v-row>
+  <v-dialog v-model="$store.state.showLikedPostModal">
+    <LikedPostModal />
+  </v-dialog>
   <v-dialog v-model="$store.state.showBacktrackModal">
     <BacktrackModal />
   </v-dialog>
@@ -348,6 +349,7 @@
 import Card from "./Card.vue";
 import FindPassword from "../../components/Modals/findPasswordModal.vue";
 import BacktrackModal from "../../components/Modals/BacktrackModal.vue";
+import LikedPostModal from "../../components/Modals/LikedPostModal.vue";
 import axios from "axios";
 import * as Toast from "../../plugins/toast";
 export default {
@@ -356,6 +358,7 @@ export default {
     Card,
     FindPassword,
     BacktrackModal,
+    LikedPostModal,
   },
   data() {
     return {
@@ -406,9 +409,7 @@ export default {
       this.currentPage = newPage;
       this.fetchBacktrackInfo();
     },
-    toggleFullScreen() {
-      this.isFullScreen = !this.isFullScreen;
-    },
+
     openPassword() {
       this.passwordExpanded = !this.passwordExpanded;
     },
@@ -421,6 +422,9 @@ export default {
     closeNickname() {
       this.nicknameExpanded = !this.nicknameExpanded;
     },
+    openLikedPost() {
+      this.$store.commit("toggleShowLikedPostModal", true);
+    },
 
     async confirmAction() {
       const shouldContinue = window.confirm("정말 회원탈퇴 하시겠습니까?");
@@ -429,16 +433,15 @@ export default {
     async showBacktrackData(item) {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/backtrack/data`,
+          `http://localhost:4000/api/backtrack/detail`,
           {
             params: {
-              title: item.selectable.title,
+              id: item.selectable.id,
             },
             withCredentials: true,
           }
         );
         const backtrackData = response.data.backtrackData;
-
         if (backtrackData) {
           this.$store.commit("toggleBacktrackModal", true);
           this.$store.commit("setChordData", backtrackData.backtrack);
@@ -561,6 +564,8 @@ export default {
         );
         this.provider = localStorage.getItem("oauth");
         this.fetchedUserInfo = response.data;
+        this.likedPosts = response.data.likedPosts;
+        this.$store.commit("setLikes", response.data.likedPosts);
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -636,17 +641,17 @@ export default {
 }
 
 .card-backtrack {
-  transition: width 0.3s;
-  position: absolute;
-  /* top: 0; */
-  right: 370px;
-  /* right: 0; */
-  /* bottom: 0; */
   width: 2750px;
-  flex-direction: row-reverse;
-  max-height: 2500px;
+  flex-direction: row;
+  height: 2500px;
+  overflow: hidden;
+  min-width: 2750px;
+  min-height: 2500px;
 }
-
+.card-user {
+  /* overflow: hidden; */
+  width: 2750px;
+}
 .error-shake-animation {
   animation: shake 0.5s;
 }
@@ -670,10 +675,7 @@ export default {
     transform: translateX(5px);
   }
 }
-.card-user {
-  /* overflow: hidden; */
-  width: 2750px;
-}
+
 .author {
   margin-top: 20px;
   padding: 70px 100px;
