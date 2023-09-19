@@ -4,6 +4,7 @@ import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 import { BacktrackRepository } from "./backtrack.repository";
 import { AuthRepository } from "./auth.repository";
+import { In } from "typeorm";
 
 export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   async createPost(
@@ -41,6 +42,17 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         throw `Post ${id} not found`;
       }
       return post;
+    } catch (error) {
+      throw error;
+    }
+  },
+  async getMyPosts(ids: number[]) {
+    try {
+      const posts = await this.find({
+        where: { backtrackId: In(ids) },
+      });
+
+      return posts;
     } catch (error) {
       throw error;
     }

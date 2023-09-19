@@ -5,9 +5,11 @@ import config from "../config";
 import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
+import { BacktrackRepository } from "../models/repositories/backtrack.repository";
 import * as nodemailer from "../config/nodemailer";
 import { AppDataSource } from "../loaders/dbLoader";
 import * as postService from "./postService";
+import { PostRepository } from "../models/repositories/post.repository";
 const { saltRounds } = config.bcrypt;
 const ACCESS_TOKEN_SECRET = config.jwt.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = config.jwt.REFRESH_TOKEN_SECRET;
@@ -175,21 +177,47 @@ export const deleteUser = async (username: string) => {
   }
 };
 
+export const getMyPostsInfo = async (
+  username: string,
+  page: number,
+  pageSize: number
+) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allBacktracks = await BacktrackRepository.getBacktrack(username);
+    const ids = allBacktracks.map((backtrack) => backtrack.id);
+    const posts = await PostRepository.getMyPosts(ids);
+
+    const paginatedMyPosts = posts.slice(startIndex, endIndex);
+    if (paginatedMyPosts.length === 0) {
+      return null;
+    }
+    return paginatedMyPosts;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getPaginatedLikedPosts = async (
   likedPostArray: number[],
   page: number,
   pageSize: number
 ) => {
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedLikedPosts = likedPostArray.slice(startIndex, endIndex);
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedLikedPosts = likedPostArray.slice(startIndex, endIndex);
 
-  const likedPostTitles = await Promise.all(
-    paginatedLikedPosts.map(async (postId) => {
-      const post = await postService.getOnePost(postId);
-      return post ? { [postId]: post.title } : null;
-    })
-  );
+    const likedPostTitles = await Promise.all(
+      paginatedLikedPosts.map(async (postId) => {
+        const post = await postService.getOnePost(postId);
+        return post ? { [postId]: post.title } : null;
+      })
+    );
 
-  return likedPostTitles.filter((title) => title !== null);
+    return likedPostTitles.filter((title) => title !== null);
+  } catch (error) {
+    throw error;
+  }
 };

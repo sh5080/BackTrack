@@ -37,7 +37,26 @@ export const getUserInfo = async (
     next(error);
   }
 };
-
+export const getMyPostsInfo = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const page = req.query.page;
+    const pageSize = 10;
+    const { username } = req.user!;
+    const myPostData = await mypageService.getMyPostsInfo(
+      username,
+      parseInt(page),
+      pageSize
+    );
+    res.json(myPostData);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 export const getLikesInfo = async (
   req: CustomRequest,
   res: Response,
