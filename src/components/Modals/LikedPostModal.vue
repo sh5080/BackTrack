@@ -1,7 +1,10 @@
 <template>
   <v-dialog v-model="$store.state.showLikedPostModal" persistent="">
     <div class="liked-post-modal">
-      <h2 class="mb-3" style="font-size: 6em; margin-top: 400px">
+      <h2
+        class="mb-3"
+        style="font-size: 6em; margin-top: 100px; font-weight: 400"
+      >
         {{ $store.state.loggedInNickname }} 님의 좋아요 목록
       </h2>
 
@@ -20,14 +23,6 @@
               {{ value }}
             </v-list-item-title>
           </v-list-item>
-
-          <v-pagination
-            v-model="currentPage"
-            :length="pageCount"
-            @update:model-value="fetchLikedPostData"
-            size="x-large"
-            class="page"
-          ></v-pagination>
         </v-list>
       </v-card>
       <button
@@ -39,6 +34,15 @@
         확인
       </button>
     </div>
+    <v-pagination
+      v-model="currentPage"
+      :length="pageCount"
+      @update:model-value="onPageChange"
+      size="x-large"
+      class="page"
+      style="margin-top: 1120px"
+    >
+    </v-pagination>
   </v-dialog>
 </template>
 
@@ -49,12 +53,13 @@ export default {
     return {
       likedPostData: [],
       currentPage: 1,
+      totalItems: 0,
+      itemsPerPage: 10,
     };
   },
   methods: {
     closeAllModals() {
       this.$store.commit("toggleShowLikedPostModal", false);
-      this.$router.push("/");
     },
     async getLikedPost(postId) {
       try {
@@ -62,28 +67,27 @@ export default {
           `http://localhost:4000/api/post/${postId}`
         );
         const likedPost = response.data;
-        console.log(likedPost);
       } catch (error) {
         console.error("Error fetching liked post:", error);
       }
     },
-    async fetchLikedPostData(page = 1) {
+    async fetchLikedPostData() {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo/likes?page=${page}`,
+          `http://localhost:4000/api/mypage/userInfo/likes?page=${this.currentPage}`,
           {
             withCredentials: true,
           }
         );
         this.likedPostData = response.data.filteredLikedPostTitles;
-        console.log(response.data);
+        this.totalItems = response.data.totalItems;
       } catch (error) {
         console.error("Error fetching liked post data:", error);
       }
     },
     onPageChange(page) {
       this.currentPage = page;
-      this.fetchLikedPostData(page);
+      this.fetchLikedPostData();
     },
   },
 
@@ -91,8 +95,11 @@ export default {
     likedPosts() {
       return this.$store.state.likedPosts || [];
     },
+    pageCount() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
-  mounted() {
+  created() {
     this.fetchLikedPostData();
   },
 };
@@ -121,8 +128,9 @@ export default {
 }
 
 .btn-success {
-  position: relative;
-  left: 50%;
+  position: fixed;
+  bottom: 100px;
+  right: 0;
   padding: 1em 2.5em;
   font-size: 3.5em;
   text-transform: uppercase;
@@ -153,5 +161,11 @@ export default {
 ::v-deep .v-list-item-title {
   font-size: 3rem;
   line-height: 5rem;
+}
+
+::v-deep .v-pagination .v-btn {
+  font-size: 50px;
+  width: 100px;
+  height: 100px;
 }
 </style>
