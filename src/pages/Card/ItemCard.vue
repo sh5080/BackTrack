@@ -20,17 +20,16 @@
           cols="12"
           sm="6"
           md="4"
-          lg="4"
-          style="padding: 100px; width: 1000px"
+          lg="3"
+          style="padding: 100px"
           class="d-flex justify-center"
         >
           <v-card style="width: 1000px">
             <v-img
               :src="post.imageSrc"
-              class="align-end"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="800px"
               cover
+              class="card-img"
             >
             </v-img>
 
@@ -108,7 +107,7 @@ export default {
     return {
       posts: [],
       currentPage: 1,
-      itemsPerPage: 6,
+      itemsPerPage: 8,
       totalItems: null,
       totalLikedCount: null,
     };
@@ -141,7 +140,7 @@ export default {
         );
 
         this.posts = response.data.postData.paginatedPosts;
-        this.totalItems = response.data.postData.totalPage;
+        this.totalItems = response.data.postData.totalItemsCount;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -221,6 +220,9 @@ export default {
   height: 100px;
   font-size: 40px;
   padding: 10px 60px;
+}
+.card-img {
+  height: 800px;
 }
 .likes-count {
   font-size: 50px;
