@@ -232,7 +232,7 @@
       <v-btn
         id="closeButton"
         type="button"
-        @click="closeAllModals"
+        @click="closeModal"
         border
         class="text-none"
         variant="text"
@@ -268,7 +268,7 @@
         <v-btn
           id="mainButton"
           type="button"
-          @click="closeAllModals"
+          @click="closeModalAndRender"
           border
           class="text-none"
           variant="text"
@@ -356,7 +356,10 @@ export default {
         this.stopMetronome();
       }
     },
-    closeAllModals() {
+    closeModal() {
+      this.$store.commit("toggleBacktrackModal", false);
+    },
+    closeModalAndRender() {
       this.$store.commit("toggleBacktrackModal", false);
       this.$router.go();
     },
