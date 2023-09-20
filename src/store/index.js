@@ -29,8 +29,13 @@ export const store = createStore({
     },
 
     //
-    backtrackModalData: null,
+
     likedPosts: [],
+    showLikedPostModal: false,
+    showMyPostModal: false,
+    showPostModal: false,
+    currentPost: null,
+    currentPostAuthor: null,
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -107,6 +112,12 @@ export const store = createStore({
     setLikes(state, value) {
       state.likedPosts = value;
     },
+    setPostData(state, post) {
+      state.currentPost = post;
+    },
+    setPostAuthor(state, author) {
+      state.currentPostAuthor = author;
+    },
     updateLikedPosts(state, postId) {
       if (state.likedPosts) {
         const index = state.likedPosts.indexOf(postId);
@@ -116,6 +127,15 @@ export const store = createStore({
           state.likedPosts.push(postId);
         }
       }
+    },
+    toggleShowLikedPostModal(state, value) {
+      state.showLikedPostModal = value;
+    },
+    toggleShowMyPostModal(state, value) {
+      state.showMyPostModal = value;
+    },
+    toggleShowPostModal(state, value) {
+      state.showPostModal = value;
     },
   },
 
