@@ -23,10 +23,11 @@
           lg="3"
           style="padding: 100px"
           class="d-flex justify-center"
+          @click="openPost(post.id, post.backtrackId, post.author)"
         >
-          <v-card style="width: 1000px">
+          <v-card style="width: 1000px" class="card-hover">
             <v-img
-              :src="post.imageSrc"
+              :src="post.image"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
               cover
               class="card-img"
@@ -60,7 +61,7 @@
                   :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
                   variant="text"
                   icon="mdi-heart"
-                  @click="toggleLike(post.id)"
+                  @click="toggleLike(post.id, post.author)"
                   class="card-btn"
                 >
                 </v-btn>
@@ -98,10 +99,14 @@
       ></v-pagination>
     </div>
   </v-card>
+  <v-dialog v-model="$store.state.showPostModal">
+    <PostModal />
+  </v-dialog>
 </template>
 <script>
 import axios from "axios";
 import * as Toast from "../../plugins/toast";
+import PostModal from "../../components/Modals/PostModal.vue";
 export default {
   data() {
     return {
@@ -111,6 +116,9 @@ export default {
       totalItems: null,
       totalLikedCount: null,
     };
+  },
+  components: {
+    PostModal,
   },
   computed: {
     pageCount() {
@@ -129,6 +137,42 @@ export default {
       const likedPosts = this.$store.state.likedPosts || [];
       return likedPosts.includes(postId);
     },
+    //게시판에서 post 불러오는 모달
+    async openPost(postId, backtrackId, author) {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/post/${postId}`,
+
+          {
+            withCredentials: true,
+          }
+        );
+
+        const backtrackResponse = await axios.get(
+          `http://localhost:4000/api/backtrack/detail`,
+          {
+            params: {
+              id: backtrackId,
+            },
+            withCredentials: true,
+          }
+        );
+        const backtrackData = backtrackResponse.data.backtrackData;
+        if (backtrackData) {
+          this.$store.commit("setChordData", backtrackData.backtrack);
+          this.$store.commit("setBacktrackData", backtrackData);
+        }
+
+        const result = response.data.postData;
+
+        this.$store.commit("setPostData", result);
+        this.$store.commit("setPostAuthor", author);
+        this.$store.commit("toggleShowPostModal", true);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    },
+    //게시판 post
     async fetchPosts() {
       try {
         const response = await axios.get(
@@ -226,5 +270,16 @@ export default {
 }
 .likes-count {
   font-size: 50px;
+}
+
+.card-hover:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+::v-deep .v-pagination .v-btn {
+  font-size: 50px;
+  width: 100px;
+  height: 100px;
 }
 </style>
