@@ -3,6 +3,8 @@ import { BacktrackEntity } from "../entities/backtrack.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 
+import { PostEntity } from "../entities/post.entity";
+
 export const BacktrackRepository = AppDataSource.getRepository(
   BacktrackEntity
 ).extend({
@@ -26,7 +28,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async getBacktrack(username: string) {
+  async getMyBacktrack(username: string) {
     try {
       if (!username) {
         throw new AppError(
@@ -66,7 +68,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       }
 
       const userData = await this.remove(backtrackData);
-
+      await AppDataSource.getRepository(PostEntity).delete({ backtrackId });
       return userData;
     } catch (error) {
       throw error;
