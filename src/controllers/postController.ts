@@ -54,7 +54,7 @@ export const createPost = async (
     );
     console.log(postData);
     res
-      .status(200)
+      .status(201)
       .json({ message: "게시글 생성이 완료되었습니다.", postData });
   } catch (error) {
     next(error);
