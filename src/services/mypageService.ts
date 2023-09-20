@@ -185,7 +185,7 @@ export const getMyPostsInfo = async (
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allBacktracks = await BacktrackRepository.getBacktrack(username);
+    const allBacktracks = await BacktrackRepository.getMyBacktrack(username);
     const ids = allBacktracks.map((backtrack) => backtrack.id);
     const posts = await PostRepository.getMyPosts(ids);
     const totalItems = posts.length;

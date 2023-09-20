@@ -34,7 +34,7 @@ export const createBacktrack = async (
   }
 };
 
-export const getBacktrack = async (
+export const getMyBacktrack = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
@@ -43,7 +43,7 @@ export const getBacktrack = async (
     const username = req.user!.username;
     const page = req.query.page;
 
-    const backtrackData = await backtrackService.getBacktrack(
+    const backtrackData = await backtrackService.getMyBacktrack(
       username,
       parseInt(page)
     );
@@ -63,7 +63,6 @@ export const getBacktrackDetail = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
     const { id } = req.query;
     const backtrackData = await backtrackService.getBacktrackDetail(
       parseInt(id)
