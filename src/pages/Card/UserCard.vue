@@ -256,6 +256,13 @@
               <span class="info-value">{{ this.provider }}</span>
             </div>
             <div class="info-item">
+              <span class="info-label">내가 쓴 게시글</span>
+              <span class="info-value"></span>
+              <button class="generate-button" type="button" @click="openMyPost">
+                바로가기
+              </button>
+            </div>
+            <div class="info-item">
               <span class="info-label">좋아요 한 게시글</span>
               <span class="info-value"></span>
               <button
@@ -344,12 +351,16 @@
   <v-dialog v-model="$store.state.showBacktrackModal">
     <BacktrackModal />
   </v-dialog>
+  <v-dialog v-model="$store.state.showMyPostModal">
+    <MyPostModal />
+  </v-dialog>
 </template>
 <script>
 import Card from "./Card.vue";
 import FindPassword from "../../components/Modals/findPasswordModal.vue";
 import BacktrackModal from "../../components/Modals/BacktrackModal.vue";
 import LikedPostModal from "../../components/Modals/LikedPostModal.vue";
+import MyPostModal from "../../components/Modals/MyPostModal.vue";
 import axios from "axios";
 import * as Toast from "../../plugins/toast";
 export default {
@@ -359,6 +370,7 @@ export default {
     FindPassword,
     BacktrackModal,
     LikedPostModal,
+    MyPostModal,
   },
   data() {
     return {
@@ -424,6 +436,9 @@ export default {
     },
     openLikedPost() {
       this.$store.commit("toggleShowLikedPostModal", true);
+    },
+    openMyPost() {
+      this.$store.commit("toggleShowMyPostModal", true);
     },
 
     async confirmAction() {
