@@ -180,7 +180,7 @@
                         v-model="description"
                         style="font-size: 130px; height: 600px"
                         label="소개글*"
-                        hint="200자 이내로 입력 가능합니다."
+                        hint="200자 이내로 입력 가능합니다. 이미지 업로드는 아래에서 가능합니다."
                         persistent-hint
                         required
                         rows="4"
@@ -189,9 +189,26 @@
                   </v-row>
                 </v-container>
               </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
 
+              <v-card-actions>
+                <div class="file-container">
+                  <input
+                    class="file-input"
+                    type="file"
+                    ref="fileInput"
+                    @change="handleFileUpload"
+                    accept="image/*"
+                  />
+                  <button
+                    class="upload-button"
+                    type="button"
+                    @click="resetImage"
+                    style="margin-left: 20px"
+                  >
+                    초기화
+                  </button>
+                </div>
+                <!-- <v-spacer></v-spacer> -->
                 <v-btn
                   id="saveButton1"
                   type="button"
@@ -203,7 +220,6 @@
                 >
                   게시하기
                 </v-btn>
-
                 <v-btn
                   id="closeButton1"
                   type="button"
@@ -292,8 +308,6 @@ export default {
       metronomeSequence: null,
       drum: null,
       transport: Tone.Transport,
-      // title: this.$store.state.backtrackTitle.title,
-      // backtrackData: this.$store.state.backtrackTitle,
       title: this.$store.state.backtrackData.title,
       backtrackData: this.$store.state.backtrackData,
       tableIndex: 0,
@@ -312,6 +326,12 @@ export default {
       isBacktrack: false,
       dialog: false,
       description: "",
+      selectedFile: null,
+      imageUploaded: false,
+      selectedImageURL: "",
+      maxFileSize: 1024 * 1024,
+      fileSizeExceeded: false,
+      postResponse: true,
     };
   },
   computed: {
@@ -341,6 +361,37 @@ export default {
 
   // },
   methods: {
+    handleFileUpload() {
+      const fileInput = this.$refs.fileInput;
+      const selectedFile = fileInput.files[0];
+
+      // 파일 크기 확인
+      if (selectedFile) {
+        if (selectedFile.size > this.maxFileSize) {
+          this.fileSizeExceeded = true;
+          fileInput.value = "";
+        } else {
+          this.fileSizeExceeded = false;
+          this.selectedFile = selectedFile; // 파일 크기가 제한 이내인 경우 선택한 파일 저장
+          this.selectedImageURL = URL.createObjectURL(selectedFile);
+        }
+      }
+    },
+    resetImage() {
+      if (this.selectedImageURL) {
+        URL.revokeObjectURL(this.selectedImageURL);
+      }
+
+      this.selectedImageURL = null;
+      // this.updatePreviewData({
+      //   imageURL: "",
+      // });
+      this.selectedFile = null;
+      const fileInput = this.$refs.fileInput;
+      if (fileInput) {
+        fileInput.value = null;
+      }
+    },
     decrement() {
       this.bpm--;
     },
@@ -782,21 +833,47 @@ export default {
         }
 
         const id = this.backtrackData.id;
+        const requestData = {
+          description: this.description,
+          image: this.selectedFile ? this.selectedFile : null,
+        };
+        if (this.selectedFile) {
+          const formData = new FormData();
 
-        const response = await axios.post(
-          `http://localhost:4000/api/post`,
-          {
-            description: this.description,
-            //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
-          },
-          {
-            withCredentials: true,
-            params: {
-              backtrackId: id,
-            },
-          }
-        );
-        if (response.status === 200) {
+          formData.append("description", this.description);
+          formData.append("image", this.selectedFile);
+
+          const response = await axios.post(
+            `http://localhost:4000/api/post`,
+            formData,
+            {
+              withCredentials: true,
+              params: {
+                backtrackId: id,
+              },
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          this.postResponse = response;
+        } else {
+          const response = await axios.post(
+            `http://localhost:4000/api/post`,
+            requestData,
+
+            {
+              withCredentials: true,
+              params: {
+                backtrackId: id,
+              },
+            }
+          );
+          this.postResponse = response;
+        }
+        console.log(this.postResponse);
+        if (this.postResponse.status === 201) {
           this.isBacktrack = true;
           this.dialog = false;
         }
@@ -819,7 +896,6 @@ export default {
     },
     async deleteBacktrack() {
       try {
-        console.log("여기!");
         const id = this.backtrackData.id;
         if (!id) {
           Toast.customError("이미 삭제되었거나 없는 백킹트랙입니다.");
@@ -838,6 +914,7 @@ export default {
         if (response) {
           Toast.alertMessage("삭제되었습니다.");
           this.$store.commit("toggleBacktrackModal", false);
+          this.$router.go();
         }
       } catch (error) {
         console.error("Error to delete backtrack:", error);
@@ -858,7 +935,7 @@ export default {
   border-radius: 5px;
   background: #fefefe;
   width: 3000px;
-  height: 2200px;
+  height: 2100px;
   text-align: center;
 }
 
@@ -913,7 +990,7 @@ export default {
 #playButton {
   position: absolute;
   right: 60px;
-  bottom: 640px;
+  bottom: 540px;
   width: 450px;
   height: 150px;
   font-size: 4em;
@@ -943,12 +1020,14 @@ export default {
   font-size: 4em;
 }
 #saveButton1 {
-  bottom: 10px;
   right: 550px;
 }
 #closeButton1 {
-  bottom: 10px;
   right: 65px;
+}
+#saveButton1,
+#closeButton1 {
+  bottom: 205px;
 }
 .text-end {
   margin-right: 10px !important;
@@ -1046,7 +1125,7 @@ export default {
 }
 ::v-deep .v-card .v-card-text {
   line-height: 300px;
-  margin-top: -40px;
+
   padding: 50px;
 }
 ::v-deep .v-card .v-card-title {
@@ -1067,6 +1146,9 @@ export default {
   position: fixed;
   max-width: 1500px;
 }
+::v-deep .v-card-actions {
+  margin-bottom: 200px;
+}
 
 .bpm {
   font-size: 200px;
@@ -1085,8 +1167,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 2500px;
-  height: 1000px;
+  width: 3000px;
+  height: 2100px;
 }
 .register-title {
   font-size: 80px;
@@ -1137,5 +1219,28 @@ export default {
 
 ::v-deep .v-textarea .v-field__input {
   font-size: 80px;
+  height: 800px;
+}
+
+.file-container {
+  margin-top: 300px;
+}
+.file-input {
+  font-size: 65px;
+  border: 1px solid #ccc;
+  margin-top: 100px;
+  margin-left: 20px;
+  padding: 20px 200px;
+  text-align: center;
+
+  width: 1400px;
+}
+.upload-button {
+  border: 1px solid #ccc;
+  padding: 20px 0px;
+  width: 450px;
+  display: inline-block;
+  margin-top: 120px;
+  font-size: 70px;
 }
 </style>
