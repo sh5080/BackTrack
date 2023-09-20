@@ -3,10 +3,11 @@ import * as postController from "../../controllers/postController";
 import { validateRequestBody } from "../middlewares/validateRequest";
 import { validateToken } from "../middlewares/jwt";
 import transactionMiddleware from "../middlewares/transactionHandler";
+import { processImage } from "../middlewares/multer";
 const router = Router();
 
 /** 게시글 업로드 */
-router.post("/", validateToken, postController.createPost);
+router.post("/", validateToken, processImage, postController.createPost);
 
 /** 게시글 전체 조회 (페이지네이션) */
 router.get("/", postController.getPost);

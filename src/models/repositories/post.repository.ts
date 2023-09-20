@@ -10,12 +10,14 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   async createPost(
     backtrackId: number,
     description: string,
+    image: string,
     createdAt: string
   ) {
     try {
       const userData = this.create({
         backtrackId,
         description,
+        image,
         createdAt,
       });
 

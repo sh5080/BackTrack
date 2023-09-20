@@ -7,11 +7,10 @@ import { AuthRepository } from "../models/repositories/auth.repository";
 export const createPost = async (
   backtrackId: string,
   username: string,
-  description: string
+  description: string,
+  imgNames: string
 ) => {
   try {
-    console.log("b_id: ", backtrackId);
-    console.log("desc: ", description);
     const backtrackData = await BacktrackRepository.getBacktrackDetail(
       parseInt(backtrackId)
     );
@@ -40,11 +39,13 @@ export const createPost = async (
 
     const createdAt = `${year}-${month}-${day}`;
 
-    await PostRepository.createPost(
+    const postData = await PostRepository.createPost(
       parseInt(backtrackId),
       description,
+      imgNames,
       createdAt
     );
+    return postData;
   } catch (error) {
     throw error;
   }

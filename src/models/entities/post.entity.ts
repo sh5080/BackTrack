@@ -21,6 +21,9 @@ export class PostEntity {
   @Column()
   description: string;
 
+  @Column({ nullable: true })
+  image: string;
+
   @Column({ name: "liked_users", nullable: true, type: "json" })
   likedUsers: number[];
 
@@ -41,12 +44,14 @@ export class PostEntity {
     id: number,
     backtrackId: number,
     description: string,
+    image: string,
     createdAt: string,
     likedUsers: number[]
   ) {
     this.id = id;
     this.backtrackId = backtrackId;
     this.description = description;
+    this.image = image;
     this.createdAt = createdAt;
     this.likedUsers = likedUsers;
   }
