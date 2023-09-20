@@ -2,6 +2,7 @@ import * as Type from "../types/type";
 import { BacktrackRepository } from "../models/repositories/backtrack.repository";
 import { AppError, CommonError } from "../types/AppError";
 import { PostRepository } from "../models/repositories/post.repository";
+import { AuthRepository } from "../models/repositories/auth.repository";
 
 export const createPost = async (
   backtrackId: string,
@@ -62,10 +63,10 @@ export const getPost = async (page: number = 1, pageSize: number = 8) => {
         backtrackId
       );
       const title = backtrackData?.title;
-      const username = backtrackData?.username;
-
+      const backtrackAuthor = backtrackData?.username;
+      const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
-      post.author = username;
+      post.author = nicknameData?.nickname;
     }
     return { paginatedPosts, totalItemsCount };
   } catch (error) {
