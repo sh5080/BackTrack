@@ -20,6 +20,7 @@ export interface CustomRequest extends Request {
 
     postId: number;
     userId: number;
+    comment: string;
   };
   query: {
     page: string;
