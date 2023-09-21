@@ -8,14 +8,23 @@
       <div v-if="isLogged">
         <div class="logged-title">
           {{ $store.state.currentPostAuthor }} 님의 게시물
-          {{ $store.state.currentPost }}
+          {{ $store.state.currentPost.title || "" }}
         </div>
         <div class="sheet-message" style="top: 180px">
           만들어진 백킹트랙을 재생할 수 있습니다.
         </div>
       </div>
       <v-row>
-        <v-col cols="6"></v-col>
+        <v-col cols="6">
+          <div class="sheet-music">
+            <v-img
+              aspect-ratio="4/3"
+              :src="$store.state.currentPost.image"
+              cover
+            >
+            </v-img>
+          </div>
+        </v-col>
         <v-col cols="6">
           <div class="sheet-music">
             <div v-if="previousChordArray">
@@ -231,9 +240,6 @@ export default {
       metronomeSequence: null,
       drum: null,
       transport: Tone.Transport,
-      // title: this.$store.state.backtrackTitle.title,
-      //   // backtrackData: this.$store.state.backtrackTitle,
-      //   title: this.$store.state.backtrackData.title,
       backtrackData: this.$store.state.backtrackData,
       tableIndex: 0,
       measureIndex: 0,
@@ -1075,5 +1081,13 @@ export default {
 
 ::v-deep .v-textarea .v-field__input {
   font-size: 80px;
+}
+
+.card-img {
+  width: 46%;
+  height: 1000px;
+  margin-top: 50px;
+  padding: 20px;
+  border: 0 solid 1px #000000;
 }
 </style>
