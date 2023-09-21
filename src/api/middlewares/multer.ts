@@ -44,12 +44,19 @@ export const processImage = (
       console.error(err);
       return next(err); // 에러를 다음 미들웨어로 전달
     }
+
+    // 이미지가 업로드되었는지 확인
     const file = req.file as Express.Multer.File;
-    if (!file) {
-      return res.status(400).json({ error: "No file uploaded." });
+
+    // 파일이 없어도 계속 진행
+    if (!file || !file.filename) {
+      console.log("No file uploaded.");
+    } else {
+      // 업로드된 파일의 정보를 활용하여 추가 작업 수행
+      console.log("Uploaded file:", file.filename);
     }
-    // 업로드된 파일의 정보를 활용하여 추가 작업 수행
-    console.log("Uploaded file:", file.filename);
+
+    // 다음 미들웨어로 이동
     next();
   });
 };

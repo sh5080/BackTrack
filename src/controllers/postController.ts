@@ -35,8 +35,10 @@ export const createPost = async (
         "../../public/compressed",
         file.filename
       );
+      const fixedWidth = 600;
+      const fixedHeight = (3 / 4) * fixedWidth;
 
-      await compressImage(inputPath, compressedPath, 600, 600);
+      await compressImage(inputPath, compressedPath, fixedWidth, fixedHeight);
 
       const compressedFilename = path.basename(compressedPath);
       const encodedFilename = encodeURIComponent(compressedFilename);
