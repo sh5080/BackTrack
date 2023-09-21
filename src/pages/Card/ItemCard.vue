@@ -26,14 +26,17 @@
           @click="openPost(post.id, post.backtrackId, post.author)"
         >
           <v-card style="width: 1000px" class="card-hover">
-            <v-img
+            <img
+              v-if="post.image"
               :src="post.image"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              onerror="this.src='/img/no_image.png'"
               cover
               class="card-img"
-            >
-            </v-img>
+            />
 
+            <img v-else cover class="card-img" :src="noImageSrc" />
+
+            <!--        img gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" -->
             <v-card-subtitle class="pt-4" style="height: 50px">
             </v-card-subtitle>
             <v-card-text>
@@ -91,6 +94,7 @@
 import axios from "axios";
 import * as Toast from "../../plugins/toast";
 import PostModal from "../../components/Modals/PostModal.vue";
+
 export default {
   data() {
     return {
@@ -99,6 +103,7 @@ export default {
       itemsPerPage: 8,
       totalItems: null,
       totalLikedCount: null,
+      noImageSrc: "/img/no_image.png",
     };
   },
   components: {
