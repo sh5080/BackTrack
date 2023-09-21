@@ -61,26 +61,10 @@
                   :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
                   variant="text"
                   icon="mdi-heart"
-                  @click="toggleLike(post.id, post.author)"
+                  @click.stop="toggleLike(post.id, post.author)"
                   class="card-btn"
                 >
                 </v-btn>
-                <!-- 
-                <v-btn
-                  size="x-large"
-                  color="surface-variant"
-                  variant="text"
-                  icon="mdi-bookmark"
-                  class="card-btn"
-                ></v-btn> -->
-
-                <!-- <v-btn
-                  size="x-large"
-                  color="surface-variant"
-                  variant="text"
-                  icon="mdi-share-variant"
-                  class="card-btn"
-                ></v-btn> -->
               </div>
             </v-card-actions>
           </v-card>
