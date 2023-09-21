@@ -25,4 +25,12 @@ export const CommentRepository = AppDataSource.getRepository(
       throw error;
     }
   },
+
+  async getCommentsByPostId(postId: number) {
+    const existingComments = await this.find({
+      where: { postId: postId },
+    });
+
+    return existingComments;
+  },
 });

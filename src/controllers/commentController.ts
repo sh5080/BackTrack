@@ -24,34 +24,34 @@ export const createComment = async (
   }
 };
 
-// /** 여행기에 대한 댓글 조회 */
-// export const getCommentsByPostId = async (
-//   req: CustomRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const { diaryId } = req.params;
-//     const { page } = req.query;
-//     const limit = 10;
-//     const comments = await commentService.getCommentsByPostId(
-//       Number(diaryId),
-//       Number(page),
-//       Number(limit)
-//     );
-//     if (comments[0] === undefined) {
-//       throw new AppError(
-//         CommonError.RESOURCE_NOT_FOUND,
-//         "댓글을 찾을 수 없습니다.",
-//         404
-//       );
-//     }
-//     res.status(200).json({ comments });
-//   } catch (error) {
-//     console.error(error);
-//     next(error);
-//   }
-// };
+/** 여행기에 대한 댓글 조회 */
+export const getCommentsByPostId = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId } = req.params;
+    const { page } = req.query;
+    const limit = 10;
+    const comments = await commentService.getCommentsByPostId(
+      Number(postId),
+      Number(page),
+      Number(limit)
+    );
+    if (comments === undefined) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "댓글을 찾을 수 없습니다.",
+        404
+      );
+    }
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
 // /** 댓글 수정 */
 // export const updateComment = async (

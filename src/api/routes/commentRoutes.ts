@@ -12,8 +12,8 @@ router.post(
   commentController.createComment
 );
 
-// /** [댓글] 여행기별 댓글 조회 */
-// router.get("/diaries/:diaryId", commentController.getCommentsByPostId);
+/** [댓글] 댓글 조회 */
+router.get("/:postId", commentController.getCommentsByPostId);
 
 // /** [댓글] 댓글 수정 */
 // router.put(

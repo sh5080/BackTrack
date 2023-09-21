@@ -35,17 +35,22 @@ export const createComment = async (
   }
 };
 
-// /**
-//  * 게시물별 댓글 조회
-//  */
-// export const getCommentsByPostId = async (
-//   postId: number,
-//   page: number,
-//   limit: number
-// ): Promise<Comment[]> => {
-//   const comments = await CommentRepository.getCommentsByPostId(postId, page, limit);
-//   return comments;
-// };
+/**
+ * 게시물별 댓글 조회
+ */
+export const getCommentsByPostId = async (
+  postId: number,
+  page: number,
+  pageSize: number
+) => {
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const comments = await CommentRepository.getCommentsByPostId(postId);
+  const totalItemsCount = comments.length;
+  const paginatedComments = comments.slice(startIndex, endIndex);
+
+  return { paginatedComments, totalItemsCount };
+};
 
 // /**
 //  * 댓글 수정
