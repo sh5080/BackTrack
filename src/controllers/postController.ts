@@ -18,7 +18,7 @@ export const createPost = async (
     const username = req.user!.username;
     const { backtrackId } = req.query;
     console.log("여기: ", description, backtrackId);
-    if (description.length > 30 || !description) {
+    if (description.length > 200 || !description) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "소개는 200자 이내로 작성 가능합니다.",
