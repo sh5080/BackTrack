@@ -71,7 +71,17 @@ export const getPost = async (
 ) => {
   try {
     const page = req.query.page;
-    const postData = await postService.getPost(parseInt(page));
+    const sortBy = req.query.sortBy; // 정렬 방식 받아오기
+
+    let postData;
+
+    if (sortBy === "oldest") {
+      postData = await postService.getOldestPosts(parseInt(page));
+    } else if (sortBy === "likes") {
+      postData = await postService.getPostsByLikes(parseInt(page));
+    } else {
+      postData = await postService.getLatestPosts(parseInt(page));
+    }
 
     if (postData.paginatedPosts.length < 1) {
       throw new AppError(

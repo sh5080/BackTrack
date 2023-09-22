@@ -51,7 +51,101 @@ export const createPost = async (
   }
 };
 
-export const getPost = async (page: number = 1, pageSize: number = 8) => {
+// export const getPost = async (page: number = 1, pageSize: number = 8) => {
+//   try {
+//     const startIndex = (page - 1) * pageSize;
+//     const endIndex = startIndex + pageSize;
+//     const allPosts = await PostRepository.getPost();
+//     const totalItemsCount = allPosts.length;
+//     const paginatedPosts = allPosts.slice(startIndex, endIndex);
+//     for (const post of paginatedPosts) {
+//       const backtrackId = post.backtrackId;
+//       const backtrackData = await BacktrackRepository.getBacktrackDetail(
+//         backtrackId
+//       );
+//       const title = backtrackData?.title;
+//       const backtrackAuthor = backtrackData?.username;
+//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
+//       post.title = title;
+//       post.author = nicknameData?.nickname;
+//     }
+//     return { paginatedPosts, totalItemsCount };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+export const getLatestPosts = async (
+  page: number = 1,
+  pageSize: number = 8
+) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allPosts = await PostRepository.getPost();
+    const sortedPosts = allPosts.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+    const totalItemsCount = sortedPosts.length;
+    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
+    for (const post of paginatedPosts) {
+      const backtrackId = post.backtrackId;
+      const backtrackData = await BacktrackRepository.getBacktrackDetail(
+        backtrackId
+      );
+      const title = backtrackData?.title;
+      const backtrackAuthor = backtrackData?.username;
+      const nicknameData = await AuthRepository.findUser(backtrackAuthor);
+      post.title = title;
+      post.author = nicknameData?.nickname;
+    }
+    return { paginatedPosts, totalItemsCount };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getPostsByLikes = async (
+  page: number = 1,
+  pageSize: number = 8
+) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allPosts = await PostRepository.getPost();
+
+    // 좋아요 수를 기준으로 정렬
+    const sortedPosts = allPosts.sort((a, b) => {
+      const aLikes = a.likedUsers?.length || 0;
+      const bLikes = b.likedUsers?.length || 0;
+      return bLikes - aLikes;
+    });
+
+    const totalItemsCount = sortedPosts.length;
+    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
+
+    for (const post of paginatedPosts) {
+      const backtrackId = post.backtrackId;
+      const backtrackData = await BacktrackRepository.getBacktrackDetail(
+        backtrackId
+      );
+      const title = backtrackData?.title;
+      const backtrackAuthor = backtrackData?.username;
+      const nicknameData = await AuthRepository.findUser(backtrackAuthor);
+      post.title = title;
+      post.author = nicknameData?.nickname;
+    }
+
+    return { paginatedPosts, totalItemsCount };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getOldestPosts = async (
+  page: number = 1,
+  pageSize: number = 8
+) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;

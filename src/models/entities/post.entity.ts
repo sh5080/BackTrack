@@ -28,7 +28,7 @@ export class PostEntity {
   likedUsers: number[];
 
   @Column({ name: "created_at" })
-  createdAt: string;
+  createdAt: Date;
 
   title: string | undefined;
   author: string | undefined;
@@ -45,7 +45,7 @@ export class PostEntity {
     backtrackId: number,
     description: string,
     image: string,
-    createdAt: string,
+    createdAt: Date,
     likedUsers: number[]
   ) {
     this.id = id;

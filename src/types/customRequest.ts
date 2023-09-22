@@ -29,5 +29,6 @@ export interface CustomRequest extends Request {
     nickname: string;
     id: string;
     backtrackId: string;
+    sortBy: string;
   };
 }
