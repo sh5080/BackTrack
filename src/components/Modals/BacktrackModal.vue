@@ -19,7 +19,9 @@
         <div v-if="previousChordArray">
           <div class="previous-measure">
             <span
-              v-for="(chordSegment, segmentIndex) in previousChordArray"
+              v-for="(chordSegment, segmentIndex) in previousChordArray
+                .join(' ')
+                .split(' ')"
               :key="segmentIndex"
               :class="getChordInPreviousMeasure(chordSegment)"
             >
@@ -30,7 +32,9 @@
 
         <div class="measure">
           <span
-            v-for="(chordSegment, segmentIndex) in currentChordArray"
+            v-for="(chordSegment, segmentIndex) in currentChordArray
+              .join(' ')
+              .split(' ')"
             :key="segmentIndex"
             :class="getChordInMeasure(chordSegment)"
           >
@@ -41,7 +45,9 @@
         <div v-if="nextChordArray">
           <div class="next-measure">
             <span
-              v-for="(chordSegment, segmentIndex) in nextChordArray"
+              v-for="(chordSegment, segmentIndex) in nextChordArray
+                .join(' ')
+                .split(' ')"
               :key="segmentIndex"
               :class="getChordInNextMeasure(chordSegment)"
             >
@@ -710,29 +716,27 @@ export default {
       const classes = [];
 
       if (
-        [
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "A#",
-          "B#",
-          "C#",
-          "D#",
-          "E#",
-          "F#",
-          "G#",
-          "Ab",
-          "Bb",
-          "Cb",
-          "Db",
-          "Eb",
-          "Fb",
-          "Gb",
-        ].includes(chordSegment)
+        chordSegment === "A" ||
+        chordSegment === "B" ||
+        chordSegment === "C" ||
+        chordSegment === "D" ||
+        chordSegment === "E" ||
+        chordSegment === "F" ||
+        chordSegment === "G" ||
+        chordSegment === "A#" ||
+        chordSegment === "B#" ||
+        chordSegment === "C#" ||
+        chordSegment === "D#" ||
+        chordSegment === "E#" ||
+        chordSegment === "F#" ||
+        chordSegment === "G#" ||
+        chordSegment === "Ab" ||
+        chordSegment === "Bb" ||
+        chordSegment === "Cb" ||
+        chordSegment === "Db" ||
+        chordSegment === "Eb" ||
+        chordSegment === "Fb" ||
+        chordSegment === "Gb"
       ) {
         classes.push("key-font");
       } else if (chordSegment === "/") {
@@ -775,7 +779,7 @@ export default {
       } else if (chordSegment === "/") {
         classes.push("small-blank-font");
       } else {
-        classes.push("extends-font");
+        classes.push("small-extends-font");
       }
 
       return classes;
@@ -812,7 +816,7 @@ export default {
       } else if (chordSegment === "/") {
         classes.push("small-blank-font");
       } else {
-        classes.push("extends-font");
+        classes.push("small-extends-font");
       }
 
       return classes;
@@ -835,7 +839,7 @@ export default {
         const id = this.backtrackData.id;
         const requestData = {
           description: this.description,
-          image: this.selectedFile ? this.selectedFile : null,
+          image: this.selectedFile || null,
         };
         if (this.selectedFile) {
           const formData = new FormData();
@@ -859,6 +863,7 @@ export default {
 
           this.postResponse = response;
         } else {
+          console.log("여기: ", requestData);
           const response = await axios.post(
             `http://localhost:4000/api/post`,
             requestData,
@@ -880,16 +885,6 @@ export default {
       } catch (error) {
         console.error("Error generating backtrack:", error);
         if (error.response) {
-          if (
-            error.response.data.message.includes("필수 입력값이 누락되었습니다")
-          ) {
-            Toast.customError(
-              "악보를 구성해야 저장이 가능합니다. 악보를 확인해 주세요."
-            );
-          } else {
-            Toast.errorMessage(error);
-          }
-        } else {
           Toast.customWarning("서버 응답을 받을 수 없습니다.");
         }
       }
@@ -1082,12 +1077,19 @@ export default {
   font-size: 150px;
   padding: 0px 100px;
 }
-
-.extends-font {
+.small-extends-font {
   position: relative;
   font-family: "Font2";
   font-size: 70px;
   bottom: 100px;
+  right: 100px;
+}
+.extends-font {
+  position: relative;
+  font-family: "Font2";
+  font-size: 100px;
+  bottom: 200px;
+  right: 100px;
 }
 .blank-font {
   font-family: "Font1";
