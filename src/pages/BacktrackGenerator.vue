@@ -148,13 +148,6 @@
                   <button class="next-button" @click="nextMeasure">
                     마디 넘기기
                   </button>
-                  <button
-                    class="generate-button"
-                    type="button"
-                    @click="generateBacktrack"
-                  >
-                    Backingtrack 생성하기
-                  </button>
                 </v-col>
               </div>
             </v-col>
@@ -175,63 +168,36 @@
                 />
               </div>
 
-              <button class="dropdown-toggle1" @click="toggleBpmDropdown">
-                BPM 선택
-              </button>
+              <v-menu>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    color="primary"
+                    v-bind="props"
+                    class="dropdown-toggle1"
+                    @click="toggleBpmDropdown"
+                  >
+                    BPM 선택
+                  </v-btn>
+                </template>
 
-              <div class="menu-container" v-if="bpmDropdownOpen">
                 <ul class="dropdown-menu1">
-                  <li
-                    v-for="bpm in bpmOptions"
-                    :key="bpm"
-                    @click="selectBpm(bpm)"
-                  >
-                    {{ bpm }}
-                  </li>
-                  <li @click="selectBpmDirectInput">직접입력</li>
+                  <v-list>
+                    <v-list-item
+                      v-for="bpm in bpmOptions"
+                      :key="bpm"
+                      @click="selectBpm(bpm)"
+                    >
+                      <v-list-item-title>{{ bpm }} </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
                 </ul>
-              </div>
+              </v-menu>
             </div>
-
-            <!-- <div class="measure-input-container">
-              <div class="measure-label-container">
-                <label class="measure-label" style="margin-left: -32px"
-                  >마디수:</label
-                >
-              </div>
-              <div class="measure-input">
-                <input
-                  class="input-field"
-                  v-model.number="measure"
-                  :readonly="!measureDirectInput"
-                  :style="{
-                    backgroundColor: measureDirectInput ? 'white' : 'lightgray',
-                  }"
-                />
-              </div>
-
-              <button class="dropdown-toggle1" @click="toggleMeasureDropdown">
-                마디 수 선택
-              </button>
-              <div class="menu-container" v-if="measureDropdownOpen">
-                <ul class="dropdown-menu2">
-                  <li
-                    v-for="measure in measureOptions"
-                    :key="measure"
-                    @click="selectMeasure(measure)"
-                  >
-                    {{ measure }}
-                  </li>
-                  <li @click="selectMeasureDirectInput">직접입력</li>
-                </ul>
-              </div>
-            </div> -->
           </div>
         </v-col>
 
         <v-col cols="6">
           <div class="input-group3">
-            <!-- dd -->
             <label class="key-label">Preview</label>
             <v-col cols="11">
               <div class="table-container">
@@ -251,7 +217,6 @@
                         class="chord-cell"
                       >
                         <div class="chord-content">
-                          <!-- {{ getChordAt(tableIndex, colIndex) }} -->
                           <span
                             v-for="(chordSegment, index) in getChordAt(
                               tableIndex,
@@ -399,12 +364,12 @@ export default {
       this.measure = "";
       this.measureDropdownOpen = false;
     },
-    selectBpmDirectInput() {
-      this.bpmDirectInput = true;
-      this.selectedBpm = "";
-      this.bpm = "";
-      this.bpmDropdownOpen = false;
-    },
+    // selectBpmDirectInput() {
+    //   this.bpmDirectInput = true;
+    //   this.selectedBpm = "";
+    //   this.bpm = "";
+    //   this.bpmDropdownOpen = false;
+    // },
     selectBpm(bpm) {
       this.bpmDropdownOpen = false;
       this.bpm = bpm;
@@ -1222,6 +1187,7 @@ export default {
 }
 .dropdown-toggle1 {
   width: 440px;
+  height: 141px;
   font-size: 80px;
   background: linear-gradient(to top, #00b869, #03c75a);
 }
@@ -1229,9 +1195,9 @@ export default {
 .dropdown-menu1,
 .dropdown-menu2 {
   position: absolute;
-  top: 55px;
+
   width: 440px;
-  left: 750px;
+
   background-color: white;
   border: 1px solid #ccc;
   list-style-type: none;
@@ -1354,5 +1320,10 @@ export default {
   font-size: 90px;
   /* margin-left: 50px; */
   margin-right: 30px;
+}
+
+:deep .v-list-item-title {
+  font-size: 5rem;
+  line-height: 7rem;
 }
 </style>
