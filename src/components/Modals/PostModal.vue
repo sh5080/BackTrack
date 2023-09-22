@@ -115,6 +115,12 @@
                 </v-card>
               </v-dialog>
             </div>
+            <div class="description-text">
+              <div class="author">{{ $store.state.currentPostAuthor }}</div>
+              <div class="description">
+                {{ $store.state.currentPost.description }}
+              </div>
+            </div>
             <div class="current-comment">
               <div
                 v-for="comment in recentComments"
@@ -134,7 +140,9 @@
             <div v-if="previousChordArray">
               <div class="previous-measure">
                 <span
-                  v-for="(chordSegment, segmentIndex) in previousChordArray"
+                  v-for="(chordSegment, segmentIndex) in previousChordArray
+                    .join(' ')
+                    .split(' ')"
                   :key="segmentIndex"
                   :class="getChordInPreviousMeasure(chordSegment)"
                 >
@@ -145,7 +153,9 @@
 
             <div class="measure">
               <span
-                v-for="(chordSegment, segmentIndex) in currentChordArray"
+                v-for="(chordSegment, segmentIndex) in currentChordArray
+                  .join(' ')
+                  .split(' ')"
                 :key="segmentIndex"
                 :class="getChordInMeasure(chordSegment)"
               >
@@ -156,7 +166,9 @@
             <div v-if="nextChordArray">
               <div class="next-measure">
                 <span
-                  v-for="(chordSegment, segmentIndex) in nextChordArray"
+                  v-for="(chordSegment, segmentIndex) in nextChordArray
+                    .join(' ')
+                    .split(' ')"
                   :key="segmentIndex"
                   :class="getChordInNextMeasure(chordSegment)"
                 >
@@ -846,29 +858,27 @@ export default {
       const classes = [];
 
       if (
-        [
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "A#",
-          "B#",
-          "C#",
-          "D#",
-          "E#",
-          "F#",
-          "G#",
-          "Ab",
-          "Bb",
-          "Cb",
-          "Db",
-          "Eb",
-          "Fb",
-          "Gb",
-        ].includes(chordSegment)
+        chordSegment === "A" ||
+        chordSegment === "B" ||
+        chordSegment === "C" ||
+        chordSegment === "D" ||
+        chordSegment === "E" ||
+        chordSegment === "F" ||
+        chordSegment === "G" ||
+        chordSegment === "A#" ||
+        chordSegment === "B#" ||
+        chordSegment === "C#" ||
+        chordSegment === "D#" ||
+        chordSegment === "E#" ||
+        chordSegment === "F#" ||
+        chordSegment === "G#" ||
+        chordSegment === "Ab" ||
+        chordSegment === "Bb" ||
+        chordSegment === "Cb" ||
+        chordSegment === "Db" ||
+        chordSegment === "Eb" ||
+        chordSegment === "Fb" ||
+        chordSegment === "Gb"
       ) {
         classes.push("key-font");
       } else if (chordSegment === "/") {
@@ -911,7 +921,7 @@ export default {
       } else if (chordSegment === "/") {
         classes.push("small-blank-font");
       } else {
-        classes.push("extends-font");
+        classes.push("small-extends-font");
       }
 
       return classes;
@@ -948,7 +958,7 @@ export default {
       } else if (chordSegment === "/") {
         classes.push("small-blank-font");
       } else {
-        classes.push("extends-font");
+        classes.push("small-extends-font");
       }
 
       return classes;
@@ -1202,12 +1212,19 @@ export default {
   font-size: 150px;
   padding: 0px 100px;
 }
-
-.extends-font {
+.small-extends-font {
   position: relative;
   font-family: "Font2";
   font-size: 70px;
   bottom: 100px;
+  right: 100px;
+}
+.extends-font {
+  position: relative;
+  font-family: "Font2";
+  font-size: 100px;
+  bottom: 200px;
+  right: 100px;
 }
 .blank-font {
   font-family: "Font1";
@@ -1372,6 +1389,19 @@ export default {
 }
 
 .comment {
+  flex: 2;
+}
+.description-text {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 70px;
+  text-align: left;
+}
+.author {
+  flex: 1;
+  font-weight: 500;
+}
+.description {
   flex: 2;
 }
 
