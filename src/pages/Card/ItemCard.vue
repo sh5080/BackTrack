@@ -1,17 +1,48 @@
 <template>
   <v-card class="mx-auto" width="">
     <v-container fluid>
-      <h4
-        class="title"
-        style="
-          font-size: 90px;
-          margin-bottom: 80px;
-          font-weight: 500;
-          padding: 50px 100px;
-        "
-      >
-        게시판
-      </h4>
+      <v-row align="center">
+        <v-col cols="6">
+          <h4
+            class="title"
+            style="
+              font-size: 90px;
+              margin-bottom: 80px;
+              font-weight: 500;
+              padding: 50px 100px;
+            "
+          >
+            게시판
+          </h4>
+        </v-col>
+        <v-col cols="6" class="d-flex justify-end">
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                style="font-size: 70px; height: 150px; margin-right: 200px"
+              >
+                정렬
+                <v-icon>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in sortOptions"
+                style="height: 150px"
+                :key="index"
+                @click="sortedPosts(item.value)"
+              >
+                <v-list-item-title
+                  style="font-size: 70px; line-height: 5.5rem"
+                  >{{ item.text }}</v-list-item-title
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
+      </v-row>
+
       <v-row dense>
         <v-col
           v-for="post in posts"
@@ -36,7 +67,6 @@
 
             <img v-else cover class="card-img" :src="noImageSrc" />
 
-            <!--        img gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" -->
             <v-card-subtitle class="pt-4" style="height: 50px">
             </v-card-subtitle>
             <v-card-text>
@@ -64,7 +94,7 @@
                   :color="isLiked(post.id) ? 'pink' : 'surface-variant'"
                   variant="text"
                   icon="mdi-heart"
-                  @click.stop="toggleLike(post.id, post.author)"
+                  @click.stop="toggleLike(post.id)"
                   class="card-btn"
                 >
                 </v-btn>
@@ -104,6 +134,12 @@ export default {
       totalItems: null,
       totalLikedCount: null,
       noImageSrc: "/img/no_image.png",
+      sortOptions: [
+        { text: "최신순", value: "latest" },
+        { text: "오래된순", value: "oldest" },
+        { text: "좋아요 순", value: "likes" },
+      ],
+      selectedSort: "latest",
     };
   },
   components: {
@@ -118,6 +154,10 @@ export default {
     this.fetchPosts();
   },
   methods: {
+    sortedPosts(value) {
+      this.selectedSort = value;
+      this.fetchPosts();
+    },
     onPageChange(newPage) {
       this.currentPage = newPage;
       this.fetchPosts();
@@ -164,13 +204,19 @@ export default {
     //게시판 post
     async fetchPosts() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/post?page=${this.currentPage}`,
+        let apiUrl = `http://localhost:4000/api/post?page=${this.currentPage}`;
 
-          {
-            withCredentials: true,
-          }
-        );
+        if (this.selectedSort === "oldest") {
+          apiUrl += "&sortBy=oldest"; // 오래된순 정렬
+        } else if (this.selectedSort === "likes") {
+          apiUrl += "&sortBy=likes"; // 좋아요 순 정렬
+        } else {
+          apiUrl += "&sortBy=latest"; // 기본값: 최신순 정렬
+        }
+
+        const response = await axios.get(apiUrl, {
+          withCredentials: true,
+        });
 
         this.posts = response.data.postData.paginatedPosts;
         this.totalItems = response.data.postData.totalItemsCount;
@@ -178,6 +224,7 @@ export default {
         console.error("Failed to fetch user info:", error);
       }
     },
+
     async toggleLike(postId) {
       if (!this.$store.state.isAuthenticated) {
         Toast.customError("로그인 이후 가능한 서비스입니다.");
