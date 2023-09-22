@@ -49,9 +49,9 @@ export const getMyBacktrack = async (
   }
 };
 
-export const getBacktrackDetail = async (id: number) => {
+export const getOneBacktrack = async (id: number) => {
   try {
-    const backtrackData = await BacktrackRepository.getBacktrackDetail(id);
+    const backtrackData = await BacktrackRepository.getOneBacktrack(id);
 
     return backtrackData;
   } catch (error) {
@@ -64,7 +64,7 @@ export const deleteBacktrack = async (
   username: string
 ) => {
   try {
-    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+    const backtrackData = await BacktrackRepository.getOneBacktrack(
       parseInt(backtrackId)
     );
     if (!backtrackData) {

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { PostEntity } from "./post.entity";
 @Entity({ name: "backtrack" })
 export class BacktrackEntity {
   @PrimaryGeneratedColumn()
@@ -16,6 +16,9 @@ export class BacktrackEntity {
 
   @Column({ name: "created_at" })
   createdAt: string;
+
+  @OneToMany(() => PostEntity, (post) => post.backtrack)
+  posts!: PostEntity[];
 
   constructor(
     id: number,

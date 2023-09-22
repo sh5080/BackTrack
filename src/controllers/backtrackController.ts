@@ -57,16 +57,14 @@ export const getMyBacktrack = async (
   }
 };
 
-export const getBacktrackDetail = async (
+export const getOneBacktrack = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { id } = req.query;
-    const backtrackData = await backtrackService.getBacktrackDetail(
-      parseInt(id)
-    );
+    const backtrackData = await backtrackService.getOneBacktrack(parseInt(id));
     res.json({ message: "악보 불러오기가 완료되었습니다.", backtrackData });
   } catch (error) {
     next(error);

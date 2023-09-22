@@ -47,7 +47,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async getBacktrackDetail(id: number) {
+  async getOneBacktrack(id: number) {
     try {
       const backtrackData = await this.findOne({
         where: { id },
