@@ -5,18 +5,13 @@
     @opened="playBacktrack"
   >
     <div class="backtrack-success-modal">
-      <div v-if="isLogged">
-        <div class="logged-title">
-          {{ $store.state.currentPostAuthor }} 님의 게시물
-          {{ $store.state.currentPost.title || "" }}
-        </div>
-        <div class="sheet-message" style="top: 180px">
-          만들어진 백킹트랙을 재생할 수 있습니다.
-        </div>
+      <div class="logged-title">
+        {{ $store.state.currentPostAuthor }} 님의 게시물
+        {{ $store.state.currentPost.title || "" }}
       </div>
       <v-row>
         <v-col cols="6">
-          <div class="sheet-music">
+          <div class="sheet-image">
             <v-img
               aspect-ratio="4/3"
               :src="$store.state.currentPost.image"
@@ -24,7 +19,118 @@
             >
             </v-img>
           </div>
+          <v-card max-width="1800">
+            <div class="description-container">
+              <v-btn
+                size="x-large"
+                :color="
+                  isLiked($store.state.currentPost.id)
+                    ? 'pink'
+                    : 'surface-variant'
+                "
+                variant="text"
+                icon="mdi-heart"
+                class="desc-btn"
+                @click.stop="toggleLike($store.state.currentPost.id)"
+              >
+              </v-btn>
+              <v-dialog
+                v-model="showNewComment"
+                width="auto"
+                style="margin-right: 1850px"
+                transition="dialog-bottom-transition"
+                @click:outside="closeDialog"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :key="showNewComment"
+                    size="x-large"
+                    variant="text"
+                    icon="mdi-chat-outline"
+                    class="desc-btn"
+                    style="transform: scaleX(-1)"
+                    v-on="on"
+                    @click="toggleComment"
+                  >
+                  </v-btn>
+                </template>
+                <!-- </div> -->
+                <!--  -->
+
+                <!--  -->
+                <v-card class="open-comment">
+                  댓글
+                  <div
+                    v-if="showNewComment"
+                    :key="showNewComment"
+                    class="new-comment-container"
+                  >
+                    <div
+                      v-for="comment in allComments"
+                      :key="comment.id"
+                      class="comment-container"
+                    >
+                      <div class="username">{{ comment.username }}</div>
+                      <div class="comment">{{ comment.comment }}</div>
+                    </div>
+                  </div>
+                  <!-- <v-textarea
+              class="new-comment-input"
+              placeholder="댓글 달기..."
+              style="border-radius: 100px"
+            ></v-textarea> -->
+                  <div class="text-center pt-2">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="pageCount"
+                      @update:model-value="onPageChange"
+                      size="x-large"
+                      class="custom-page"
+                    ></v-pagination>
+                  </div>
+                  <v-card-text>
+                    <v-text-field
+                      density="compact"
+                      variant="solo"
+                      label="댓글 달기..."
+                      size="x-large"
+                      append-inner-icon=""
+                      single-line
+                      hide-details
+                    >
+                      <v-icon
+                        icon="mdi-chevron-right-box"
+                        size="100"
+                        style="
+                          transform: scaleX(-1);
+                          position: absolute;
+                          right: 0;
+                          top: 50%;
+                          transform: translateY(-50%);
+                          cursor: pointer;
+                        "
+                      >
+                      </v-icon>
+                    </v-text-field>
+                  </v-card-text>
+                  <!-- </div> -->
+                </v-card>
+              </v-dialog>
+            </div>
+            <div class="current-comment">
+              <div
+                v-for="comment in recentComments"
+                :key="comment.id"
+                class="comment-container"
+              >
+                <div class="username">{{ comment.username }}</div>
+                <div class="comment">{{ comment.comment }}</div>
+              </div>
+            </div>
+          </v-card>
         </v-col>
+
+        <!--  -->
         <v-col cols="6">
           <div class="sheet-music">
             <div v-if="previousChordArray">
@@ -164,7 +270,7 @@
               악보 정지
             </v-btn>
           </div>
-          <v-btn
+          <!-- <v-btn
             id="deleteButton"
             type="button"
             @click="deleteBacktrack"
@@ -173,7 +279,7 @@
             variant="text"
           >
             삭제하기
-          </v-btn>
+          </v-btn> -->
           <v-btn
             id="closeButton"
             type="button"
@@ -257,11 +363,21 @@ export default {
       isBacktrack: false,
       dialog: false,
       description: "",
+      recentComments: [],
+      allComments: [],
+      showNewComment: false,
+      currentPage: 1,
+      totalItems: null,
+      totalLikedCount: null,
+      itemsPerPage: 10,
     };
   },
   computed: {
     isLogged() {
       return !!this.$store.state.loggedInNickname;
+    },
+    pageCount() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
     },
 
     color() {
@@ -281,11 +397,109 @@ export default {
     Tone.Transport.loop = false;
     Tone.Transport.loopStart = 0;
     Tone.Transport.loopEnd = "4m";
+    this.fetchRecentComments();
   },
   // mounted() {
 
   // },
   methods: {
+    closeDialog() {
+      this.showNewComment = false;
+      this.currentPage = 1;
+      console.log(this.currentPage);
+    },
+    toggleComment() {
+      this.showNewComment = !this.showNewComment;
+    },
+
+    onPageChange(newPage) {
+      this.currentPage = newPage;
+      this.fetchRecentComments();
+    },
+    async fetchRecentComments() {
+      try {
+        const postId = this.$store.state.currentPost.id;
+
+        const response = await axios.get(
+          `http://localhost:4000/api/comment/${postId}?page=${this.currentPage}`,
+          {
+            withCredentials: true,
+          }
+        );
+        this.recentComments = response.data.currentComments.slice(0, 3);
+        console.log(this.recentComments);
+        this.allComments = response.data.paginatedComments;
+        this.totalItems = response.data.totalItemsCount;
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    },
+    isLiked(postId) {
+      const likedPosts = this.$store.state.likedPosts || [];
+      return likedPosts.includes(postId);
+    },
+    async toggleLike(postId) {
+      if (!this.$store.state.isAuthenticated) {
+        Toast.customError("로그인 이후 가능한 서비스입니다.");
+        return;
+      }
+      const liked = this.isLiked(postId);
+      if (liked) {
+        await this.removeLike(postId);
+      } else {
+        await this.addLike(postId);
+      }
+      this.$store.commit("updateLikedPosts", postId);
+    },
+    async addLike(postId) {
+      const response = await axios.post(
+        `http://localhost:4000/api/post/like/`,
+        { postId: postId },
+        {
+          withCredentials: true,
+        }
+      );
+      const likesCountElement = document.querySelector(
+        `#likes-count-${postId}`
+      );
+      if (response.data.likesCount !== null) {
+        if (likesCountElement) {
+          const currentLikesCount = parseInt(
+            likesCountElement.textContent.trim()
+          );
+          likesCountElement.textContent = isNaN(currentLikesCount)
+            ? 1
+            : currentLikesCount + 1;
+        } else {
+          console.error(`Likes count element for post ${postId} not found`);
+        }
+      }
+    },
+    async removeLike(postId) {
+      const response = await axios.delete(
+        `http://localhost:4000/api/post/like/${postId}`,
+
+        {
+          withCredentials: true,
+        }
+      );
+      const likesCountElement = document.querySelector(
+        `#likes-count-${postId}`
+      );
+      if (response.data.likesCount !== null) {
+        if (likesCountElement) {
+          const currentLikesCount = parseInt(
+            likesCountElement.textContent.trim()
+          );
+          likesCountElement.textContent = isNaN(currentLikesCount)
+            ? ""
+            : currentLikesCount - 1;
+        } else {
+          console.error(`Likes count element for post ${postId} not found`);
+        }
+      }
+    },
+
     decrement() {
       this.bpm--;
     },
@@ -830,19 +1044,35 @@ export default {
   bottom: 10px;
   color: rgb(165, 165, 165);
 }
-
-.sheet-music {
+.sheet-image {
   width: 46%;
   height: 1000px;
   background-color: #f0f0f0;
-  margin-top: 50px;
+  margin-top: 0px;
   padding: 20px;
   font-size: 200px;
   text-align: center;
   justify-content: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   position: absolute;
-  top: 300px;
+  top: 250px;
+  /* left: 0;
+  right: 0; */
+  margin-left: auto;
+  margin-right: auto;
+}
+.sheet-music {
+  width: 46%;
+  height: 1000px;
+  background-color: #f0f0f0;
+  margin-top: 0px;
+  padding: 20px;
+  font-size: 200px;
+  text-align: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 250px;
   /* left: 0;
   right: 0; */
   margin-left: auto;
@@ -908,13 +1138,10 @@ export default {
   /* transform: scale(3); */
 }
 .logged-title {
-  position: fixed;
   font-size: 5em;
-  top: 70px;
-  left: 0;
-  right: 0;
+  text-align: left;
 
-  /* bottom: 0; */
+  padding: 20px;
 }
 .sheet-message {
   position: absolute;
@@ -986,7 +1213,7 @@ export default {
   /* position: fixed;
       height: 600px;
       bottom: 190px; */
-  top: 1340px;
+  top: 1150px;
 }
 ::v-deep .v-card .v-card-text {
   line-height: 300px;
@@ -1076,18 +1303,131 @@ export default {
   overflow: visible;
 }
 ::v-deep .v-text-field .v-field {
-  margin-top: 300px;
+  margin-top: 200px;
 }
 
 ::v-deep .v-textarea .v-field__input {
-  font-size: 80px;
+  font-size: 60px;
+  height: 200px;
 }
 
-.card-img {
-  width: 46%;
-  height: 1000px;
-  margin-top: 50px;
-  padding: 20px;
-  border: 0 solid 1px #000000;
+.description-container {
+  border: 1px solid #000;
+  position: relative;
+  font-size: 70px;
+  padding: 40px 50px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+.desc-btn {
+  font-size: 4rem !important;
+  margin-right: 70px;
+  margin-bottom: 30px;
+}
+
+.current-comment {
+  max-height: 500px;
+  overflow-y: auto;
+  min-height: 100%;
+  padding: 50px;
+}
+.comment-container {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 70px;
+  text-align: left;
+}
+.username {
+  flex: 1;
+  font-weight: 500;
+}
+
+.comment {
+  flex: 2;
+}
+
+.new-comment-input {
+  /* width: 100%;
+
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px; */
+  position: absolute;
+  bottom: 0; /* 하단에 고정 */
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 100px;
+  border-top: 1px solid #ccc; /* 상단에 구분선 추가 */
+  resize: none;
+}
+
+::v-deep .v-pagination .v-btn {
+  font-size: 50px;
+  width: 100px;
+  height: 100px;
+}
+
+::v-deep .v-text-field .v-field--single-line input {
+  font-size: 70px;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.slide-enter,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.close-button {
+  cursor: pointer;
+  position: absolute;
+  right: 60px;
+  top: 80px;
+  transform: translateY(-50%);
+}
+
+.v-dialog > .v-overlay__content > .v-card,
+.open-comment {
+  width: 2000px;
+  border: 1px solid #ccc;
+  border-radius: 100px;
+
+  position: relative;
+  top: 0;
+
+  height: 3000px;
+  font-size: 5rem;
+  text-align: center;
+}
+.new-comment-container {
+  /* border: 1px solid #ccc;
+  border-radius: 100px; */
+  padding: 10px;
+  position: relative;
+  /* background-color: #e0dddd; */
+  top: 10px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2000px;
+
+  width: 2000px;
+  overflow-y: auto;
+  z-index: 10;
+  padding: 50px;
+  font-size: 70px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.custom-page {
+  position: relative;
 }
 </style>
