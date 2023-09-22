@@ -39,7 +39,6 @@
                 width="auto"
                 style="margin-right: 1850px"
                 transition="dialog-bottom-transition"
-                @click:outside="closeDialog"
               >
                 <template v-slot:activator="{ on }">
                   <v-btn
@@ -70,15 +69,11 @@
                       :key="comment.id"
                       class="comment-container"
                     >
-                      <div class="username">{{ comment.username }}</div>
+                      <div class="nickname">{{ comment.nickname }}</div>
                       <div class="comment">{{ comment.comment }}</div>
                     </div>
                   </div>
-                  <!-- <v-textarea
-              class="new-comment-input"
-              placeholder="댓글 달기..."
-              style="border-radius: 100px"
-            ></v-textarea> -->
+
                   <div class="text-center pt-2">
                     <v-pagination
                       v-model="currentPage"
@@ -90,6 +85,7 @@
                   </div>
                   <v-card-text>
                     <v-text-field
+                      v-model="commentInput"
                       density="compact"
                       variant="solo"
                       label="댓글 달기..."
@@ -97,6 +93,7 @@
                       append-inner-icon=""
                       single-line
                       hide-details
+                      @keydown.enter="sendComment"
                     >
                       <v-icon
                         icon="mdi-chevron-right-box"
@@ -109,9 +106,10 @@
                           transform: translateY(-50%);
                           cursor: pointer;
                         "
-                      >
-                      </v-icon>
+                        @click="sendComment"
+                      ></v-icon>
                     </v-text-field>
+                    <v-btn type="submit" hidden></v-btn>
                   </v-card-text>
                   <!-- </div> -->
                 </v-card>
@@ -123,7 +121,7 @@
                 :key="comment.id"
                 class="comment-container"
               >
-                <div class="username">{{ comment.username }}</div>
+                <div class="nickname">{{ comment.nickname }}</div>
                 <div class="comment">{{ comment.comment }}</div>
               </div>
             </div>
@@ -370,6 +368,7 @@ export default {
       totalItems: null,
       totalLikedCount: null,
       itemsPerPage: 10,
+      commentInput: "",
     };
   },
   computed: {
@@ -403,12 +402,41 @@ export default {
 
   // },
   methods: {
-    closeDialog() {
-      this.showNewComment = false;
-      this.currentPage = 1;
-      console.log(this.currentPage);
+    async sendComment() {
+      const comment = this.commentInput;
+      const postId = this.$store.state.currentPost.id;
+
+      try {
+        if (!this.isLogged) {
+          Toast.customError("로그인 후 댓글을 작성할 수 있습니다.");
+
+          this.openLoginModal();
+          return;
+        }
+        const response = await axios.post(
+          "http://localhost:4000/api/comment",
+          { postId: postId, comment: comment },
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 201) {
+          this.$router.go();
+        }
+        console.log("댓글이 서버로 전송되었습니다.", response.data);
+        // 성공적으로 전송된 후의 작업을 수행하세요.
+      } catch (error) {
+        console.error("댓글을 전송하는 중 오류가 발생했습니다:", error);
+        // 오류 발생 시 처리할 작업을 수행하세요.
+      }
     },
     toggleComment() {
+      if (!this.isLogged) {
+        Toast.customError("로그인 후 댓글을 작성할 수 있습니다.");
+
+        this.openLoginModal();
+        return;
+      }
       this.showNewComment = !this.showNewComment;
     },
 
@@ -427,7 +455,7 @@ export default {
           }
         );
         this.recentComments = response.data.currentComments.slice(0, 3);
-        console.log(this.recentComments);
+
         this.allComments = response.data.paginatedComments;
         this.totalItems = response.data.totalItemsCount;
       } catch (error) {
@@ -1338,7 +1366,7 @@ export default {
   font-size: 70px;
   text-align: left;
 }
-.username {
+.nickname {
   flex: 1;
   font-weight: 500;
 }
