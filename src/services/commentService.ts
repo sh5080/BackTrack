@@ -47,7 +47,7 @@ export const getCommentsByPostId = async (
   const endIndex = startIndex + pageSize;
   const comments = await CommentRepository.getCommentsByPostId(postId);
   const totalItemsCount = comments.length;
-  const currentComments = comments.slice(0, 3);
+  const currentComments = comments.slice(0, 2);
   const paginatedComments = comments.slice(startIndex, endIndex);
   return { paginatedComments, totalItemsCount, currentComments };
 };
