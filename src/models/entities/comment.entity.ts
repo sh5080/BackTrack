@@ -8,8 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-//   import { AuthEntity } from "./auth.entity";
-//   import { BacktrackEntity } from "./backtrack.entity";
+import { AuthEntity } from "./auth.entity";
 @Entity({ name: "comment" })
 export class CommentEntity {
   @PrimaryGeneratedColumn()
@@ -30,6 +29,10 @@ export class CommentEntity {
 
   title: string | undefined;
   author: string | undefined;
+
+  @ManyToOne(() => AuthEntity, (user) => user.comment)
+  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  nickname!: AuthEntity;
 
   constructor(
     id: number,

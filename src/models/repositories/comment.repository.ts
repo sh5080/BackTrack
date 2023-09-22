@@ -25,12 +25,20 @@ export const CommentRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-
   async getCommentsByPostId(postId: number) {
-    const existingComments = await this.find({
-      where: { postId: postId },
+    const existingComments = await this.createQueryBuilder("comment")
+
+      .leftJoinAndSelect("comment.nickname", "user")
+      .where("comment.postId = :postId", { postId })
+      .getMany();
+
+    const commentsWithNicknames = existingComments.map((comment) => {
+      return {
+        ...comment,
+        nickname: comment.nickname.nickname,
+      };
     });
 
-    return existingComments;
+    return commentsWithNicknames;
   },
 });
