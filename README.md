@@ -76,8 +76,10 @@ Vue3
 
 ## Sequence Diagram
 
-![Auth](diagrams/auth.drawio.png)
-![Backtrack](diagrams/backtrack.drawio.png)
+1. **Auth**
+   ![Auth](diagrams/auth.drawio.png)
+2. **Backtrack**
+   ![Backtrack](diagrams/backtrack.drawio.png)
 
 <br />
 
