@@ -29,8 +29,9 @@ Vue3
 
 ### 💻 Back-end
 
-- Node.js, TypeScript, Express, Socket.io
-- Mysql, Redis
+- Language / Framework | Node.js, TypeScript, Express
+- Library | Multer, Socket.io, JWT, Tone
+- Database | Mysql(TypeORM), Redis
 
 <!-- ## ⭐ Infra Structure
 
@@ -75,7 +76,8 @@ Vue3
 
 ## Sequence Diagram
 
-![](diagrams/auth.drawio.png)
+![Auth](diagrams/auth.drawio.png)
+![Backtrack](diagrams/backtrack.drawio.png)
 
 <br />
 
