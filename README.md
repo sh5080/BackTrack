@@ -74,6 +74,10 @@ Vue3
 
 ## 프로젝트 구성도 및 다이어그램
 
+## Entity Relationship Diagram
+
+![](diagrams/ERD.png)
+
 ## Sequence Diagram
 
 1. **Auth**
