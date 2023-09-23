@@ -51,30 +51,6 @@ export const createPost = async (
   }
 };
 
-// export const getPost = async (page: number = 1, pageSize: number = 8) => {
-//   try {
-//     const startIndex = (page - 1) * pageSize;
-//     const endIndex = startIndex + pageSize;
-//     const allPosts = await PostRepository.getPost();
-//     const totalItemsCount = allPosts.length;
-//     const paginatedPosts = allPosts.slice(startIndex, endIndex);
-//     for (const post of paginatedPosts) {
-//       const backtrackId = post.backtrackId;
-//       const backtrackData = await BacktrackRepository.getOneBacktrack(
-//         backtrackId
-//       );
-//       const title = backtrackData?.title;
-//       const backtrackAuthor = backtrackData?.username;
-//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-//       post.title = title;
-//       post.author = nicknameData?.nickname;
-//     }
-//     return { paginatedPosts, totalItemsCount };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 export const getLatestPosts = async (
   page: number = 1,
   pageSize: number = 8
