@@ -11,7 +11,7 @@ router.post("/", validateToken, communityController.createCommunity);
 // router.get("/", communityController.getCommunity);
 
 /** 커뮤니티 게시글 특정 조회 */
-// router.get("/:id", communityController.getOneCommunity);
+router.get("/:id", communityController.getOneCommunity);
 
 /** 커뮤니티 게시글 수정 */
 // router.patch("/", validateToken, communityController.updateCommunity);

@@ -150,20 +150,21 @@ export const createCommunity = async (
 //   }
 // };
 
-// export const getOneCommunity = async (id: number) => {
-//   try {
-//     const Community = await CommunityRepository.getOneCommunity(id);
-//     const backtrackId = Community.backtrackId;
-//     const backtrackData = await BacktrackRepository.getOneBacktrack(
-//       backtrackId
-//     );
-//     const title = backtrackData?.title;
-//     Community.title = title;
-//     return Community;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+export const getOneCommunity = async (id: number) => {
+  try {
+    const community = await CommunityRepository.getOneCommunity(id);
+    if (!community) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "조회되는 게시글이 없습니다.",
+        400
+      );
+    }
+    return community;
+  } catch (error) {
+    throw error;
+  }
+};
 
 // export const deleteCommunity = async (
 //   backtrackId: string,

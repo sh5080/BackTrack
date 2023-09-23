@@ -56,3 +56,19 @@ export const createCommunity = async (
 //     next(error);
 //   }
 // };
+
+/** 게시글 특정 조회 */
+export const getOneCommunity = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const communityData = await communityService.getOneCommunity(parseInt(id));
+
+    res.json({ communityData });
+  } catch (error) {
+    next(error);
+  }
+};

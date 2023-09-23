@@ -39,17 +39,15 @@ export const CommunityRepository = AppDataSource.getRepository(
   //       throw error;
   //     }
   //   },
-  //   async getOnePost(id: number) {
-  //     try {
-  //       const post = await this.findOne({ where: { id } });
-  //       if (!post) {
-  //         throw `Post ${id} not found`;
-  //       }
-  //       return post;
-  //     } catch (error) {
-  //       throw error;
-  //     }
-  //   },
+  async getOneCommunity(id: number) {
+    try {
+      const community = await this.findOne({ where: { id } });
+
+      return community;
+    } catch (error) {
+      throw error;
+    }
+  },
   //   async getMyPosts(ids: number[]) {
   //     try {
   //       // const posts = await this.find({
