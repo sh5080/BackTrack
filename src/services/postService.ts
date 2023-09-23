@@ -11,7 +11,7 @@ export const createPost = async (
   imgNames: string
 ) => {
   try {
-    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+    const backtrackData = await BacktrackRepository.getOneBacktrack(
       parseInt(backtrackId)
     );
 
@@ -60,7 +60,7 @@ export const createPost = async (
 //     const paginatedPosts = allPosts.slice(startIndex, endIndex);
 //     for (const post of paginatedPosts) {
 //       const backtrackId = post.backtrackId;
-//       const backtrackData = await BacktrackRepository.getBacktrackDetail(
+//       const backtrackData = await BacktrackRepository.getOneBacktrack(
 //         backtrackId
 //       );
 //       const title = backtrackData?.title;
@@ -90,7 +90,7 @@ export const getLatestPosts = async (
     const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
     for (const post of paginatedPosts) {
       const backtrackId = post.backtrackId;
-      const backtrackData = await BacktrackRepository.getBacktrackDetail(
+      const backtrackData = await BacktrackRepository.getOneBacktrack(
         backtrackId
       );
       const title = backtrackData?.title;
@@ -126,7 +126,7 @@ export const getPostsByLikes = async (
 
     for (const post of paginatedPosts) {
       const backtrackId = post.backtrackId;
-      const backtrackData = await BacktrackRepository.getBacktrackDetail(
+      const backtrackData = await BacktrackRepository.getOneBacktrack(
         backtrackId
       );
       const title = backtrackData?.title;
@@ -154,7 +154,7 @@ export const getOldestPosts = async (
     const paginatedPosts = allPosts.slice(startIndex, endIndex);
     for (const post of paginatedPosts) {
       const backtrackId = post.backtrackId;
-      const backtrackData = await BacktrackRepository.getBacktrackDetail(
+      const backtrackData = await BacktrackRepository.getOneBacktrack(
         backtrackId
       );
       const title = backtrackData?.title;
@@ -173,7 +173,7 @@ export const getOnePost = async (id: number) => {
   try {
     const post = await PostRepository.getOnePost(id);
     const backtrackId = post.backtrackId;
-    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+    const backtrackData = await BacktrackRepository.getOneBacktrack(
       backtrackId
     );
     const title = backtrackData?.title;
@@ -186,7 +186,7 @@ export const getOnePost = async (id: number) => {
 
 export const deletePost = async (backtrackId: string, username: string) => {
   try {
-    const backtrackData = await BacktrackRepository.getBacktrackDetail(
+    const backtrackData = await BacktrackRepository.getOneBacktrack(
       parseInt(backtrackId)
     );
     if (!backtrackData) {
