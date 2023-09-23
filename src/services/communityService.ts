@@ -32,124 +32,6 @@ export const createCommunity = async (
   }
 };
 
-// export const getCommunity = async (page: number = 1, pageSize: number = 8) => {
-//   try {
-//     const startIndex = (page - 1) * pageSize;
-//     const endIndex = startIndex + pageSize;
-//     const allCommunitys = await CommunityRepository.getCommunity();
-//     const totalItemsCount = allCommunitys.length;
-//     const paginatedCommunitys = allCommunitys.slice(startIndex, endIndex);
-//     for (const Community of paginatedCommunitys) {
-//       const backtrackId = Community.backtrackId;
-//       const backtrackData = await BacktrackRepository.getOneBacktrack(
-//         backtrackId
-//       );
-//       const title = backtrackData?.title;
-//       const backtrackAuthor = backtrackData?.username;
-//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-//       Community.title = title;
-//       Community.author = nicknameData?.nickname;
-//     }
-//     return { paginatedCommunitys, totalItemsCount };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
-// export const getLatestCommunitys = async (
-//   page: number = 1,
-//   pageSize: number = 8
-// ) => {
-//   try {
-//     const startIndex = (page - 1) * pageSize;
-//     const endIndex = startIndex + pageSize;
-//     const allCommunitys = await CommunityRepository.getCommunity();
-//     const sortedCommunitys = allCommunitys.sort(
-//       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-//     );
-//     const totalItemsCount = sortedCommunitys.length;
-//     const paginatedCommunitys = sortedCommunitys.slice(startIndex, endIndex);
-//     for (const Community of paginatedCommunitys) {
-//       const backtrackId = Community.backtrackId;
-//       const backtrackData = await BacktrackRepository.getOneBacktrack(
-//         backtrackId
-//       );
-//       const title = backtrackData?.title;
-//       const backtrackAuthor = backtrackData?.username;
-//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-//       Community.title = title;
-//       Community.author = nicknameData?.nickname;
-//     }
-//     return { paginatedCommunitys, totalItemsCount };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
-// export const getCommunitysByLikes = async (
-//   page: number = 1,
-//   pageSize: number = 8
-// ) => {
-//   try {
-//     const startIndex = (page - 1) * pageSize;
-//     const endIndex = startIndex + pageSize;
-//     const allCommunitys = await CommunityRepository.getCommunity();
-
-//     // 좋아요 수를 기준으로 정렬
-//     const sortedCommunitys = allCommunitys.sort((a, b) => {
-//       const aLikes = a.likedUsers?.length || 0;
-//       const bLikes = b.likedUsers?.length || 0;
-//       return bLikes - aLikes;
-//     });
-
-//     const totalItemsCount = sortedCommunitys.length;
-//     const paginatedCommunitys = sortedCommunitys.slice(startIndex, endIndex);
-
-//     for (const Community of paginatedCommunitys) {
-//       const backtrackId = Community.backtrackId;
-//       const backtrackData = await BacktrackRepository.getOneBacktrack(
-//         backtrackId
-//       );
-//       const title = backtrackData?.title;
-//       const backtrackAuthor = backtrackData?.username;
-//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-//       Community.title = title;
-//       Community.author = nicknameData?.nickname;
-//     }
-
-//     return { paginatedCommunitys, totalItemsCount };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
-// export const getOldestCommunitys = async (
-//   page: number = 1,
-//   pageSize: number = 8
-// ) => {
-//   try {
-//     const startIndex = (page - 1) * pageSize;
-//     const endIndex = startIndex + pageSize;
-//     const allCommunitys = await CommunityRepository.getCommunity();
-//     const totalItemsCount = allCommunitys.length;
-//     const paginatedCommunitys = allCommunitys.slice(startIndex, endIndex);
-//     for (const Community of paginatedCommunitys) {
-//       const backtrackId = Community.backtrackId;
-//       const backtrackData = await BacktrackRepository.getOneBacktrack(
-//         backtrackId
-//       );
-//       const title = backtrackData?.title;
-//       const backtrackAuthor = backtrackData?.username;
-//       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-//       Community.title = title;
-//       Community.author = nicknameData?.nickname;
-//     }
-//     return { paginatedCommunitys, totalItemsCount };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 export const getOneCommunity = async (id: number) => {
   try {
     const community = await CommunityRepository.getOneCommunity(id);
@@ -161,6 +43,68 @@ export const getOneCommunity = async (id: number) => {
       );
     }
     return community;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getLatestCommunities = async (
+  page: number = 1,
+  pageSize: number = 8
+) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allCommunities = await CommunityRepository.getCommunity();
+    const sortedCommunities = allCommunities.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+    const totalItemsCount = sortedCommunities.length;
+    const paginatedCommunities = sortedCommunities.slice(startIndex, endIndex);
+
+    return { paginatedCommunities, totalItemsCount };
+  } catch (error) {
+    throw error;
+  }
+};
+
+// export const getCommunitiesByLikes = async (
+//   page: number = 1,
+//   pageSize: number = 8
+// ) => {
+//   try {
+//     const startIndex = (page - 1) * pageSize;
+//     const endIndex = startIndex + pageSize;
+//     const allCommunities = await CommunityRepository.getCommunity();
+
+//     // 좋아요 수를 기준으로 정렬
+//     const sortedCommunities = allCommunities.sort((a, b) => {
+//       const aLikes = a.likedUsers?.length || 0;
+//       const bLikes = b.likedUsers?.length || 0;
+//       return bLikes - aLikes;
+//     });
+
+//     const totalItemsCount = sortedCommunities.length;
+//     const paginatedCommunities = sortedCommunities.slice(startIndex, endIndex);
+
+//     return { paginatedCommunities, totalItemsCount };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+export const getOldestCommunities = async (
+  page: number = 1,
+  pageSize: number = 8
+) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const allCommunities = await CommunityRepository.getCommunity();
+    const totalItemsCount = allCommunities.length;
+    const paginatedCommunities = allCommunities.slice(startIndex, endIndex);
+
+    return { paginatedCommunities, totalItemsCount };
   } catch (error) {
     throw error;
   }

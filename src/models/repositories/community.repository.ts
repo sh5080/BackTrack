@@ -30,20 +30,21 @@ export const CommunityRepository = AppDataSource.getRepository(
     }
   },
 
-  //   async getPost() {
-  //     try {
-  //       const allPosts = await this.find({});
-
-  //       return allPosts;
-  //     } catch (error) {
-  //       throw error;
-  //     }
-  //   },
   async getOneCommunity(id: number) {
     try {
       const community = await this.findOne({ where: { id } });
 
       return community;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async getCommunity() {
+    try {
+      const allCommunities = await this.find({});
+
+      return allCommunities;
     } catch (error) {
       throw error;
     }
