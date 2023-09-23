@@ -20,12 +20,12 @@ const REFRESH_TOKEN_EXPIRES_IN = config.jwt.ACCESS_TOKEN_EXPIRES_IN;
  * 사용자 닉네임, 이메일 업데이트
  */
 export const updateUser = async (
-  username: string,
+  id: number,
   nickname: string,
   email: string
 ) => {
   try {
-    const existingUser = await AuthRepository.findUser(username);
+    const existingUser = await AuthRepository.findUser(id);
 
     if (!existingUser) {
       throw new AppError(
@@ -64,8 +64,8 @@ export const updateUser = async (
       );
     }
 
-    const updatedUser = await AuthRepository.updateUserByUsername(
-      username,
+    const updatedUser = await AuthRepository.updateUser(
+      id,
       undefined,
       nickname,
       email
@@ -99,12 +99,12 @@ export const updateUser = async (
  */
 
 export const updatePassword = async (
-  username: string,
+  id: number,
   password: string,
   newPassword: string
 ) => {
   try {
-    const existingUser = await AuthRepository.findUser(username);
+    const existingUser = await AuthRepository.findUser(id);
 
     if (!existingUser) {
       throw new AppError(
@@ -129,10 +129,7 @@ export const updatePassword = async (
       }
     }
 
-    const updatedUser = await AuthRepository.updateUserByUsername(
-      username,
-      newPassword
-    );
+    const updatedUser = await AuthRepository.updateUser(id, newPassword);
 
     if (!updatedUser) {
       throw new AppError(
@@ -160,9 +157,9 @@ export const updatePassword = async (
 /**
  * 사용자 삭제
  */
-export const deleteUser = async (username: string) => {
+export const deleteUser = async (id: number) => {
   try {
-    const deletedUser = await AuthRepository.deleteUserByUsername(username);
+    const deletedUser = await AuthRepository.deleteUser(id);
     return deletedUser;
   } catch (error) {
     if (error instanceof AppError) {
@@ -178,14 +175,14 @@ export const deleteUser = async (username: string) => {
 };
 
 export const getMyPostsInfo = async (
-  username: string,
+  id: number,
   page: number,
   pageSize: number
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allBacktracks = await BacktrackRepository.getMyBacktrack(username);
+    const allBacktracks = await BacktrackRepository.getMyBacktrack(id);
     const ids = allBacktracks.map((backtrack) => backtrack.id);
     const posts = await PostRepository.getMyPosts(ids);
     const totalItems = posts.length;

@@ -8,7 +8,7 @@ const setAsync = promisify(redisClient.set).bind(redisClient);
 const getAsync = promisify(redisClient.get).bind(redisClient);
 
 export const saveSessionToRedis = async (
-  username: string,
+  userId: number,
   nickname: string,
   refreshToken: string,
   maxAge: number
@@ -26,12 +26,12 @@ export const saveSessionToRedis = async (
     session_start_time: sessionStart,
     session_expire_time: sessionExpire,
   });
-  const key = `session:${username}`;
+  const key = `session:${userId}`;
   await redisClient.set(key, sessionData, "EX", maxAge);
 };
 
-export const getSessionFromRedis = async (username: string) => {
-  const sessionData = await getAsync(`session:${username}`);
+export const getSessionFromRedis = async (userId: number) => {
+  const sessionData = await getAsync(`session:${userId}`);
 
   if (sessionData) {
     return JSON.parse(sessionData);
@@ -57,13 +57,10 @@ export const createChatToRedis = async (
 };
 
 export const saveChatUserToRedis = async (username: string) => {
-  // await redisClient.set("chatUser", username, "EX", 3600000);
   await redisClient.rpush("chatUsers", username);
   await redisClient.expire("chatUsers", 30 * 24 * 60 * 60);
 };
 export const getAllChatUsersFromRedis = async () => {
-  // const keys = await redisClient.keys("chatUser");
-  // const values = await Promise.all(keys.map((key) => redisClient.get(key)));
   const users = await redisClient.lrange("chatUsers", 0, -1);
 
   return users;

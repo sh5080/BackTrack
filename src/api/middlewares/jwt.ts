@@ -42,7 +42,7 @@ export const validateToken = async (
 
   try {
     req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & {
-      username: string;
+      userId: number;
       role: string;
     };
     next();
@@ -60,8 +60,8 @@ export const validateToken = async (
       }
 
       try {
-        const username = req.user!.username;
-        const sessionData = await getSessionFromRedis(username);
+        const userId = req.user!.userId;
+        const sessionData = await getSessionFromRedis(userId);
         const redisRefreshToken = sessionData.refreshToken;
 
         if (redisRefreshToken !== refreshToken) {
@@ -78,13 +78,13 @@ export const validateToken = async (
           refreshToken,
           REFRESH_TOKEN_SECRET
         ) as JwtPayload & {
-          username: string;
+          userId: number;
           role: string;
         };
 
         const newAccessToken = jwt.sign(
           {
-            username: decodedRefreshToken.username,
+            userId: decodedRefreshToken.userId,
             role: decodedRefreshToken.role,
           },
           ACCESS_TOKEN_SECRET,
@@ -94,7 +94,7 @@ export const validateToken = async (
         );
 
         req.user = {
-          username: decodedRefreshToken.username,
+          userId: decodedRefreshToken.userId,
           role: decodedRefreshToken.role,
         };
         res
@@ -160,7 +160,7 @@ export const isLoggedIn = async (
   if (accessToken) {
     try {
       req.user = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as JwtPayload & {
-        username: string;
+        userId: number;
         role: string;
       };
     } catch (err) {

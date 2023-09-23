@@ -2,7 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { Request } from "express";
 
 export interface CustomRequest extends Request {
-  user?: JwtPayload & { username: string; role: string };
+  user?: JwtPayload & { userId: number; role: string };
   body: {
     username: string;
     email: string;

@@ -3,7 +3,7 @@ import { BacktrackRepository } from "../models/repositories/backtrack.repository
 import { AppError, CommonError } from "../types/AppError";
 
 export const createBacktrack = async (
-  username: string,
+  userId: number,
   title: string,
   backtrack: string[][][]
 ) => {
@@ -20,7 +20,7 @@ export const createBacktrack = async (
     const createdAt = `${year}-${month}-${day}`;
 
     await BacktrackRepository.createBacktrack(
-      username,
+      userId,
       title,
       backtrack,
       createdAt
@@ -31,14 +31,14 @@ export const createBacktrack = async (
 };
 
 export const getMyBacktrack = async (
-  username: string,
+  userId: number,
   page: number = 1,
   pageSize: number = 10
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allBacktracks = await BacktrackRepository.getMyBacktrack(username);
+    const allBacktracks = await BacktrackRepository.getMyBacktrack(userId);
 
     const paginatedBacktracks = allBacktracks.slice(startIndex, endIndex);
     const totalPage = allBacktracks.length;
@@ -59,10 +59,7 @@ export const getOneBacktrack = async (id: number) => {
   }
 };
 
-export const deleteBacktrack = async (
-  backtrackId: string,
-  username: string
-) => {
+export const deleteBacktrack = async (backtrackId: string, userId: number) => {
   try {
     const backtrackData = await BacktrackRepository.getOneBacktrack(
       parseInt(backtrackId)
@@ -74,7 +71,7 @@ export const deleteBacktrack = async (
         400
       );
     }
-    if (backtrackData.username !== username) {
+    if (backtrackData.id !== userId) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "사용자의 백킹트랙이 아닙니다.",

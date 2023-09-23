@@ -9,14 +9,14 @@ export const BacktrackRepository = AppDataSource.getRepository(
   BacktrackEntity
 ).extend({
   async createBacktrack(
-    username: string,
+    userId: number,
     title: string,
     backtrack: string[][][],
     createdAt: string
   ) {
     try {
       const userData = this.create({
-        username,
+        userId,
         title,
         backtrack,
         createdAt,
@@ -28,9 +28,9 @@ export const BacktrackRepository = AppDataSource.getRepository(
       throw error;
     }
   },
-  async getMyBacktrack(username: string) {
+  async getMyBacktrack(userId: number) {
     try {
-      if (!username) {
+      if (!userId) {
         throw new AppError(
           CommonError.RESOURCE_NOT_FOUND,
           "사용자 정보를 찾을 수 없습니다.",
@@ -39,7 +39,7 @@ export const BacktrackRepository = AppDataSource.getRepository(
       }
 
       const allBacktracks = await this.find({
-        where: { username },
+        where: { userId },
       });
 
       return allBacktracks;

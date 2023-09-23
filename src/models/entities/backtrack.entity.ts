@@ -5,8 +5,8 @@ export class BacktrackEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  username: string;
+  @Column({ name: "user_id" })
+  userId: number;
 
   @Column()
   title: string;
@@ -22,13 +22,13 @@ export class BacktrackEntity {
 
   constructor(
     id: number,
-    username: string,
+    userId: number,
     title: string,
     backtrack: string[][][],
     createdAt: string
   ) {
     this.id = id;
-    this.username = username;
+    this.userId = userId;
     this.title = title;
     this.backtrack = backtrack;
     this.createdAt = createdAt;

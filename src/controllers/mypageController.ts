@@ -14,8 +14,8 @@ export const getUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { username } = req.user!;
-    const userData = await authService.getUser(username);
+    const { userId } = req.user!;
+    const userData = await authService.getUser(userId);
 
     if (!userData) {
       throw new AppError(

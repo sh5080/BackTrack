@@ -23,22 +23,22 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
 
     return !!existingUser;
   },
-  async updateUserByUsername(
-    username: string,
+  async updateUser(
+    id: number,
     newPassword?: string,
     nickname?: string,
     email?: string
   ) {
     try {
       if (nickname) {
-        await this.update({ username }, { nickname });
+        await this.update({ id }, { nickname });
       } else if (email) {
-        await this.update({ username }, { email });
+        await this.update({ id }, { email });
       } else {
-        await this.update({ username }, { password: newPassword });
+        await this.update({ id }, { password: newPassword });
       }
 
-      const newUser = this.findOne({ where: { username } });
+      const newUser = this.findOne({ where: { id } });
       return newUser;
     } catch (error) {
       throw new AppError(
@@ -55,10 +55,10 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
 
     return existingUser;
   },
-  async findUser(username?: string, email?: string, nickname?: string) {
+  async findUser(id?: number, email?: string, nickname?: string) {
     try {
-      if (username && email) {
-        const user = await this.findOne({ where: { username, email } });
+      if (id && email) {
+        const user = await this.findOne({ where: { id, email } });
         if (user) {
           return user;
         } else {
@@ -68,8 +68,8 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
             404
           );
         }
-      } else if (username) {
-        const user = await this.findOne({ where: { username } });
+      } else if (id) {
+        const user = await this.findOne({ where: { id } });
         return user;
       } else if (email) {
         const user = await this.findOne({ where: { email } });
@@ -88,7 +88,10 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
       throw error;
     }
   },
-
+  async findUserByUsername(username: string) {
+    const user = await this.findOne({ where: { username } });
+    return user;
+  },
   async saveOauthUser(user: Type.OauthUser) {
     const { username, email, oauthProvider } = user;
 
@@ -103,9 +106,9 @@ export const AuthRepository = AppDataSource.getRepository(AuthEntity).extend({
     return newUser;
   },
 
-  async deleteUserByUsername(username: string) {
+  async deleteUser(id: number) {
     const existingUser = await this.findOne({
-      where: { username },
+      where: { id },
     });
     if (!existingUser) {
       throw new AppError(

@@ -6,7 +6,7 @@ import { AuthRepository } from "../models/repositories/auth.repository";
 
 export const createPost = async (
   backtrackId: string,
-  username: string,
+  userId: number,
   description: string,
   imgNames: string
 ) => {
@@ -22,7 +22,7 @@ export const createPost = async (
         400
       );
     }
-    if (backtrackData.username !== username) {
+    if (backtrackData.id !== userId) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "사용자의 백킹트랙이 아닙니다.",
@@ -70,7 +70,7 @@ export const getLatestPosts = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.username;
+      const backtrackAuthor = backtrackData?.id;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
@@ -106,7 +106,7 @@ export const getPostsByLikes = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.username;
+      const backtrackAuthor = backtrackData?.id;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
@@ -134,7 +134,7 @@ export const getOldestPosts = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.username;
+      const backtrackAuthor = backtrackData?.id;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
@@ -160,7 +160,7 @@ export const getOnePost = async (id: number) => {
   }
 };
 
-export const deletePost = async (backtrackId: string, username: string) => {
+export const deletePost = async (backtrackId: string, userId: number) => {
   try {
     const backtrackData = await BacktrackRepository.getOneBacktrack(
       parseInt(backtrackId)
@@ -172,7 +172,7 @@ export const deletePost = async (backtrackId: string, username: string) => {
         400
       );
     }
-    if (backtrackData.username !== username) {
+    if (backtrackData.id !== userId) {
       throw new AppError(
         CommonError.INVALID_INPUT,
         "사용자의 백킹트랙이 아닙니다.",

@@ -174,9 +174,9 @@ export const loginUser = async (
 /**
  * 사용자 정보 조회
  */
-export const getUser = async (username?: string) => {
+export const getUser = async (id?: number) => {
   try {
-    const user = await AuthRepository.findUser(username);
+    const user = await AuthRepository.findUser(id);
     if (user !== null) {
       const { ...userData } = user;
       return userData;
@@ -193,6 +193,11 @@ export const getUser = async (username?: string) => {
       );
     }
   }
+};
+
+export const getUserByUsername = async (username: string) => {
+  const userData = await AuthRepository.findUserByUsername(username);
+  return userData;
 };
 
 /**
@@ -235,7 +240,9 @@ export const resetPasswordByEmail = async (username: string, email: string) => {
   try {
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    user = await AuthRepository.findUser(username, email);
+
+    const userData = await AuthRepository.findUserByUsername(username);
+    user = await AuthRepository.findUser(userData?.id, email);
 
     // 새로운 임시 비밀번호 생성
     newTemporaryPassword = generateTemporaryPassword();

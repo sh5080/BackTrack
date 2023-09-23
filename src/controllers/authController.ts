@@ -141,14 +141,18 @@ export const login = async (
 
     const token = await authService.loginUser(username!, password!);
     const refresh = token.refreshToken;
-    const userData = await authService.getUser(username);
+    const user = await authService.getUserByUsername(username);
+    if (!user) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "사용자 정보를 찾지 못했습니다.",
+        400
+      );
+    }
+
+    const userData = await authService.getUser(user.id);
     const maxAge = 3600000; //1시간
-    await saveSessionToRedis(
-      userData!.username,
-      userData!.nickname,
-      refresh,
-      maxAge
-    );
+    await saveSessionToRedis(userData!.id, userData!.nickname, refresh, maxAge);
 
     res
       .cookie("token", token, {

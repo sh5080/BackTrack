@@ -71,7 +71,7 @@ export const kakaoCallback = async (
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
       await saveSessionToRedis(
-        existingInfo.username,
+        existingInfo.id,
         existingInfo.nickname,
         token.refreshToken,
         maxAge
@@ -145,7 +145,7 @@ export const googleCallback = async (
       const token = await oauthService.OauthLoginUser(existingInfo.email);
 
       await saveSessionToRedis(
-        existingInfo.username,
+        existingInfo.id,
         existingInfo.nickname,
         token.refreshToken,
         maxAge
