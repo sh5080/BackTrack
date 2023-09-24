@@ -9,14 +9,14 @@ import {
   JoinColumn,
 } from "typeorm";
 import { AuthEntity } from "./auth.entity";
-@Entity({ name: "comment" })
+@Entity({ name: "post_comment" })
 export class CommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({ name: "post_id" })
   postId: number;
   @Column()
-  username: string;
+  userId: number;
 
   @Column()
   comment: string;
@@ -31,19 +31,19 @@ export class CommentEntity {
   author: string | undefined;
 
   @ManyToOne(() => AuthEntity, (user) => user.comment)
-  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  @JoinColumn({ name: "userId", referencedColumnName: "id" })
   nickname!: AuthEntity;
 
   constructor(
     id: number,
-    username: string,
+    userId: number,
     postId: number,
     comment: string,
     createdAt: string,
     updatedAt: string
   ) {
     this.id = id;
-    this.username = username;
+    this.userId = userId;
     this.postId = postId;
     this.comment = comment;
     this.updatedAt = updatedAt;
