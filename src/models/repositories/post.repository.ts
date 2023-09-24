@@ -81,13 +81,13 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   },
 
   // 좋아요 추가
-  async addLikeToPost(username: string, id: number) {
+  async addLikeToPost(userId: number, id: number) {
     const connect = AppDataSource.createQueryRunner();
     await connect.connect();
     await connect.startTransaction();
     try {
       const user = await AuthRepository.findOne({
-        where: { username },
+        where: { id: userId },
       });
       const post = await PostRepository.findOne({
         where: { id },
@@ -125,13 +125,13 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   },
 
   // 좋아요 취소
-  async removeLikeFromPost(username: string, id: number) {
+  async removeLikeFromPost(userId: number, id: number) {
     const connect = AppDataSource.createQueryRunner();
     await connect.connect();
     await connect.startTransaction();
     try {
       const user = await AuthRepository.findOne({
-        where: { username },
+        where: { id: userId },
       });
       const post = await PostRepository.findOne({
         where: { id },

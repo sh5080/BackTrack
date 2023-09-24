@@ -15,7 +15,7 @@ export const createPost = async (
 ) => {
   try {
     const { description } = req.body;
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const { backtrackId } = req.query;
     console.log("여기: ", description, backtrackId);
     if (description.length > 200 || !description) {
@@ -50,7 +50,7 @@ export const createPost = async (
 
     const postData = await postService.createPost(
       backtrackId,
-      username,
+      userId,
       description,
       imgNames
     );
@@ -119,10 +119,10 @@ export const deletePost = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const { backtrackId } = req.query;
 
-    const deletedData = await postService.deletePost(backtrackId, username);
+    const deletedData = await postService.deletePost(backtrackId, userId);
 
     res.json({ message: "게시글 생성이 완료되었습니다.", deletedData });
   } catch (error) {
@@ -135,10 +135,10 @@ export const addLikeToPost = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const { postId } = req.body;
 
-    const result = await postService.addLikeToPost(username, postId);
+    const result = await postService.addLikeToPost(userId, postId);
 
     return res.status(200).json({ result });
   } catch (error) {
@@ -152,10 +152,10 @@ export const removeLikeFromPost = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const { postId } = req.params;
     const likesCount = await postService.removeLikeFromPost(
-      username,
+      userId,
       parseInt(postId)
     );
 
