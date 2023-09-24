@@ -11,7 +11,7 @@ export const createBacktrack = async (
 ) => {
   try {
     const { title, backtrack } = req.body;
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     console.log("backtrack: ", backtrack);
 
     if (title.length > 30) {
@@ -23,7 +23,7 @@ export const createBacktrack = async (
     }
 
     const backtrackData = await backtrackService.createBacktrack(
-      username,
+      userId,
       title,
       backtrack
     );
@@ -40,11 +40,11 @@ export const getMyBacktrack = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const page = req.query.page;
 
     const backtrackData = await backtrackService.getMyBacktrack(
-      username,
+      userId,
       parseInt(page)
     );
 
@@ -78,12 +78,12 @@ export const deleteBacktrack = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user!.username;
+    const userId = req.user!.userId;
     const { backtrackId } = req.query;
 
     const deletedData = await backtrackService.deleteBacktrack(
       backtrackId,
-      username
+      userId
     );
 
     res.json({ message: "게시글 삭제가 완료되었습니다.", deletedData });

@@ -15,8 +15,8 @@ export class CommunityEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  username: string;
+  @Column({ name: "user_id" })
+  userId: number;
 
   @Column()
   title: string;
@@ -34,14 +34,14 @@ export class CommunityEntity {
 
   constructor(
     id: number,
-    username: string,
+    userId: number,
     title: string,
     description: string,
     createdAt: Date,
     updatedAt: Date
   ) {
     this.id = id;
-    this.username = username;
+    this.userId = userId;
     this.title = title;
     this.description = description;
     this.createdAt = createdAt;

@@ -12,10 +12,10 @@ export const createCommunity = async (
 ) => {
   try {
     const { title, description } = req.body;
-    const username = req.user!.username;
+    const userId = req.user!.userId;
 
     const communityData = await communityService.createCommunity(
-      username,
+      userId,
       title,
       description
     );

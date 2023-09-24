@@ -10,14 +10,14 @@ export const CommunityRepository = AppDataSource.getRepository(
   CommunityEntity
 ).extend({
   async createCommunity(
-    username: string,
+    userId: number,
     title: string,
     description: string,
     createdAt: string
   ) {
     try {
       const userData = this.create({
-        username,
+        userId,
         title,
         description,
         createdAt,

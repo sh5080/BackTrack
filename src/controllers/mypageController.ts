@@ -45,9 +45,9 @@ export const getMyPostsInfo = async (
   try {
     const page = req.query.page;
     const pageSize = 10;
-    const { username } = req.user!;
+    const { userId } = req.user!;
     const myPostData = await mypageService.getMyPostsInfo(
-      username,
+      userId,
       parseInt(page),
       pageSize
     );
@@ -64,8 +64,8 @@ export const getLikesInfo = async (
 ) => {
   try {
     const page = req.query.page;
-    const { username } = req.user!;
-    const userData = await authService.getUser(username);
+    const { userId } = req.user!;
+    const userData = await authService.getUser(userId);
     const pageSize = 10;
     if (!userData) {
       throw new AppError(
@@ -106,20 +106,20 @@ export const updateUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { username } = req.user!;
+    const { userId } = req.user!;
     const { email, nickname } = req.body;
 
     const updatedUserData = await mypageService.updateUser(
-      username,
+      userId,
       nickname,
       email
     );
 
     if (nickname && email === undefined) {
-      const sessionData = await getSessionFromRedis(username);
+      const sessionData = await getSessionFromRedis(userId);
       if (sessionData) {
         await saveSessionToRedis(
-          username,
+          userId,
           nickname,
           sessionData.refreshToken,
           3600000
@@ -141,10 +141,10 @@ export const updatePassword = async (
   next: NextFunction
 ) => {
   try {
-    const { username } = req.user!;
+    const { userId } = req.user!;
     const { password, newPassword, newPasswordConfirm } = req.body;
 
-    const userData = await authService.getUser(username);
+    const userData = await authService.getUser(userId);
     if (
       userData?.oauth_provider === "KAKAO" ||
       userData?.oauth_provider === "GOOGLE"
@@ -190,7 +190,7 @@ export const updatePassword = async (
       saltRounds
     );
     const updatedUserData = await mypageService.updatePassword(
-      username,
+      userId,
       password,
       hashedNewPassword
     );
@@ -211,7 +211,7 @@ export const deleteUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { username: currentUser } = req.user!;
+    const { id: currentUser } = req.user!;
     const deletedUserData = await mypageService.deleteUser(currentUser);
 
     if (deletedUserData === undefined) {
@@ -222,8 +222,8 @@ export const deleteUserInfo = async (
       );
     }
 
-    const { nickname, username, email } = deletedUserData;
-    const responseData = { nickname, username, email };
+    const { nickname, id, email } = deletedUserData;
+    const responseData = { nickname, id, email };
     res.clearCookie("token").status(200).json(responseData);
   } catch (error) {
     next(error);

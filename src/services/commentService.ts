@@ -6,7 +6,7 @@ import { getOnePost } from "../services/postService";
  * 댓글 생성
  */
 export const createComment = async (
-  username: string,
+  userId: number,
   postId: number,
   comment: string
 ): Promise<void> => {
@@ -29,7 +29,7 @@ export const createComment = async (
 
     const createdAt = `${year}-${month}-${day}`;
 
-    await CommentRepository.createComment(username, postId, comment, createdAt);
+    await CommentRepository.createComment(userId, postId, comment, createdAt);
   } catch (error) {
     console.error(error);
   }
@@ -58,7 +58,7 @@ export const getCommentsByPostId = async (
 // export const updateComment = async (
 //   newComment: string,
 //   id: number,
-//   username: string
+//   userId: string
 // ) => {
 //   const commentsInfo = await CommentRepository.updateComment(newComment, id);
 
@@ -70,7 +70,7 @@ export const getCommentsByPostId = async (
 //     );
 //   }
 
-//   if (commentsInfo.username !== username) {
+//   if (commentsInfo.userId !== userId) {
 //     throw new AppError(
 //       CommonError.UNAUTHORIZED_ACCESS,
 //       "댓글을 수정할 권한이 없습니다.",
@@ -83,7 +83,7 @@ export const getCommentsByPostId = async (
 // /**
 //  * 댓글 삭제
 //  */
-// export const deleteComment = async (id: number, username: string) => {
+// export const deleteComment = async (id: number, userId: string) => {
 //   const commentsInfo = await CommentRepository.deleteComment(id);
 //   if (!commentsInfo) {
 //     throw new AppError(
@@ -92,7 +92,7 @@ export const getCommentsByPostId = async (
 //       404
 //     );
 //   }
-//   if (commentsInfo.username !== username) {
+//   if (commentsInfo.userId !== userId) {
 //     throw new AppError(
 //       CommonError.UNAUTHORIZED_ACCESS,
 //       "댓글을 삭제할 권한이 없습니다.",

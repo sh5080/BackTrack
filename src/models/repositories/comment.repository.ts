@@ -1,19 +1,19 @@
 import * as Type from "../../types/type";
-import { CommentEntity } from "../entities/comment.entity";
+import { CommentEntity } from "../entities/p.comment.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 export const CommentRepository = AppDataSource.getRepository(
   CommentEntity
 ).extend({
   async createComment(
-    username: string,
+    userId: number,
     postId: number,
     comment: string,
     createdAt: string
   ) {
     try {
       const commentData = this.create({
-        username,
+        userId,
         postId,
         comment: comment,
         createdAt,

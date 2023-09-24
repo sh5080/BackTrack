@@ -5,7 +5,7 @@ import { CommunityRepository } from "../models/repositories/community.repository
 import { AuthRepository } from "../models/repositories/auth.repository";
 
 export const createCommunity = async (
-  username: string,
+  userId: number,
   title: string,
   description: string
 ) => {
@@ -20,7 +20,7 @@ export const createCommunity = async (
     const createdAt = `${year}-${month}-${day}`;
 
     const CommunityData = await CommunityRepository.createCommunity(
-      username,
+      userId,
       title,
       description,
       createdAt

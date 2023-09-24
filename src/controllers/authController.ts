@@ -175,14 +175,14 @@ export const getSessionData = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.user?.username;
+    const userId = req.user?.userId;
 
-    if (!username) {
+    if (!userId) {
       next();
       return;
     }
 
-    const sessionData = await getSessionFromRedis(username);
+    const sessionData = await getSessionFromRedis(userId);
     const nickname = sessionData.nickname;
     const role = req.user?.role;
 
