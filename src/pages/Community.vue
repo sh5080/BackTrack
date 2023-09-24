@@ -18,8 +18,11 @@
                     margin-top: 100px;
                     max-height: 1775px;
                     height: 1775px;
+                    width: 4000px;
                   "
+                  class="mx-auto"
                 >
+                  <!-- class="mx-auto" 가운데정렬 -->
                   <template v-slot:item="{ item, index }">
                     <tr style="height: 180px">
                       <td>
