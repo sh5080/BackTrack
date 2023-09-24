@@ -788,8 +788,8 @@ export default {
           return;
         }
 
-        const response = await axios.post(
-          "http://localhost:4000/api/backtrack",
+        const response = await this.$axios.post(
+          "/api/backtrack",
           {
             title: this.title,
             backtrack: this.$store.state.chordData,

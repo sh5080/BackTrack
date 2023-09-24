@@ -63,9 +63,7 @@ export default {
     },
     async getLikedPost(postId) {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/post/${postId}`
-        );
+        const response = await this.$axios.get(`/api/post/${postId}`);
         const likedPost = response.data;
       } catch (error) {
         console.error("Error fetching liked post:", error);
@@ -73,8 +71,8 @@ export default {
     },
     async fetchLikedPostData() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo/likes?page=${this.currentPage}`,
+        const response = await this.$axios.get(
+          `/api/mypage/userInfo/likes?page=${this.currentPage}`,
           {
             withCredentials: true,
           }

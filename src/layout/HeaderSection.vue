@@ -119,6 +119,7 @@ export default {
   position: fixed;
   z-index: 9;
   top: 0;
+  left: 0;
 }
 .categories {
   display: flex;

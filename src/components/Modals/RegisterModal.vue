@@ -204,7 +204,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { mapMutations } from "vuex";
 import RegisterSuccess from "./RegisterSuccessModal.vue";
 export default {
@@ -343,8 +342,8 @@ export default {
 
     async checkUsername() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/auth/check/username`,
+        const response = await this.$axios.get(
+          `/api/auth/check/username`,
           {
             params: { username: this.username },
           },
@@ -369,8 +368,8 @@ export default {
     },
     async checkNickname() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/auth/check/nickname`,
+        const response = await this.$axios.get(
+          `/api/auth/check/nickname`,
           {
             params: { nickname: this.nickname },
           },
@@ -403,8 +402,8 @@ export default {
         this.nicknameMessage === "사용 가능한 닉네임입니다."
       ) {
         try {
-          const response = await axios.post(
-            "http://localhost:4000/api/auth/signup",
+          const response = await this.$axios.post(
+            "/api/auth/signup",
             {
               username: this.username,
               nickname: this.nickname,
@@ -415,8 +414,8 @@ export default {
             { withCredentials: true }
           );
           if (response.data.message.includes("회원가입에 성공했습니다.")) {
-            const loginResponse = await axios.post(
-              "http://localhost:4000/api/auth/login",
+            const loginResponse = await this.$axios.post(
+              "/api/auth/login",
               {
                 username: this.username,
                 password: this.password,

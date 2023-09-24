@@ -99,8 +99,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   components: {},
   data() {
@@ -160,8 +158,8 @@ export default {
         this.email = undefined;
       }
       try {
-        const response = await axios.post(
-          `http://localhost:4000/api/auth/Pw/${this.email}`,
+        const response = await this.$axios.post(
+          `/api/auth/Pw/${this.email}`,
           { username: this.username },
           { withCredentials: true }
         );

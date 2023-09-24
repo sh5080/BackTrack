@@ -108,7 +108,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Register from "./RegisterModal.vue";
 import FindUsername from "./findUsernameModal.vue";
 import FindPassword from "./findPasswordModal.vue";
@@ -230,8 +229,8 @@ export default {
       this.password = submitEvent.target.elements.password.value;
 
       try {
-        const response = await axios.post(
-          "http://localhost:4000/api/auth/login",
+        const response = await this.$axios.post(
+          "/api/auth/login",
           {
             username: this.username,
             password: this.password,

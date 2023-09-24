@@ -345,7 +345,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import * as Tone from "tone";
 import * as Toast from "../../plugins/toast";
 export default {
@@ -425,8 +424,8 @@ export default {
           this.openLoginModal();
           return;
         }
-        const response = await axios.post(
-          "http://localhost:4000/api/comment",
+        const response = await this.$axios.post(
+          "/api/comment",
           { postId: postId, comment: comment },
           {
             withCredentials: true,
@@ -460,8 +459,8 @@ export default {
       try {
         const postId = this.$store.state.currentPost.id;
 
-        const response = await axios.get(
-          `http://localhost:4000/api/comment/${postId}?page=${this.currentPage}`,
+        const response = await this.$axios.get(
+          `/api/comment/${postId}?page=${this.currentPage}`,
           {
             withCredentials: true,
           }
@@ -492,8 +491,8 @@ export default {
       this.$store.commit("updateLikedPosts", postId);
     },
     async addLike(postId) {
-      const response = await axios.post(
-        `http://localhost:4000/api/post/like/`,
+      const response = await this.$axios.post(
+        `/api/post/like/`,
         { postId: postId },
         {
           withCredentials: true,
@@ -516,8 +515,8 @@ export default {
       }
     },
     async removeLike(postId) {
-      const response = await axios.delete(
-        `http://localhost:4000/api/post/like/${postId}`,
+      const response = await this.$axios.delete(
+        `/api/post/like/${postId}`,
 
         {
           withCredentials: true,
@@ -980,8 +979,8 @@ export default {
 
         const id = this.backtrackData.id;
 
-        const response = await axios.post(
-          `http://localhost:4000/api/post`,
+        const response = await this.$axios.post(
+          `/api/post`,
           {
             description: this.description,
             //이후 bpm, 드럼, 피아노 등 추가되는 데이터 추가
@@ -1020,8 +1019,8 @@ export default {
         if (!id) {
           Toast.customError("이미 삭제되었거나 없는 백킹트랙입니다.");
         }
-        const response = await axios.delete(
-          `http://localhost:4000/api/backtrack`,
+        const response = await this.$axios.delete(
+          `/api/backtrack`,
 
           {
             withCredentials: true,
@@ -1403,6 +1402,10 @@ export default {
 }
 .description {
   flex: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
 }
 
 .new-comment-input {

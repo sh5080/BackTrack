@@ -282,7 +282,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import * as Toast from "../plugins/toast";
 import BacktrackSuccessModal from "../components/Modals/BacktrackSuccessModal.vue";
 
@@ -932,7 +931,8 @@ export default {
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  margin-left: -20px;
+  /* margin-left: -20px; */
+  /* margin-left: 220px; */
   margin-top: 20px;
   /*  */
   display: flex;

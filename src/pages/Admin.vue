@@ -137,7 +137,6 @@
 <script>
 import Card from "./Card/Card.vue";
 import PopupPreview from "../components/Modals/PopupPreviewModal.vue";
-import axios from "axios";
 import * as Toast from "../plugins/toast";
 import { mapActions } from "vuex";
 import { QuillEditor } from "@vueup/vue-quill";
@@ -266,8 +265,8 @@ export default {
           const formData = new FormData();
           formData.append("description", this.description);
           formData.append("image", this.selectedFile);
-          const response = await axios.post(
-            `http://localhost:4000/api/admin/popup`,
+          const response = await this.$axios.post(
+            `/api/admin/popup`,
             formData,
             {
               withCredentials: true,
@@ -279,8 +278,8 @@ export default {
 
           this.result = response.data;
         } else {
-          const response = await axios.post(
-            `http://localhost:4000/api/admin/popup`,
+          const response = await this.$axios.post(
+            `/api/admin/popup`,
             requestData,
             {
               withCredentials: true,

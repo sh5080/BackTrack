@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-
+import axios from "axios";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import { loadFonts } from "./plugins/webfontloader";
@@ -9,8 +9,14 @@ import { router } from "./routes/routes";
 import { SocketPlugin } from "./plugins/socketPlugin";
 import "./registerServiceWorker";
 
-loadFonts();
+const serverUrl = "http://localhost:4000";
+
 const app = createApp(App);
+app.config.globalProperties.$axios = axios.create({
+  baseURL: serverUrl,
+});
+
+loadFonts();
 app.use(SocketPlugin);
 app.use(vuetify);
 app.use(router);

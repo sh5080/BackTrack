@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import axios from "axios";
 // import Register from "./RegisterModal.vue";
 
 export default {
@@ -139,8 +138,8 @@ export default {
         this.email = undefined;
       }
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/auth/Id/${this.email}`,
+        const response = await this.$axios.get(
+          `/api/auth/Id/${this.email}`,
 
           { withCredentials: true }
         );

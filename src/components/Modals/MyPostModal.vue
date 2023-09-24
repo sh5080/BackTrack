@@ -9,8 +9,8 @@
       </h2>
 
       <div style="font-size: 3em; margin-top: 100px">
-        업로드한 게시글이 이 곳에 저장됩니다. <br />언제든지 불러와서 재생할 수
-        있습니다.
+        업로드한 게시글이 이 곳에 저장됩니다. <br />언제든지 불러와서 재생 및
+        수정할 수 있습니다.
       </div>
       <v-card class="mx-auto" max-width="1000">
         <v-list>
@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -63,9 +62,7 @@ export default {
     },
     async getMyPost() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo`
-        );
+        const response = await this.$axios.get(`/api/mypage/userInfo`);
         const myPost = response.data;
       } catch (error) {
         console.error("Error fetching liked post:", error);
@@ -73,15 +70,13 @@ export default {
     },
     async fetchMyPostData() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo/posts?page=${this.currentPage}`,
+        const response = await this.$axios.get(
+          `/api/mypage/userInfo/posts?page=${this.currentPage}`,
           {
             withCredentials: true,
           }
         );
-        // this.myPostTitles = response.data.paginatedMyPosts.map(
-        //   (item) => item.title
-        // );
+
         this.myPostTitles = response.data.paginatedMyPosts.map(
           (item) => item.backtrack.title
         );

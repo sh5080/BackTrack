@@ -361,7 +361,6 @@ import FindPassword from "../../components/Modals/findPasswordModal.vue";
 import BacktrackModal from "../../components/Modals/BacktrackModal.vue";
 import LikedPostModal from "../../components/Modals/LikedPostModal.vue";
 import MyPostModal from "../../components/Modals/MyPostModal.vue";
-import axios from "axios";
 import * as Toast from "../../plugins/toast";
 export default {
   props: ["userInfo"],
@@ -447,15 +446,12 @@ export default {
     },
     async showBacktrackData(item) {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/backtrack/detail`,
-          {
-            params: {
-              id: item.selectable.id,
-            },
-            withCredentials: true,
-          }
-        );
+        const response = await this.$axios.get(`/api/backtrack/detail`, {
+          params: {
+            id: item.selectable.id,
+          },
+          withCredentials: true,
+        });
         const backtrackData = response.data.backtrackData;
         if (backtrackData) {
           this.$store.commit("toggleBacktrackModal", true);
@@ -473,8 +469,8 @@ export default {
           return;
         }
 
-        const response = await axios.delete(
-          `http://localhost:4000/api/mypage/`,
+        const response = await this.$axios.delete(
+          `/api/mypage/`,
 
           {
             withCredentials: true,
@@ -500,8 +496,8 @@ export default {
         ) {
           throw "이모티콘 및 일부 특수문자 사용 불가합니다.";
         }
-        const response = await axios.put(
-          `http://localhost:4000/api/mypage/userInfo/nickname`,
+        const response = await this.$axios.put(
+          `/api/mypage/userInfo/nickname`,
           {
             nickname: this.nickname,
           },
@@ -540,8 +536,8 @@ export default {
         if (!emailRegex.test(this.email)) {
           throw "이메일 형식에 맞추어 입력해주세요.";
         }
-        const response = await axios.put(
-          `http://localhost:4000/api/mypage/userInfo/email`,
+        const response = await this.$axios.put(
+          `/api/mypage/userInfo/email`,
           {
             email: this.email,
           },
@@ -570,8 +566,8 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/mypage/userInfo`,
+        const response = await this.$axios.get(
+          `/api/mypage/userInfo`,
 
           {
             withCredentials: true,
@@ -587,8 +583,8 @@ export default {
     },
     async fetchBacktrackInfo() {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/backtrack?page=${this.currentPage}`,
+        const response = await this.$axios.get(
+          `/api/backtrack?page=${this.currentPage}`,
 
           {
             withCredentials: true,
@@ -614,8 +610,8 @@ export default {
         ) {
           throw "빈 칸을 모두 입력해주세요.";
         }
-        const response = await axios.put(
-          `http://localhost:4000/api/mypage/userInfo/password`,
+        const response = await this.$axios.put(
+          `/api/mypage/userInfo/password`,
           {
             password: this.originPassword,
             newPassword: this.newPassword,
