@@ -54,7 +54,6 @@
 
 <script>
 import Login from "../components/Modals/LoginModal.vue";
-import axios from "axios";
 import { mapMutations } from "vuex";
 export default {
   components: {
@@ -90,10 +89,9 @@ export default {
     ...mapMutations(["setAuthenticated"]),
     async logout() {
       try {
-        const response = await axios.delete(
-          "http://localhost:4000/api/auth/logout",
-          { withCredentials: true }
-        );
+        const response = await this.$axios.delete("/api/auth/logout", {
+          withCredentials: true,
+        });
         if (response.data.message === "로그아웃 되었습니다.") {
           await this.$store.dispatch("resetState");
           this.$router.go();
