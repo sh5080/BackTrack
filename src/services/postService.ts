@@ -55,17 +55,17 @@ export const createPost = async (
 };
 
 export const getLatestPosts = async (
-  page: number = 1,
-  pageSize: number = 8
+  page: number,
+  pageSize: number,
+  option?: string,
+  searchBy?: string
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allPosts = await PostRepository.getPost();
-    const sortedPosts = allPosts.sort((a, b) => b.id - a.id);
-    const totalItemsCount = sortedPosts.length;
-    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
-    for (const post of paginatedPosts) {
+    let allPosts = await PostRepository.getPost();
+
+    for (const post of allPosts) {
       const backtrackId = post.backtrackId;
       const backtrackData = await BacktrackRepository.getOneBacktrack(
         backtrackId
@@ -76,6 +76,21 @@ export const getLatestPosts = async (
       post.title = title;
       post.author = nicknameData?.nickname;
     }
+    if (searchBy) {
+      allPosts = allPosts.filter((post) => {
+        return (
+          (option === "title" && post.title && post.title.includes(searchBy)) ||
+          (option === "author" &&
+            post.author &&
+            post.author.includes(searchBy)) ||
+          (option === "description" && post.description.includes(searchBy))
+        );
+      });
+    }
+    const sortedPosts = allPosts.sort((a, b) => b.id - a.id);
+    const totalItemsCount = sortedPosts.length;
+    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
+
     return { paginatedPosts, totalItemsCount };
   } catch (error) {
     throw error;
@@ -83,13 +98,39 @@ export const getLatestPosts = async (
 };
 
 export const getPostsByLikes = async (
-  page: number = 1,
-  pageSize: number = 8
+  page: number,
+  pageSize: number,
+  option?: string,
+  searchBy?: string
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allPosts = await PostRepository.getPost();
+    let allPosts = await PostRepository.getPost();
+
+    for (const post of allPosts) {
+      const backtrackId = post.backtrackId;
+      const backtrackData = await BacktrackRepository.getOneBacktrack(
+        backtrackId
+      );
+      const title = backtrackData?.title;
+      const backtrackAuthor = backtrackData?.userId;
+      const nicknameData = await AuthRepository.findUser(backtrackAuthor);
+      post.title = title;
+      post.author = nicknameData?.nickname;
+    }
+
+    if (searchBy) {
+      allPosts = allPosts.filter((post) => {
+        return (
+          (option === "title" && post.title && post.title.includes(searchBy)) ||
+          (option === "author" &&
+            post.author &&
+            post.author.includes(searchBy)) ||
+          (option === "description" && post.description.includes(searchBy))
+        );
+      });
+    }
 
     // 좋아요 수를 기준으로 정렬
     const sortedPosts = allPosts.sort((a, b) => {
@@ -101,18 +142,6 @@ export const getPostsByLikes = async (
     const totalItemsCount = sortedPosts.length;
     const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
 
-    for (const post of paginatedPosts) {
-      const backtrackId = post.backtrackId;
-      const backtrackData = await BacktrackRepository.getOneBacktrack(
-        backtrackId
-      );
-      const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.userId;
-      const nicknameData = await AuthRepository.findUser(backtrackAuthor);
-      post.title = title;
-      post.author = nicknameData?.nickname;
-    }
-
     return { paginatedPosts, totalItemsCount };
   } catch (error) {
     throw error;
@@ -121,15 +150,17 @@ export const getPostsByLikes = async (
 
 export const getOldestPosts = async (
   page: number = 1,
-  pageSize: number = 8
+  pageSize: number = 8,
+  option?: string,
+  searchBy?: string
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const allPosts = await PostRepository.getPost();
-    const totalItemsCount = allPosts.length;
-    const paginatedPosts = allPosts.slice(startIndex, endIndex);
-    for (const post of paginatedPosts) {
+    let allPosts = await PostRepository.getPost();
+
+    // author 정보 추가
+    for (const post of allPosts) {
       const backtrackId = post.backtrackId;
       const backtrackData = await BacktrackRepository.getOneBacktrack(
         backtrackId
@@ -140,6 +171,22 @@ export const getOldestPosts = async (
       post.title = title;
       post.author = nicknameData?.nickname;
     }
+
+    if (searchBy) {
+      allPosts = allPosts.filter((post) => {
+        return (
+          (option === "title" && post.title && post.title.includes(searchBy)) ||
+          (option === "author" &&
+            post.author &&
+            post.author.includes(searchBy)) ||
+          (option === "description" && post.description.includes(searchBy))
+        );
+      });
+    }
+
+    const totalItemsCount = allPosts.length;
+    const paginatedPosts = allPosts.slice(startIndex, endIndex);
+
     return { paginatedPosts, totalItemsCount };
   } catch (error) {
     throw error;
