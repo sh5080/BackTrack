@@ -30,5 +30,7 @@ export interface CustomRequest extends Request {
     id: string;
     backtrackId: string;
     sortBy: string;
+    searchBy: string;
+    option: string;
   };
 }

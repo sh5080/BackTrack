@@ -66,26 +66,25 @@ export const getCommunity = async (
   try {
     const page = req.query.page;
     const sortBy = req.query.sortBy;
-
+    const searchBy = req.query.searchBy;
+    const option = req.query.option;
     let communityData;
 
     if (sortBy === "oldest") {
       communityData = await communityService.getOldestCommunities(
-        parseInt(page)
+        parseInt(page),
+        10,
+        option,
+        searchBy
       );
-    }
-    // 추후 조회수 관련 정렬 가능성 있음
-    // else if (sortBy === "likes") {
-    //   communityData = await communityService.getCommunitiesByLikes(
-    //     parseInt(page)
-    //   );
-    // }
-    else {
+    } else {
       communityData = await communityService.getLatestCommunities(
-        parseInt(page)
+        parseInt(page),
+        10,
+        option,
+        searchBy
       );
     }
-
     if (communityData.paginatedCommunities.length < 1) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,
@@ -93,6 +92,7 @@ export const getCommunity = async (
         400
       );
     }
+
     res.json({ message: "게시글 조회 완료되었습니다.", communityData });
   } catch (error) {
     next(error);
