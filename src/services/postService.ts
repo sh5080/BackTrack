@@ -31,13 +31,16 @@ export const createPost = async (
     }
 
     const now = new Date();
-    const krDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const krDate = new Date(now.getTime());
 
     const year = krDate.getFullYear();
     const month = String(krDate.getMonth() + 1).padStart(2, "0");
     const day = String(krDate.getDate()).padStart(2, "0");
+    const hours = String(krDate.getHours()).padStart(2, "0");
+    const minutes = String(krDate.getMinutes()).padStart(2, "0");
+    const seconds = String(krDate.getSeconds()).padStart(2, "0");
 
-    const createdAt = `${year}-${month}-${day}`;
+    const createdAt = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     const postData = await PostRepository.createPost(
       parseInt(backtrackId),
@@ -59,9 +62,7 @@ export const getLatestPosts = async (
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const allPosts = await PostRepository.getPost();
-    const sortedPosts = allPosts.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    const sortedPosts = allPosts.sort((a, b) => b.id - a.id);
     const totalItemsCount = sortedPosts.length;
     const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
     for (const post of paginatedPosts) {

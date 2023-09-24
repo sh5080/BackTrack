@@ -11,13 +11,16 @@ export const createCommunity = async (
 ) => {
   try {
     const now = new Date();
-    const krDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const krDate = new Date(now.getTime());
 
     const year = krDate.getFullYear();
     const month = String(krDate.getMonth() + 1).padStart(2, "0");
     const day = String(krDate.getDate()).padStart(2, "0");
+    const hours = String(krDate.getHours()).padStart(2, "0");
+    const minutes = String(krDate.getMinutes()).padStart(2, "0");
+    const seconds = String(krDate.getSeconds()).padStart(2, "0");
 
-    const createdAt = `${year}-${month}-${day}`;
+    const createdAt = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     const CommunityData = await CommunityRepository.createCommunity(
       userId,
@@ -50,18 +53,19 @@ export const getOneCommunity = async (id: number) => {
 
 export const getLatestCommunities = async (
   page: number = 1,
-  pageSize: number = 8
+  pageSize: number = 10
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const allCommunities = await CommunityRepository.getCommunity();
-    const sortedCommunities = allCommunities.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    const sortedCommunities = allCommunities.sort((a, b) => b.id - a.id);
     const totalItemsCount = sortedCommunities.length;
     const paginatedCommunities = sortedCommunities.slice(startIndex, endIndex);
-
+    for (const community of paginatedCommunities) {
+      const nicknameData = await AuthRepository.findUser(community.userId);
+      community.author = nicknameData?.nickname;
+    }
     return { paginatedCommunities, totalItemsCount };
   } catch (error) {
     throw error;
@@ -95,7 +99,7 @@ export const getLatestCommunities = async (
 
 export const getOldestCommunities = async (
   page: number = 1,
-  pageSize: number = 8
+  pageSize: number = 10
 ) => {
   try {
     const startIndex = (page - 1) * pageSize;
@@ -103,7 +107,10 @@ export const getOldestCommunities = async (
     const allCommunities = await CommunityRepository.getCommunity();
     const totalItemsCount = allCommunities.length;
     const paginatedCommunities = allCommunities.slice(startIndex, endIndex);
-
+    for (const community of paginatedCommunities) {
+      const nicknameData = await AuthRepository.findUser(community.userId);
+      community.author = nicknameData?.nickname;
+    }
     return { paginatedCommunities, totalItemsCount };
   } catch (error) {
     throw error;
