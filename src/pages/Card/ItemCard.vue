@@ -297,7 +297,7 @@ export default {
 </script>
 
 <style scoped>
-::v-deep .v-card-text {
+:deep(.v-card-text) {
   font-size: 3.5rem;
 }
 
@@ -319,7 +319,7 @@ export default {
   transition: transform 0.3s ease;
   cursor: pointer;
 }
-::v-deep .v-pagination .v-btn {
+:deep(.v-pagination .v-btn) {
   font-size: 50px;
   width: 100px;
   height: 100px;

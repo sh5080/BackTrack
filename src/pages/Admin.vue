@@ -395,42 +395,42 @@ export default {
   justify-content: flex-end;
   align-items: center;
 }
-::v-deep .v-input__control,
-::v-deep .v-input__details {
+:deep(.v-input__control),
+:deep(.v-input__details) {
   // margin-top: 20px;
   width: 800px;
   // font-size: 80px;
 }
 
-::v-deep.v-select .v-field .v-field__input > input,
-::v-deep .v-label {
+:deep(.v-select .v-field .v-field__input > input),
+:deep(.v-label) {
   width: 800px;
   font-size: 50px;
 }
 
-::v-deep .v-select .v-select__selection-text {
+:deep(.v-select .v-select__selection-text) {
   margin-top: 50px;
   font-size: 70px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-::v-deep .v-field--variant-filled {
+:deep(.v-field--variant-filled) {
   --v-input-control-height: 150px;
   --v-field-padding-bottom: 100px;
 }
-::v-deep .v-select .v-select__selection,
-::v-deep .v-btn .v-btn--elevated {
+:deep(.v-select .v-select__selection),
+:deep(.v-btn .v-btn--elevated) {
   width: 800px;
   font-size: 100px;
 }
-::v-deep .v-checkbox {
+:deep(.v-checkbox) {
   width: 800px;
   height: 100px;
   font-size: 70px;
 }
 
-::v-deep .v-field.v-field--appended {
+:deep(.v-field.v-field--appended) {
   --v-field-padding-end: 6px;
   font-size: 100px;
 }

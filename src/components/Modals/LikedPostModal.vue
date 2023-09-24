@@ -156,12 +156,12 @@ export default {
   transform: translate(-50%, -1px);
 }
 
-::v-deep .v-list-item-title {
+:deep(.v-list-item-title) {
   font-size: 3rem;
   line-height: 5rem;
 }
 
-::v-deep .v-pagination .v-btn {
+:deep(.v-pagination .v-btn) {
   font-size: 50px;
   width: 100px;
   height: 100px;

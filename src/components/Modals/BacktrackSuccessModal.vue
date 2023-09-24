@@ -1014,32 +1014,32 @@ export default {
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
-::v-deep .v-card {
+:deep(.v-card) {
   /* position: fixed;
   height: 600px;
   bottom: 190px; */
   top: 1340px;
 }
-::v-deep .v-card .v-card-text {
+:deep(.v-card .v-card-text) {
   line-height: 300px;
   margin-top: -40px;
   padding: 50px;
 }
-::v-deep .v-card .v-card-title {
+:deep(.v-card .v-card-title) {
   line-height: none !important;
 }
-::v-deep .v-toolbar-title__placeholder {
+:deep(.v-toolbar-title__placeholder) {
   height: 100px;
   font-size: 200px;
   align-items: center;
 }
-::v-deep .v-btn--icon.v-btn--density-default {
+:deep(.v-btn--icon.v-btn--density-default) {
   width: 100px;
   height: 100px;
   font-size: 50px;
 }
 
-::v-deep .v-toolbar__content {
+:deep(.v-toolbar__content) {
   position: fixed;
   max-width: 1500px;
 }
@@ -1086,28 +1086,29 @@ export default {
   font-family: "Roboto", sans-serif !important;
   text-transform: none !important;
 }
-::v-deep .v-text-field input.v-field__input {
+:deep(.v-text-field input.v-field__input) {
   font-size: 70px;
 }
-::v-deep
-  .v-input--density-default
-  .v-field--variant-filled
-  .v-label.v-field-label--floating,
-.v-label.v-field-label {
+:deep(
+    .v-input--density-default
+      .v-field--variant-filled
+      .v-label.v-field-label--floating,
+    .v-label.v-field-label
+  ) {
   font-size: 40px;
 }
-::v-deep .v-messages {
+:deep(.v-messages) {
   font-size: 60px;
   top: 40px;
 }
 
-::v-deep .v-label {
+:deep(.v-label) {
   font-size: 70px;
 }
-::v-deep .v-input__details {
+:deep(.v-input__details) {
   overflow: visible;
 }
-::v-deep .v-text-field .v-field {
+:deep(.v-text-field .v-field) {
   margin-top: 300px;
 }
 </style>

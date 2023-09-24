@@ -771,18 +771,18 @@ export default {
   background: none;
   color: rgb(43, 4, 234);
 }
-::v-deep .v-data-table__tr:hover {
+:deep(.v-data-table__tr:hover) {
   color: #a7a8c8;
   cursor: pointer;
 }
 
-::v-deep .v-data-table__td .v-data-table-column--align-start {
+:deep(.v-data-table__td .v-data-table-column--align-start) {
   max-width: 10px;
 }
-::v-deep .v-data-table__tr {
+:deep(.v-data-table__tr) {
   height: 138px;
 }
-::v-deep .v-pagination .v-btn {
+:deep(.v-pagination .v-btn) {
   font-size: 50px;
   width: 100px;
   height: 100px;

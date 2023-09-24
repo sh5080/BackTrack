@@ -1322,7 +1322,7 @@ export default {
   margin-right: 30px;
 }
 
-:deep .v-list-item-title {
+:deep(.v-list-item-title) {
   font-size: 5rem;
   line-height: 7rem;
 }
