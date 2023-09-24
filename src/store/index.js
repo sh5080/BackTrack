@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import socket from "./socket";
+import axios from "axios";
 
 export const store = createStore({
   state: {
@@ -148,9 +149,12 @@ export const store = createStore({
 
     async fetchSessionData({ commit }) {
       try {
-        const response = await this.$axios.get(`/api/auth/getSessionData`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `http://localhost:4000/api/auth/getSessionData`,
+          {
+            withCredentials: true,
+          }
+        );
 
         const nickname = response.data.nickname;
         const role = response.data.role;
