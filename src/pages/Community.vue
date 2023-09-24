@@ -56,7 +56,8 @@
                           style="
                             font-size: 70px;
                             height: 150px;
-                            margin-right: 200px;
+
+                            width: 350px;
                           "
                         >
                           {{ selectedSortSearch }}
@@ -86,6 +87,10 @@
                     >
                       <v-card-text>
                         <v-text-field
+                          v-model="searchValue"
+                          @keyup.enter="
+                            fetchCommunityPosts(searchValue, selectedSearch)
+                          "
                           density="compact"
                           variant="solo"
                           append-inner-icon="mdi-magnify"
@@ -103,7 +108,8 @@
                           style="
                             font-size: 70px;
                             height: 150px;
-                            margin-right: 200px;
+
+                            width: 400px;
                           "
                         >
                           {{ selectedSortPosts }}
@@ -185,6 +191,7 @@ export default {
         { text: "내용", value: "description" },
       ],
       selectedSearch: "title",
+      searchValue: "",
     };
   },
   methods: {
@@ -193,22 +200,25 @@ export default {
       this.fetchCommunityPosts();
     },
     sortedSearch(value) {
-      this.selectedSort = value;
+      this.selectedSearch = value;
       this.fetchCommunityPosts(value);
     },
     onPageChange(newPage) {
       this.currentPage = newPage;
-      this.fetchCommunityPosts();
+      this.fetchCommunityPosts(this.searchValue, this.selectedSearch);
     },
-    async fetchCommunityPosts(value) {
+    async fetchCommunityPosts(value, option) {
       try {
         let apiUrl = `/api/community?page=${this.currentPage}`;
+
         if (this.selectedSort === "oldest") {
           apiUrl += "&sortBy=oldest";
         } else {
           apiUrl += "&sortBy=latest";
         }
-
+        if (option) {
+          apiUrl += `&option=${option}`;
+        }
         if (value) {
           apiUrl += `&searchBy=${value}`;
         }
@@ -291,5 +301,8 @@ export default {
   width: 100px;
   height: 100px;
   margin-top: 300px;
+}
+:deep(.v-field--center-affix .v-field__append-inner) {
+  font-size: 50px;
 }
 </style>
