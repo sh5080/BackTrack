@@ -186,7 +186,7 @@
                         v-model="description"
                         style="font-size: 130px; height: 600px"
                         label="소개글*"
-                        hint="200자 이내로 입력 가능합니다. 이미지 업로드는 아래에서 가능합니다."
+                        :hint="` (${description.length}/200)`"
                         persistent-hint
                         required
                         rows="4"
@@ -195,7 +195,6 @@
                   </v-row>
                 </v-container>
               </v-card-text>
-
               <v-card-actions>
                 <div class="file-container">
                   <input
@@ -303,7 +302,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import * as Tone from "tone";
 import * as Toast from "../../plugins/toast";
 export default {
@@ -835,7 +833,10 @@ export default {
           Toast.customError("소개글을 입력해주세요.");
           return;
         }
-
+        if (this.description.length > 200) {
+          Toast.customError("200자 이내로 입력이 가능합니다.");
+          return;
+        }
         const id = this.backtrackData.id;
         const requestData = {
           description: this.description,
@@ -847,25 +848,21 @@ export default {
           formData.append("description", this.description);
           formData.append("image", this.selectedFile);
 
-          const response = await axios.post(
-            `http://localhost:4000/api/post`,
-            formData,
-            {
-              withCredentials: true,
-              params: {
-                backtrackId: id,
-              },
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+          const response = await this.$axios.post(`/api/post`, formData, {
+            withCredentials: true,
+            params: {
+              backtrackId: id,
+            },
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
 
           this.postResponse = response;
         } else {
           console.log("여기: ", requestData);
-          const response = await axios.post(
-            `http://localhost:4000/api/post`,
+          const response = await this.$axios.post(
+            `/api/post`,
             requestData,
 
             {
@@ -895,8 +892,8 @@ export default {
         if (!id) {
           Toast.customError("이미 삭제되었거나 없는 백킹트랙입니다.");
         }
-        const response = await axios.delete(
-          `http://localhost:4000/api/backtrack`,
+        const response = await this.$axios.delete(
+          `/api/backtrack`,
 
           {
             withCredentials: true,
@@ -1244,5 +1241,11 @@ export default {
   display: inline-block;
   margin-top: 120px;
   font-size: 70px;
+}
+
+.v-messages__message {
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 </style>
