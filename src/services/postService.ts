@@ -70,7 +70,7 @@ export const getLatestPosts = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.id;
+      const backtrackAuthor = backtrackData?.userId;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
@@ -106,7 +106,7 @@ export const getPostsByLikes = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.id;
+      const backtrackAuthor = backtrackData?.userId;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
@@ -134,7 +134,7 @@ export const getOldestPosts = async (
         backtrackId
       );
       const title = backtrackData?.title;
-      const backtrackAuthor = backtrackData?.id;
+      const backtrackAuthor = backtrackData?.userId;
       const nicknameData = await AuthRepository.findUser(backtrackAuthor);
       post.title = title;
       post.author = nicknameData?.nickname;
