@@ -12,7 +12,7 @@
               padding: 50px 100px;
             "
           >
-            게시판
+            게시판 (백킹트랙 공유)
           </h4>
         </v-col>
         <v-col cols="6" class="d-flex justify-end">
@@ -22,7 +22,7 @@
                 v-bind="props"
                 style="font-size: 70px; height: 150px; margin-right: 200px"
               >
-                정렬
+                {{ selectedSortText }}
                 <v-icon>mdi-chevron-down</v-icon>
               </v-btn>
             </template>
@@ -121,7 +121,6 @@
   </v-dialog>
 </template>
 <script>
-import axios from "axios";
 import * as Toast from "../../plugins/toast";
 import PostModal from "../../components/Modals/PostModal.vue";
 
@@ -149,6 +148,12 @@ export default {
     pageCount() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
     },
+    selectedSortText() {
+      const selectedOption = this.sortOptions.find(
+        (option) => option.value === this.selectedSort
+      );
+      return selectedOption ? selectedOption.text : "";
+    },
   },
   created() {
     this.fetchPosts();
@@ -169,16 +174,16 @@ export default {
     //게시판에서 post 불러오는 모달
     async openPost(postId, backtrackId, author) {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/post/${postId}`,
+        const response = await this.$axios.get(
+          `/api/post/${postId}`,
 
           {
             withCredentials: true,
           }
         );
 
-        const backtrackResponse = await axios.get(
-          `http://localhost:4000/api/backtrack/detail`,
+        const backtrackResponse = await this.$axios.get(
+          `/api/backtrack/detail`,
           {
             params: {
               id: backtrackId,
@@ -204,7 +209,7 @@ export default {
     //게시판 post
     async fetchPosts() {
       try {
-        let apiUrl = `http://localhost:4000/api/post?page=${this.currentPage}`;
+        let apiUrl = `/api/post?page=${this.currentPage}`;
 
         if (this.selectedSort === "oldest") {
           apiUrl += "&sortBy=oldest"; // 오래된순 정렬
@@ -214,11 +219,12 @@ export default {
           apiUrl += "&sortBy=latest"; // 기본값: 최신순 정렬
         }
 
-        const response = await axios.get(apiUrl, {
+        const response = await this.$axios.get(apiUrl, {
           withCredentials: true,
         });
 
         this.posts = response.data.postData.paginatedPosts;
+
         this.totalItems = response.data.postData.totalItemsCount;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
@@ -239,8 +245,8 @@ export default {
       this.$store.commit("updateLikedPosts", postId);
     },
     async addLike(postId) {
-      const response = await axios.post(
-        `http://localhost:4000/api/post/like/`,
+      const response = await this.$axios.post(
+        `/api/post/like/`,
         { postId: postId },
         {
           withCredentials: true,
@@ -263,8 +269,8 @@ export default {
       }
     },
     async removeLike(postId) {
-      const response = await axios.delete(
-        `http://localhost:4000/api/post/like/${postId}`,
+      const response = await this.$axios.delete(
+        `/api/post/like/${postId}`,
 
         {
           withCredentials: true,
