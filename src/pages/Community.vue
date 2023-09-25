@@ -28,7 +28,12 @@
                       <td>
                         {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                       </td>
-                      <td>{{ item.selectable.title }}</td>
+                      <td
+                        class="clickable-cell"
+                        @click="openCommunityModal(item.selectable)"
+                      >
+                        {{ item.selectable.title }}
+                      </td>
                       <td>{{ item.selectable.author }}</td>
                       <td>
                         {{
@@ -139,16 +144,20 @@
             </div>
           </div>
         </card>
+        <v-dialog v-model="$store.state.showCommunityModal" persistent="">
+          <CommunityModal />
+        </v-dialog>
       </div>
     </div>
   </div>
 </template>
 <script>
 import Card from "./Card/Card.vue";
-
+import CommunityModal from "../components/Modals/CommunityModal.vue";
 export default {
   components: {
     Card,
+    CommunityModal,
   },
   computed: {
     selectedSortPosts() {
@@ -198,6 +207,11 @@ export default {
     };
   },
   methods: {
+    openCommunityModal(item) {
+      this.$store.commit("setCommunityData", item);
+      this.$store.commit("toggleShowCommunityModal", true);
+    },
+
     sortedCommunityPosts(value) {
       this.selectedSort = value;
       this.fetchCommunityPosts();
@@ -274,7 +288,10 @@ export default {
   margin-bottom: 10px;
   border-top: 1px solid #ccc;
 }
-
+.clickable-cell:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
 .info-label {
   display: inline-block;
   width: 600px;
