@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row">
         <card class="card-community">
-          <div class="author">
+          <div class="community-container">
             <h4 class="title">커뮤니티</h4>
             <div class="user-info">
               <div class="info-item">
@@ -44,102 +44,100 @@
                       </td>
                     </tr>
                   </template>
-
-                  <template v-slot:bottom> </template>
+                  <template v-slot:bottom></template>
                 </v-data-table>
+              </div>
+              <v-pagination
+                v-model="currentPage"
+                :length="pageCount"
+                @update:model-value="onPageChange"
+                size="x-large"
+                class="page"
+              ></v-pagination>
+              <div class="page-container">
+                <v-col cols="1">
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        style="
+                          font-size: 70px;
+                          height: 150px;
 
-                <v-pagination
-                  v-model="currentPage"
-                  :length="pageCount"
-                  @update:model-value="onPageChange"
-                  size="x-large"
-                  class="page"
-                ></v-pagination>
-                <div class="page-container">
-                  <v-col cols="1">
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ props }">
-                        <v-btn
-                          v-bind="props"
-                          style="
-                            font-size: 70px;
-                            height: 150px;
-
-                            width: 350px;
-                          "
+                          width: 350px;
+                        "
+                      >
+                        {{ selectedSortSearch }}
+                        <v-icon>mdi-chevron-down</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        v-for="(item, index) in searchOptions"
+                        style="height: 150px"
+                        :key="index"
+                        @click="sortedSearch(item.value)"
+                      >
+                        <v-list-item-title
+                          style="font-size: 70px; line-height: 5.5rem"
+                          >{{ item.text }}</v-list-item-title
                         >
-                          {{ selectedSortSearch }}
-                          <v-icon>mdi-chevron-down</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(item, index) in searchOptions"
-                          style="height: 150px"
-                          :key="index"
-                          @click="sortedSearch(item.value)"
-                        >
-                          <v-list-item-title
-                            style="font-size: 70px; line-height: 5.5rem"
-                            >{{ item.text }}</v-list-item-title
-                          >
-                        </v-list-item>
-                      </v-list>
-                    </v-menu></v-col
+                      </v-list-item>
+                    </v-list>
+                  </v-menu></v-col
+                >
+                <v-col cols="3">
+                  <v-card
+                    class="mx-auto text-right"
+                    color="grey-lighten-3"
+                    max-width="1200"
                   >
-                  <v-col cols="3">
-                    <v-card
-                      class="mx-auto text-right"
-                      color="grey-lighten-3"
-                      max-width="1200"
-                    >
-                      <v-card-text>
-                        <v-text-field
-                          v-model="searchValue"
-                          @keyup.enter="
-                            fetchCommunityPosts(searchValue, selectedSearch)
-                          "
-                          density="compact"
-                          variant="solo"
-                          append-inner-icon="mdi-magnify"
-                          single-line
-                          hide-details
-                        ></v-text-field>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="6" class="d-flex">
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ props }">
-                        <v-btn
-                          v-bind="props"
-                          style="
-                            font-size: 70px;
-                            height: 150px;
+                    <v-card-text>
+                      <v-text-field
+                        v-model="searchValue"
+                        @keyup.enter="
+                          fetchCommunityPosts(searchValue, selectedSearch)
+                        "
+                        density="compact"
+                        variant="solo"
+                        append-inner-icon="mdi-magnify"
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col cols="6" class="d-flex">
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        style="
+                          font-size: 70px;
+                          height: 150px;
 
-                            width: 400px;
-                          "
+                          width: 400px;
+                        "
+                      >
+                        {{ selectedSortPosts }}
+                        <v-icon>mdi-chevron-down</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        v-for="(item, index) in sortOptions"
+                        style="height: 150px"
+                        :key="index"
+                        @click="sortedCommunityPosts(item.value)"
+                      >
+                        <v-list-item-title
+                          style="font-size: 70px; line-height: 5.5rem"
+                          >{{ item.text }}</v-list-item-title
                         >
-                          {{ selectedSortPosts }}
-                          <v-icon>mdi-chevron-down</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(item, index) in sortOptions"
-                          style="height: 150px"
-                          :key="index"
-                          @click="sortedCommunityPosts(item.value)"
-                        >
-                          <v-list-item-title
-                            style="font-size: 70px; line-height: 5.5rem"
-                            >{{ item.text }}</v-list-item-title
-                          >
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </v-col>
-                </div>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-col>
               </div>
             </div>
           </div>
@@ -187,7 +185,7 @@ export default {
       headers: [
         { title: "No", key: "id", width: "300px" },
         { title: "제목", key: "title" },
-        { title: "작성자", key: "author", width: "600px" },
+        { title: "작성자", key: "author", width: "800px" },
         { title: "생성일자", key: "createdAt", width: "300px" },
       ],
       communityPosts: [],
@@ -265,7 +263,7 @@ export default {
 
   height: 3000px;
 }
-.author {
+.community-container {
   margin-top: 20px;
   padding: 50px 100px;
 }
