@@ -131,6 +131,34 @@
                 <div class="comment">{{ comment.comment }}</div>
               </div>
             </div>
+            <v-card-text>
+              <v-text-field
+                v-model="commentInput"
+                density="compact"
+                variant="solo"
+                label="댓글 달기..."
+                size="x-large"
+                append-inner-icon=""
+                single-line
+                hide-details
+                @keydown.enter="sendComment"
+              >
+                <v-icon
+                  icon="mdi-chevron-up-box"
+                  size="100"
+                  style="
+                    transform: scaleX(-1);
+                    position: absolute;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    cursor: pointer;
+                  "
+                  @click="sendComment"
+                ></v-icon>
+              </v-text-field>
+              <v-btn type="submit" hidden></v-btn>
+            </v-card-text>
           </v-card>
         </v-col>
 
@@ -794,6 +822,7 @@ export default {
             } else {
               // 모든 음원 재생이 완료되면 종료
               stopSounds();
+              drum.stop();
               console.log("모든 음원 재생 완료");
             }
           }

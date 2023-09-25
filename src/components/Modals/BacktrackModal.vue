@@ -651,6 +651,7 @@ export default {
             } else {
               // 모든 음원 재생이 완료되면 종료
               stopSounds();
+              drum.stop();
               console.log("모든 음원 재생 완료");
             }
           }
