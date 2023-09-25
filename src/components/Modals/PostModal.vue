@@ -426,7 +426,7 @@ export default {
         }
         const response = await this.$axios.post(
           "/api/comment",
-          { postId: postId, comment: comment },
+          { id: postId, option: "post", comment: comment },
           {
             withCredentials: true,
           }
@@ -460,7 +460,7 @@ export default {
         const postId = this.$store.state.currentPost.id;
 
         const response = await this.$axios.get(
-          `/api/comment/${postId}?page=${this.currentPage}`,
+          `/api/comment/post/${postId}?page=${this.currentPage}`,
           {
             withCredentials: true,
           }
