@@ -114,16 +114,20 @@
             </v-text-field>
             <v-btn type="submit" hidden></v-btn>
           </v-card-text>
-          <v-btn
-            id="closeButton"
-            type="button"
-            @click="closeModal"
-            border
-            class="text-none"
-            variant="text"
-          >
-            닫기1
-          </v-btn>
+          <div style="display: flex; justify-content: flex-end">
+            <!-- 왼쪽에 있는 내용 -->
+
+            <v-btn
+              id="closeButton"
+              type="button"
+              @click="closeModal"
+              border
+              class="text-none"
+              variant="text"
+            >
+              닫기
+            </v-btn>
+          </div>
         </div>
       </template>
     </card>
@@ -253,5 +257,11 @@ export default {
 }
 :deep(.v-label) {
   font-size: 70px;
+}
+#closeButton {
+  background-color: #fefefe;
+  font-size: 4rem;
+  height: 150px;
+  width: 300px;
 }
 </style>
