@@ -66,7 +66,7 @@ export const getPostCommentsByPostId = async (
   const endIndex = startIndex + pageSize;
   const comments = await postCommentRepository.getPostCommentsByPostId(postId);
   const totalItemsCount = comments.length;
-  const currentComments = comments.slice(0, 2);
+  const currentComments = comments.slice(-2);
   const paginatedComments = comments.slice(startIndex, endIndex);
   return { paginatedComments, totalItemsCount, currentComments };
 };
@@ -86,7 +86,7 @@ export const getCommunityCommentsByCommunityId = async (
       communityId
     );
   const totalItemsCount = comments.length;
-  const currentComments = comments.slice(0, 2);
+  const currentComments = comments.slice(-2);
   const paginatedComments = comments.slice(startIndex, endIndex);
   return { paginatedComments, totalItemsCount, currentComments };
 };
