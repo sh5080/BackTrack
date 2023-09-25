@@ -114,6 +114,13 @@ export const updateUserInfo = async (
       nickname,
       email
     );
+    if (!email.includes("@") || !email.includes(".")) {
+      throw new AppError(
+        CommonError.INVALID_INPUT,
+        "이메일 형식에 맞추어 입력해주세요.",
+        400
+      );
+    }
 
     if (nickname && email === undefined) {
       const sessionData = await getSessionFromRedis(userId);
