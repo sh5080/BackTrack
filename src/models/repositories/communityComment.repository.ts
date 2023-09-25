@@ -33,7 +33,7 @@ export const communityCommentRepository = AppDataSource.getRepository(
       )
 
         .leftJoinAndSelect("community_comment.nickname", "user")
-        .where("community_comment.commynityId = :commynityId", { communityId })
+        .where("community_comment.communityId = :communityId", { communityId })
         .getMany();
 
       const commentsWithNicknames = existingComments.map((comment) => {
