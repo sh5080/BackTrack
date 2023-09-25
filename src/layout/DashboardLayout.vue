@@ -13,8 +13,12 @@
         <i class="nc-icon nc-grid-45"></i>
         <p>게시판</p>
       </sidebar-link>
+      <sidebar-link to="/community">
+        <i class="nc-icon nc-bullet-list-67"></i>
+        <p>커뮤니티</p>
+      </sidebar-link>
 
-      <sidebar-link to="/table-list">
+      <sidebar-link to="/board">
         <i class="nc-icon nc-settings-gear-64"></i>
         <p>환경설정</p>
       </sidebar-link>
@@ -32,7 +36,7 @@
       </sidebar-link>
     </side-bar>
     <div class="content-wrapper">
-      <header-section style="z-index: 9"></header-section>
+      <header-section></header-section>
 
       <div class="main-panel">
         <chat> </chat>
