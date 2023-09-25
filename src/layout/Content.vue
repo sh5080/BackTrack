@@ -24,6 +24,7 @@ import Main from "../pages/Main.vue";
 import Backtrack from "../pages/BacktrackGenerator.vue";
 import Questions from "../pages/Questions.vue";
 import Board from "../pages/Board.vue";
+import Community from "../pages/Community.vue";
 import User from "../pages/UserProfile.vue";
 import Admin from "../pages/Admin.vue";
 export default {
@@ -42,6 +43,8 @@ export default {
           components.push(Backtrack);
         } else if (child.name === "Board") {
           components.push(Board);
+        } else if (child.name === "Community") {
+          components.push(Community);
         } else if (child.name === "Questions") {
           components.push(Questions);
         } else if (child.name === "User" && this.$store.state.isAuthenticated) {
@@ -114,9 +117,12 @@ export default {
 
 .content,
 .component-style {
-  height: 2500px;
-  max-height: 2500px;
-  overflow-y: auto;
+  height: 3200px;
+  max-height: 5500px;
+  width: 5500px;
+  /* margin-left: 200px; */
+  /* overflow-y: auto; */
+  /* overflow-x: hidden; */
   margin-top: 300px;
   border: 10px solid #000;
   /* padding: 100px 300px; */
