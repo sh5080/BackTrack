@@ -54,8 +54,6 @@ export const signup = async (
       );
     }
 
-    const existingUser = await authService.getUsername(username);
-
     const newUser = await authService.signupUser({
       username,
       nickname,
