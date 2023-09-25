@@ -238,7 +238,7 @@
         class="text-none"
         variant="text"
       >
-        닫기
+        닫기2
       </v-btn>
     </div>
 
@@ -361,6 +361,7 @@ export default {
     },
     closeAllModals() {
       this.$store.commit("toggleBacktrackSuccessModal", false);
+      this.stopMetronome();
     },
     mypage() {
       this.closeAllModals();
@@ -598,6 +599,7 @@ export default {
             } else {
               // 모든 음원 재생이 완료되면 종료
               stopSounds();
+              drum.stop();
               console.log("모든 음원 재생 완료");
             }
           }
