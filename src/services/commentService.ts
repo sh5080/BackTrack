@@ -1,25 +1,19 @@
-import { CommentRepository } from "../models/repositories/comment.repository";
+import { postCommentRepository } from "../models/repositories/postComment.repository";
+import { communityCommentRepository } from "../models/repositories/communityComment.repository";
 import { AppError, CommonError } from "../types/AppError";
 import { getOnePost } from "../services/postService";
+import { getOneCommunity } from "./communityService";
 
 /**
  * 댓글 생성
  */
 export const createComment = async (
+  option: string,
   userId: number,
-  postId: number,
+  id: number,
   comment: string
 ): Promise<void> => {
   try {
-    const post = await getOnePost(Number(postId));
-    if (!post) {
-      throw new AppError(
-        CommonError.RESOURCE_NOT_FOUND,
-        "유효하지 않은 게시글입니다.",
-        404
-      );
-    }
-
     const now = new Date();
     const krDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 
@@ -29,23 +23,68 @@ export const createComment = async (
 
     const createdAt = `${year}-${month}-${day}`;
 
-    await CommentRepository.createComment(userId, postId, comment, createdAt);
+    if (option === "post") {
+      const post = await getOnePost(Number(id));
+      if (!post) {
+        throw new AppError(
+          CommonError.RESOURCE_NOT_FOUND,
+          "유효하지 않은 게시글입니다.",
+          404
+        );
+      }
+      await postCommentRepository.createComment(userId, id, comment, createdAt);
+    } else {
+      const community = await getOneCommunity(Number(id));
+      if (!community) {
+        throw new AppError(
+          CommonError.RESOURCE_NOT_FOUND,
+          "유효하지 않은 게시글입니다.",
+          404
+        );
+      }
+      await communityCommentRepository.createComment(
+        userId,
+        id,
+        comment,
+        createdAt
+      );
+    }
   } catch (error) {
     console.error(error);
   }
 };
 
 /**
- * 게시물별 댓글 조회
+ * post 게시물별 댓글 조회
  */
-export const getCommentsByPostId = async (
+export const getPostCommentsByPostId = async (
   postId: number,
   page: number,
   pageSize: number
 ) => {
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const comments = await CommentRepository.getCommentsByPostId(postId);
+  const comments = await postCommentRepository.getPostCommentsByPostId(postId);
+  const totalItemsCount = comments.length;
+  const currentComments = comments.slice(0, 2);
+  const paginatedComments = comments.slice(startIndex, endIndex);
+  return { paginatedComments, totalItemsCount, currentComments };
+};
+
+/**
+ * community 게시물별 댓글 조회
+ */
+export const getCommunityCommentsByCommunityId = async (
+  communityId: number,
+  page: number,
+  pageSize: number
+) => {
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const comments =
+    await communityCommentRepository.getCommunityCommentsByCommunityId(
+      communityId
+    );
   const totalItemsCount = comments.length;
   const currentComments = comments.slice(0, 2);
   const paginatedComments = comments.slice(startIndex, endIndex);
@@ -60,7 +99,7 @@ export const getCommentsByPostId = async (
 //   id: number,
 //   userId: string
 // ) => {
-//   const commentsInfo = await CommentRepository.updateComment(newComment, id);
+//   const commentsInfo = await postCommentRepository.updateComment(newComment, id);
 
 //   if (!commentsInfo) {
 //     throw new AppError(
@@ -84,7 +123,7 @@ export const getCommentsByPostId = async (
 //  * 댓글 삭제
 //  */
 // export const deleteComment = async (id: number, userId: string) => {
-//   const commentsInfo = await CommentRepository.deleteComment(id);
+//   const commentsInfo = await postCommentRepository.deleteComment(id);
 //   if (!commentsInfo) {
 //     throw new AppError(
 //       CommonError.RESOURCE_NOT_FOUND,
@@ -99,5 +138,5 @@ export const getCommentsByPostId = async (
 //       403
 //     );
 //   }
-//   await CommentRepository.deleteComment(id);
+//   await postCommentRepository.deleteComment(id);
 // };

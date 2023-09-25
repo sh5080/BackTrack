@@ -21,6 +21,8 @@ export interface CustomRequest extends Request {
     postId: number;
     userId: number;
     comment: string;
+    option: string;
+    id: number;
   };
   query: {
     page: string;

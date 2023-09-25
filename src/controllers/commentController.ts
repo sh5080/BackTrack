@@ -11,21 +11,28 @@ export const createComment = async (
   next: NextFunction
 ) => {
   try {
-    const { postId, comment } = req.body;
+    const { id, comment, option } = req.body;
+    const userId = req.user?.userId;
 
-    const username = req.user?.username;
+    if (!option) {
+      throw new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "비정상적인 접근입니다.",
+        404
+      );
+    }
 
-    await commentService.createComment(username!, postId, comment);
+    await commentService.createComment(option, userId!, id, comment);
 
-    res.status(201).json({ postId, comment });
+    res.status(201).json({ id, comment });
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-/** 여행기에 대한 댓글 조회 */
-export const getCommentsByPostId = async (
+/** post에 대한 댓글 조회 */
+export const getPostCommentsByPostId = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
@@ -34,7 +41,7 @@ export const getCommentsByPostId = async (
     const { postId } = req.params;
     const { page } = req.query;
     const limit = 10;
-    const comments = await commentService.getCommentsByPostId(
+    const comments = await commentService.getPostCommentsByPostId(
       Number(postId),
       Number(page),
       Number(limit)
@@ -53,6 +60,34 @@ export const getCommentsByPostId = async (
   }
 };
 
+/** community에 대한 댓글 조회 */
+export const getCommunityCommentsByCommunityId = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { communityId } = req.params;
+    const { page } = req.query;
+    const limit = 10;
+    const comments = await commentService.getCommunityCommentsByCommunityId(
+      Number(communityId),
+      Number(page),
+      Number(limit)
+    );
+    if (comments === undefined) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "댓글을 찾을 수 없습니다.",
+        404
+      );
+    }
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 // /** 댓글 수정 */
 // export const updateComment = async (
 //   req: CustomRequest,

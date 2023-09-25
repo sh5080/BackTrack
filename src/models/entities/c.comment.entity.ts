@@ -10,13 +10,13 @@ import {
 } from "typeorm";
 import { AuthEntity } from "./auth.entity";
 @Entity({ name: "community_comment" })
-export class CommentEntity {
+export class communityCommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({ name: "user_id" })
   userId: number;
   @Column({ name: "community_id" })
-  communityId: string;
+  communityId: number;
 
   @Column()
   comment: string;
@@ -24,13 +24,13 @@ export class CommentEntity {
   @Column({ name: "created_at" })
   createdAt: string;
 
-  // @ManyToOne(() => AuthEntity, (user) => user.comment)
-  // @JoinColumn({ name: "username", referencedColumnName: "username" })
-  // nickname!: AuthEntity;
+  @ManyToOne(() => AuthEntity, (user) => user.communityComment)
+  @JoinColumn({ name: "user_id", referencedColumnName: "id" })
+  nickname!: AuthEntity;
 
   constructor(
     id: number,
-    communityId: string,
+    communityId: number,
     userId: number,
     comment: string,
     createdAt: string

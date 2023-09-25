@@ -8,12 +8,18 @@ const router = Router();
 router.post(
   "/",
   validateToken,
-  validateRequestBody(["postId", "comment"]),
+  validateRequestBody(["id", "comment", "option"]),
   commentController.createComment
 );
 
-/** [댓글] 댓글 조회 */
-router.get("/:postId", commentController.getCommentsByPostId);
+/** [댓글] post 댓글 조회 */
+router.get("/post/:postId", commentController.getPostCommentsByPostId);
+
+/** [댓글] post 댓글 조회 */
+router.get(
+  "/community/:communityId",
+  commentController.getCommunityCommentsByCommunityId
+);
 
 // /** [댓글] 댓글 수정 */
 // router.put(

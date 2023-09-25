@@ -10,12 +10,12 @@ import {
 } from "typeorm";
 import { AuthEntity } from "./auth.entity";
 @Entity({ name: "post_comment" })
-export class CommentEntity {
+export class postCommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({ name: "post_id" })
   postId: number;
-  @Column()
+  @Column({ name: "user_id" })
   userId: number;
 
   @Column()
@@ -30,8 +30,8 @@ export class CommentEntity {
   title: string | undefined;
   author: string | undefined;
 
-  @ManyToOne(() => AuthEntity, (user) => user.comment)
-  @JoinColumn({ name: "userId", referencedColumnName: "id" })
+  @ManyToOne(() => AuthEntity, (user) => user.postComment)
+  @JoinColumn({ name: "user_id", referencedColumnName: "id" })
   nickname!: AuthEntity;
 
   constructor(
