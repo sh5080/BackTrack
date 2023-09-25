@@ -9,6 +9,7 @@ import {
   ManyToOne,
 } from "typeorm";
 import { PostEntity } from "./post.entity";
+import { CommentEntity } from "./p.comment.entity";
 
 @Entity({ name: "user" })
 export class AuthEntity {
@@ -46,6 +47,9 @@ export class AuthEntity {
   //   inverseJoinColumn: { name: "post_id", referencedColumnName: "id" },
   // }
   likedUsers!: PostEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.nickname)
+  comment!: CommentEntity[];
 
   constructor(
     id: number,
