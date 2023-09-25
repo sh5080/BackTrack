@@ -23,6 +23,7 @@ export const store = createStore({
     chordData: null,
     bpm: 60,
     isAudioPlaying: false,
+    backtrackData: null,
     previewData: {
       description: "",
       imageURL: "",
@@ -34,8 +35,16 @@ export const store = createStore({
     showLikedPostModal: false,
     showMyPostModal: false,
     showPostModal: false,
+    showCommunityModal: false,
     currentPost: null,
     currentPostAuthor: null,
+    communityData: {
+      id: "",
+      author: "",
+      title: "",
+      description: "",
+      createdAt: "",
+    },
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -136,6 +145,12 @@ export const store = createStore({
     },
     toggleShowPostModal(state, value) {
       state.showPostModal = value;
+    },
+    toggleShowCommunityModal(state, value) {
+      state.showCommunityModal = value;
+    },
+    setCommunityData(state, value) {
+      state.communityData = value;
     },
   },
 
