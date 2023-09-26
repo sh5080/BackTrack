@@ -72,6 +72,7 @@ export const kakaoCallback = async (
 
       await saveSessionToRedis(
         existingInfo.id,
+        "KAKAO",
         existingInfo.nickname,
         token.refreshToken,
         maxAge
@@ -146,6 +147,7 @@ export const googleCallback = async (
 
       await saveSessionToRedis(
         existingInfo.id,
+        "GOOGLE",
         existingInfo.nickname,
         token.refreshToken,
         maxAge

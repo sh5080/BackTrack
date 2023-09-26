@@ -127,6 +127,7 @@ export const updateUserInfo = async (
       if (sessionData) {
         await saveSessionToRedis(
           userId,
+          "ORIGIN",
           nickname,
           sessionData.refreshToken,
           3600000

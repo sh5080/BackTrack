@@ -65,7 +65,7 @@ export const OauthLoginUser = async (
   }
 
   const accessToken: string = jwt.sign(
-    { username: user.username, role: user.role },
+    { id: user.id, role: user.role },
     ACCESS_TOKEN_SECRET,
     {
       expiresIn: ACCESS_TOKEN_EXPIRES_IN,
@@ -73,7 +73,7 @@ export const OauthLoginUser = async (
   );
 
   const refreshToken: string = jwt.sign(
-    { username: user.username, role: user.role },
+    { id: user.id, role: user.role },
     REFRESH_TOKEN_SECRET,
     {
       expiresIn: REFRESH_TOKEN_EXPIRES_IN,

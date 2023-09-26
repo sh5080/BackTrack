@@ -150,7 +150,13 @@ export const login = async (
 
     const userData = await authService.getUser(user.id);
     const maxAge = 3600000; //1시간
-    await saveSessionToRedis(userData!.id, userData!.nickname, refresh, maxAge);
+    await saveSessionToRedis(
+      userData!.id,
+      "ORIGIN",
+      userData!.nickname,
+      refresh,
+      maxAge
+    );
 
     res
       .cookie("token", token, {
