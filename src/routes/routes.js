@@ -4,7 +4,7 @@ import DashboardLayout from "../layout/DashboardLayout.vue";
 import NotFound from "../pages/NotFoundPage.vue";
 import Main from "src/pages/Main.vue";
 import UserProfile from "src/pages/UserProfile.vue";
-import TableList from "src/pages/TableList.vue";
+import Community from "src/pages/Community.vue";
 import Admin from "src/pages/Admin.vue";
 import Board from "src/pages/Board.vue";
 import Icons from "src/pages/Icons.vue";
@@ -14,7 +14,7 @@ import { store } from "../store/index";
 export const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "Main",
     component: DashboardLayout,
     children: [
       {
@@ -39,9 +39,9 @@ export const routes = [
       },
 
       {
-        path: "table-list",
-        name: "Table List",
-        component: TableList,
+        path: "community",
+        name: "Community",
+        component: Community,
       },
 
       {
@@ -68,13 +68,13 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
   linkActiveClass: "nav-item active",
-  scrollBehavior: (to) => {
-    // if (to.hash) {
-    //   return { el: to.hash };
-    // } else {
-    //   return { top: 0, left: 0 };
-    // }
-  },
+  // scrollBehavior: (to) => {
+  //   if (to.hash) {
+  //     return { el: to.hash };
+  //   } else {
+  //     return { x: 0, y: 0 };
+  //   }
+  // },
 });
 
 router.beforeEach((to, from, next) => {
@@ -115,20 +115,23 @@ axios.interceptors.response.use(
           errorMessage.includes("새 비밀번호와 비밀번호 확인이") ||
           errorMessage.includes("제목은 20자 이내") ||
           errorMessage.includes("닉네임") ||
-          errorMessage.includes("아이디")
+          errorMessage.includes("아이디") ||
+          errorMessage.includes("백킹트랙") ||
+          errorMessage.includes("게시글")
         ) {
           alerted = false;
         } else if (errorMessage.includes("유효하지 않은")) {
           store.dispatch("resetState");
-
           store.dispatch("loginState");
           if (!alerted) {
             alert("세션이 만료되었습니다. 다시 로그인해주세요.");
             alerted = true;
           }
+        } else if (errorMessage.includes("유효한 토큰을 제공")) {
+          store.dispatch("resetState");
+          store.dispatch("loginState");
         } else {
           store.dispatch("resetState");
-
           store.dispatch("loginState");
           if (!alerted) {
             alert("비정상적인 접근입니다.");
