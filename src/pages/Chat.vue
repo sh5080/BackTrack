@@ -210,18 +210,18 @@ export default {
   color: #292929;
   margin-top: 20px;
 }
-::v-deep .v-chip__close {
+:deep(.v-chip__close) {
   font-size: 50px;
 }
-::v-deep .v-list-item {
+:deep(.v-list-item) {
   font-size: 70px;
 }
 
-::v-deep .v-list-item-title {
+:deep(.v-list-item-title) {
   font-size: 50px;
   line-height: 50px;
 }
-::v-deep .v-chip {
+:deep(.v-chip) {
   padding: 0px 60px;
   height: 100px;
   max-width: 150%;
