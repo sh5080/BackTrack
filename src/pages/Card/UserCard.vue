@@ -643,18 +643,10 @@ export default {
 };
 </script>
 <style scoped>
-.fullscreen-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  cursor: pointer;
-  font-size: 70px;
-}
-
 .card-backtrack {
   width: 2750px;
   flex-direction: row;
-  height: 2500px;
+  height: 3100px;
   overflow: hidden;
   min-width: 2750px;
   min-height: 2500px;
@@ -662,6 +654,7 @@ export default {
 .card-user {
   /* overflow: hidden; */
   width: 2750px;
+  height: 3100px;
 }
 .error-shake-animation {
   animation: shake 0.5s;
