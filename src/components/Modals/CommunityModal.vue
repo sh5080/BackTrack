@@ -25,6 +25,7 @@
         <div class="custom-footer">
           <div class="comment-sheet">
             최근 댓글
+
             <v-card width="2800">
               <div class="description-container">
                 <v-dialog
@@ -33,10 +34,6 @@
                   style="margin-right: 1850px"
                   transition="dialog-bottom-transition"
                 >
-                  <!-- </div> -->
-                  <!--  -->
-
-                  <!--  -->
                   <v-card class="open-comment">
                     댓글
                     <div
@@ -63,18 +60,11 @@
                         class="custom-page"
                       ></v-pagination>
                     </div>
-
-                    <!-- </div> -->
                   </v-card>
                 </v-dialog>
               </div>
-              <!-- <div class="description-text">
-                <div class="author">{{ $store.state.currentPostAuthor }}</div>
-                <div class="description">
-                  {{ $store.state.currentPost.description }}
-                </div>
-              </div> -->
-              <div class="current-comment">
+
+              <div v-if="recentComments.length > 0" class="current-comment">
                 <div
                   v-for="comment in recentComments"
                   :key="comment.id"
@@ -115,8 +105,6 @@
             <v-btn type="submit" hidden></v-btn>
           </v-card-text>
           <div style="display: flex; justify-content: flex-end">
-            <!-- 왼쪽에 있는 내용 -->
-
             <v-btn
               id="closeButton"
               type="button"
@@ -141,6 +129,11 @@ import * as Toast from "../../plugins/toast";
 export default {
   components: {
     Card,
+  },
+  computed: {
+    isLogged() {
+      return !!this.$store.state.loggedInNickname;
+    },
   },
   created() {
     this.fetchRecentComments();
@@ -177,6 +170,34 @@ export default {
         this.totalItems = response.data.totalItemsCount;
       } catch (error) {
         console.error("Error fetching comments:", error);
+      }
+    },
+    async sendComment() {
+      const comment = this.commentInput;
+      const communityId = this.$store.state.communityData.id;
+
+      try {
+        if (!this.isLogged) {
+          Toast.customError("로그인 후 댓글을 작성할 수 있습니다.");
+
+          this.openLoginModal();
+          return;
+        }
+        const response = await this.$axios.post(
+          "/api/comment",
+          { id: communityId, option: "community", comment: comment },
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 201) {
+          this.$router.go();
+        }
+        console.log("댓글이 서버로 전송되었습니다.", response.data);
+        // 성공적으로 전송된 후의 작업을 수행하세요.
+      } catch (error) {
+        console.error("댓글을 전송하는 중 오류가 발생했습니다:", error);
+        // 오류 발생 시 처리할 작업을 수행하세요.
       }
     },
   },
