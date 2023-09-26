@@ -15,32 +15,6 @@
             게시판 (백킹트랙 공유)
           </h4>
         </v-col>
-        <v-col cols="6" class="d-flex justify-end">
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                style="font-size: 70px; height: 150px; margin-right: 200px"
-              >
-                {{ selectedSortText }}
-                <v-icon>mdi-chevron-down</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="(item, index) in sortOptions"
-                style="height: 150px"
-                :key="index"
-                @click="sortedPosts(item.value)"
-              >
-                <v-list-item-title
-                  style="font-size: 70px; line-height: 5.5rem"
-                  >{{ item.text }}</v-list-item-title
-                >
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-col>
       </v-row>
 
       <v-row dense>
@@ -104,8 +78,20 @@
 
           <div class="text-center pt-2"></div>
         </v-col>
+        <v-col
+          v-for="dummy in (8 - (posts.length % 8)) % 8"
+          :key="dummy"
+          cols="12"
+          sm="6"
+          md="4"
+          lg="3"
+          style="padding: 100px"
+        >
+          <div style="height: 1106px; width: 100%"></div>
+        </v-col>
       </v-row>
     </v-container>
+
     <div class="text-center pt-2">
       <v-pagination
         v-model="currentPage"
@@ -114,6 +100,112 @@
         size="x-large"
         class="page"
       ></v-pagination>
+    </div>
+    <!-- <v-col cols="6" class="">
+      <v-menu offset-y>
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            style="font-size: 70px; height: 150px; margin-right: 200px"
+          >
+            {{ selectedSortText }}
+            <v-icon>mdi-chevron-down</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in sortOptions"
+            style="height: 150px"
+            :key="index"
+            @click="sortedPosts(item.value)"
+          >
+            <v-list-item-title style="font-size: 70px; line-height: 5.5rem">{{
+              item.text
+            }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-col> -->
+    <div class="page-container">
+      <v-col cols="1">
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              style="
+                font-size: 70px;
+                height: 150px;
+
+                width: 350px;
+              "
+            >
+              {{ selectedSortSearch }}
+              <v-icon>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in searchOptions"
+              style="height: 150px"
+              :key="index"
+              @click="sortedSearch(item.value)"
+            >
+              <v-list-item-title style="font-size: 70px; line-height: 5.5rem">{{
+                item.text
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu></v-col
+      >
+      <v-col cols="3">
+        <v-card
+          class="mx-auto text-right"
+          color="grey-lighten-3"
+          max-width="1200"
+        >
+          <v-card-text>
+            <v-text-field
+              v-model="searchValue"
+              @keyup.enter="fetchPosts(searchValue, selectedSearch)"
+              density="compact"
+              variant="solo"
+              append-inner-icon="mdi-magnify"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="6" class="d-flex">
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              style="
+                font-size: 70px;
+                height: 150px;
+
+                width: 400px;
+              "
+            >
+              {{ selectedSortPost }}
+              <v-icon>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in sortOptions"
+              style="height: 150px"
+              :key="index"
+              @click="sortedPosts(item.value)"
+            >
+              <v-list-item-title style="font-size: 70px; line-height: 5.5rem">{{
+                item.text
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
     </div>
   </v-card>
   <v-dialog v-model="$store.state.showPostModal">
@@ -139,20 +231,33 @@ export default {
         { text: "좋아요 순", value: "likes" },
       ],
       selectedSort: "latest",
+      searchOptions: [
+        { text: "제목", value: "title" },
+        { text: "작성자", value: "author" },
+        { text: "내용", value: "description" },
+      ],
+      selectedSearch: "title",
+      searchValue: "",
     };
   },
   components: {
     PostModal,
   },
   computed: {
-    pageCount() {
-      return Math.ceil(this.totalItems / this.itemsPerPage);
-    },
-    selectedSortText() {
+    selectedSortPost() {
       const selectedOption = this.sortOptions.find(
         (option) => option.value === this.selectedSort
       );
       return selectedOption ? selectedOption.text : "";
+    },
+    selectedSortSearch() {
+      const selectedOption = this.searchOptions.find(
+        (option) => option.value === this.selectedSearch
+      );
+      return selectedOption ? selectedOption.text : "";
+    },
+    pageCount() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
     },
   },
   created() {
@@ -163,9 +268,13 @@ export default {
       this.selectedSort = value;
       this.fetchPosts();
     },
+    sortedSearch(value) {
+      this.selectedSearch = value;
+      this.fetchPosts(value);
+    },
     onPageChange(newPage) {
       this.currentPage = newPage;
-      this.fetchPosts();
+      this.fetchPosts(this.searchValue, this.selectedSearch);
     },
     isLiked(postId) {
       const likedPosts = this.$store.state.likedPosts || [];
@@ -194,7 +303,6 @@ export default {
         const backtrackData = backtrackResponse.data.backtrackData;
         if (backtrackData) {
           this.$store.commit("setChordData", backtrackData.backtrack);
-          this.$store.commit("setBacktrackData", backtrackData);
         }
 
         const result = response.data.postData;
@@ -207,16 +315,22 @@ export default {
       }
     },
     //게시판 post
-    async fetchPosts() {
+    async fetchPosts(value, option) {
       try {
         let apiUrl = `/api/post?page=${this.currentPage}`;
 
         if (this.selectedSort === "oldest") {
-          apiUrl += "&sortBy=oldest"; // 오래된순 정렬
+          apiUrl += "&sortBy=oldest";
         } else if (this.selectedSort === "likes") {
-          apiUrl += "&sortBy=likes"; // 좋아요 순 정렬
+          apiUrl += "&sortBy=likes";
         } else {
-          apiUrl += "&sortBy=latest"; // 기본값: 최신순 정렬
+          apiUrl += "&sortBy=latest";
+        }
+        if (option) {
+          apiUrl += `&option=${option}`;
+        }
+        if (value) {
+          apiUrl += `&searchBy=${value}`;
         }
 
         const response = await this.$axios.get(apiUrl, {
@@ -323,5 +437,16 @@ export default {
   font-size: 50px;
   width: 100px;
   height: 100px;
+}
+:deep(.v-field--center-affix .v-field__append-inner) {
+  font-size: 50px;
+}
+:deep(.v-text-field .v-field--single-line input) {
+  height: 150px;
+  font-size: 70px;
+}
+.page-container {
+  display: flex;
+  padding: 50px;
 }
 </style>
