@@ -575,7 +575,6 @@ export default {
             } else {
               const playChord = chordLists[chord];
               if (playChord) {
-                // self.isSoundPlaying = true;
                 playSound(playChord);
 
                 Tone.Transport.scheduleOnce(() => {

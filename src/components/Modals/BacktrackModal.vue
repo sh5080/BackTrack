@@ -695,22 +695,36 @@ export default {
         // 정지 버튼 클릭 이벤트 처리
         document.getElementById("stopButton").addEventListener("click", () => {
           stopSounds();
-          drum.stop();
-
+          this.drum.stop();
+          // metronome.clear();
+          Tone.Transport.cancel();
+          this.tableIndex = 0;
+          this.measureIndex = 0;
+          this.chordIndex = 0;
+          this.isSoundPlaying = false;
           this.isDrum = false;
           this.transport.stop();
         });
         document.getElementById("closeButton").addEventListener("click", () => {
-          drum.stop();
-
+          stopSounds();
+          this.drum.stop();
+          // metronome.clear();
+          Tone.Transport.cancel();
+          this.tableIndex = 0;
+          this.measureIndex = 0;
+          this.chordIndex = 0;
+          this.isSoundPlaying = false;
           this.isDrum = false;
           this.transport.stop();
         });
         // 악기 시작
-        this.transport.start();
+        Tone.Transport.start();
+
+        // this.isSoundPlaying = true;
+      } else {
+        Tone.Transport.stop();
       }
     },
-
     getChordInMeasure(chordSegment) {
       const classes = [];
 
