@@ -15,12 +15,12 @@
       <v-card class="mx-auto" max-width="1000">
         <v-list>
           <v-list-item
-            v-for="(title, index) in myPostTitles"
+            v-for="(item, index) in myPostData"
             :key="index"
-            @click="getMyPost"
+            @click="openMyPostModal(item)"
           >
             <v-list-item-title>
-              {{ title }}
+              {{ item.backtrack.title }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -44,26 +44,35 @@
     >
     </v-pagination>
   </v-dialog>
+  <v-dialog v-model="$store.state.showPostModal">
+    <PostModal />
+  </v-dialog>
 </template>
 
 <script>
+import PostModal from "./PostModal.vue";
 export default {
+  components: { PostModal },
   data() {
     return {
       myPostTitles: [],
       currentPage: 1,
       totalItems: 0,
       itemsPerPage: 10,
+      myPostData: null,
     };
   },
   methods: {
     closeAllModals() {
       this.$store.commit("toggleShowMyPostModal", false);
     },
-    async getMyPost() {
+    async openMyPostModal(postData) {
       try {
-        const response = await this.$axios.get(`/api/mypage/userInfo`);
-        const myPost = response.data;
+        this.$store.commit("setChordData", postData.backtrack.backtrack);
+        this.$store.commit("setPostData", postData);
+        this.$store.commit("setPostAuthor", this.$store.state.loggedInNickname);
+        this.$store.commit("toggleShowMyPostModal", false);
+        this.$store.commit("toggleShowPostModal", true);
       } catch (error) {
         console.error("Error fetching liked post:", error);
       }
@@ -80,7 +89,7 @@ export default {
         this.myPostTitles = response.data.paginatedMyPosts.map(
           (item) => item.backtrack.title
         );
-
+        this.myPostData = response.data.paginatedMyPosts;
         this.totalItems = response.data.totalItems;
       } catch (error) {
         console.error("Error fetching liked post data:", error);
