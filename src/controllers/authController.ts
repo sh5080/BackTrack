@@ -179,7 +179,7 @@ export const getSessionData = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       next();
       return;
