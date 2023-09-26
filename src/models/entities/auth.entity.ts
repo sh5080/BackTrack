@@ -9,8 +9,8 @@ import {
   ManyToOne,
 } from "typeorm";
 import { PostEntity } from "./post.entity";
-import { CommentEntity } from "./p.comment.entity";
-
+import { postCommentEntity } from "./p.comment.entity";
+import { communityCommentEntity } from "./c.comment.entity";
 @Entity({ name: "user" })
 export class AuthEntity {
   @PrimaryGeneratedColumn()
@@ -48,8 +48,11 @@ export class AuthEntity {
   // }
   likedUsers!: PostEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.nickname)
-  comment!: CommentEntity[];
+  @OneToMany(() => postCommentEntity, (comment) => comment.nickname)
+  postComment!: postCommentEntity[];
+
+  @OneToMany(() => communityCommentEntity, (comment) => comment.nickname)
+  communityComment!: communityCommentEntity[];
 
   constructor(
     id: number,
