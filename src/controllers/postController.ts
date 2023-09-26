@@ -83,12 +83,22 @@ export const getPost = async (
         searchBy
       );
     } else if (sortBy === "likes") {
-      postData = await postService.getPostsByLikes(
-        parseInt(page),
-        8,
-        option,
-        searchBy
-      );
+      if (option === "rank") {
+        postData = await postService.getPostsByLikes(
+          parseInt(page),
+
+          10,
+          option,
+          searchBy
+        );
+      } else {
+        postData = await postService.getPostsByLikes(
+          parseInt(page),
+          8,
+          option,
+          searchBy
+        );
+      }
     } else {
       postData = await postService.getLatestPosts(
         parseInt(page),
