@@ -138,12 +138,12 @@ export default {
 .button-container {
   display: flex;
   margin-top: 10px;
-  color: #fff;
+  color: #0c1860;
+  font-weight: 500;
   padding: 10px 40px;
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  background: linear-gradient(to top, #00b869, #03c75a);
 }
 .logo-button {
   display: inline-block;
