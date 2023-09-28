@@ -287,12 +287,19 @@ body > .navbar-collapse {
     );
   }
 
+  // &[data-color="azure"]:after {
+  //   background: linear-gradient(
+  //     to bottom,
+  //     #abcdef 0%,
+
+  //     #789abc 100%
+  //   );
+  // }
   &[data-color="azure"]:after {
     background: linear-gradient(
       to bottom,
-      #abcdef 0%,
-      // 예시 색상
-      #789abc 100% // 예시 색상
+      rgba(188, 217, 247, 0.831) 0%,
+      rgba(120, 155, 188, 0.5) 100%
     );
   }
 
