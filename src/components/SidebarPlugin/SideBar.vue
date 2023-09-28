@@ -5,7 +5,11 @@
     :style="sidebarStyle"
     :data-color="backgroundColor"
   >
-    <div class="sidebar-wrapper" :data-color="backgroundColor">
+    <div
+      class="sidebar-wrapper"
+      :data-color="backgroundColor"
+      :style="sidebarStyle"
+    >
       <div class="logo" @click="goMain" v-show="sidebarExpanded">
         <a class="simple-text logo__container">
           <div class="logo-img"></div>
@@ -85,6 +89,7 @@ export default {
     sidebarStyle() {
       return {
         width: this.sidebarExpanded ? "1000px" : "280px",
+        height: "2000px",
         borderRadius: "100px",
         boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
         textShadow: " 4px 4px 4px rgba(0, 0, 0, 0.5)",
