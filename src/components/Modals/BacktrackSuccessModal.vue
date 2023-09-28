@@ -186,20 +186,6 @@
       </v-row>
 
       <div class="button-container">
-        <!-- <v-btn
-          id="playButton"
-          @click="playAudio"
-          class="me-5 text-none"
-          color="#4f545c"
-          variant="flat"
-          size="x-large"
-        >
-          악보 재생
-        </v-btn>
-        <v-btn id="stopButton" border class="text-none" variant="text">
-          악보 정지
-        </v-btn> -->
-
         <v-row justify="center">
           <v-dialog v-model="dialog" persistent width="1024">
             <template v-slot:activator="{ props }">
