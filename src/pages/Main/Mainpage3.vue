@@ -1,6 +1,7 @@
 <template>
   <div class="table-container">
     <v-data-table
+      :headers="headers"
       :items="posts"
       :items-per-page="10"
       class="mx-auto table"
@@ -9,18 +10,25 @@
         margin-top: 100px;
         /* max-height: 1775px; */
         height: 1775px;
-        width: 2300px;
-        overflow: hidden;
+        width: 2500px;
       "
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title style="font-size: 5rem">실시간 차트</v-toolbar-title>
+          <v-toolbar-title style="font-size: 5rem">실시간 랭킹</v-toolbar-title>
         </v-toolbar>
       </template>
+
       <template v-slot:item="item">
         <tr>
           <td>{{ item.index + 1 }}</td>
+          <td>
+            {{
+              item.item.selectable.likedUsers
+                ? item.item.selectable.likedUsers.length
+                : ""
+            }}
+          </td>
           <td>{{ item.item.selectable.title }}</td>
           <td>{{ item.item.selectable.author }}</td>
         </tr>
@@ -35,9 +43,10 @@ export default {
   data() {
     return {
       headers: [
-        { text: "등수", value: "rank" },
-        { text: "제목", value: "title" },
-        { text: "작성자", value: "author" },
+        { title: "등수", key: "index+1", sortable: false },
+        { title: "누적 좋아요", key: "likedUsers.length", sortable: false },
+        { title: "제목", key: "title", sortable: false },
+        { title: "작성자", key: "author", sortable: false },
       ],
       posts: [],
       currentPage: 1,
@@ -74,12 +83,23 @@ export default {
 :deep(.v-toolbar-title__placeholder) {
   overflow: visible;
 }
-.table tr:hover {
-  transform: scale(1.1);
-  transition: transform 0.3s;
+.table {
+  position: relative;
+  text-align: center;
+  z-index: 100;
 }
+:deep(.v-data-table-header__content) {
+  justify-content: center;
+}
+.table tr:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s;
+  z-index: 1 !important;
+  max-width: none;
+}
+
 :deep(.v-table__wrapper) {
-  /* overflow: hidden; */
+  overflow: hidden;
   width: 2000px;
   margin: 0 auto;
 }
