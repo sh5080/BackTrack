@@ -63,7 +63,7 @@
           </div>
         </div>
       </div>
-      <div class="option-container">
+      <v-row class="option-container">
         <v-col cols="6">
           <v-card class="metronome-container" max-width="1500">
             <v-toolbar
@@ -72,7 +72,7 @@
             >
               <v-btn
                 style="
-                  width: 1500px;
+                  width: 1420px;
                   height: 150px;
                   margin-top: 80px;
                   right: 10px;
@@ -154,19 +154,36 @@
             </v-card-text>
           </v-card>
         </v-col>
+
         <v-col cols="6">
-          <div class="drum-container">
-            <v-switch
-              v-model="isDrumOn"
-              label="drum"
-              color="primary"
-              value="primary"
-              hide-details
-              @click="toggleDrum"
-            ></v-switch>
-          </div>
+          <v-card>
+            <div class="play-container d-flex justify-between align-center">
+              <v-switch
+                v-model="isDrumOn"
+                label="drum"
+                color="primary"
+                value="primary"
+                hide-details
+                @click="toggleDrum"
+              ></v-switch>
+
+              <v-btn
+                id="playButton"
+                @click="playAudio"
+                class="me-5 text-none"
+                color=""
+                variant="text"
+                size="x-large"
+              >
+                <v-icon> mdi-play </v-icon>
+              </v-btn>
+              <v-btn id="stopButton" class="text-none" variant="text">
+                <v-icon> mdi-stop </v-icon>
+              </v-btn>
+            </div>
+          </v-card>
         </v-col>
-      </div>
+      </v-row>
 
       <div class="button-container">
         <!-- <v-btn
@@ -182,20 +199,6 @@
         <v-btn id="stopButton" border class="text-none" variant="text">
           악보 정지
         </v-btn> -->
-
-        <v-btn
-          id="playButton"
-          @click="playAudio"
-          class="me-5 text-none"
-          color=""
-          variant="text"
-          size="x-large"
-        >
-          <v-icon> mdi-play </v-icon>
-        </v-btn>
-        <v-btn id="stopButton" class="text-none" variant="text">
-          <v-icon> mdi-stop </v-icon>
-        </v-btn>
 
         <v-row justify="center">
           <v-dialog v-model="dialog" persistent width="1024">
@@ -962,22 +965,22 @@ export default {
 }
 #playButton,
 #stopButton {
-  position: absolute;
-  right: 100px;
-  bottom: 900px;
   width: 100px;
   height: 100px;
   font-size: 6em;
 
   background-color: none;
 }
-
-#saveButton {
-  right: 600px;
-}
 #playButton {
   right: 200px;
 }
+#stopButton {
+  right: 100px;
+}
+#saveButton {
+  right: 600px;
+}
+
 #saveButton,
 #closeButton {
   bottom: 200px;
@@ -1197,7 +1200,7 @@ export default {
   position: relative;
   top: 1340px;
 }
-.drum-container {
-  font-size: 5rem;
+.play-container {
+  padding: 50px;
 }
 </style>

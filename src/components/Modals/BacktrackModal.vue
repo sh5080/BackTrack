@@ -56,129 +56,126 @@
           </div>
         </div>
       </div>
-      <v-card max-width="1500">
-        <v-toolbar
-          @click="toggleCard"
-          style="height: 150px; width: 1500px; cursor: pointer"
-        >
-          <v-btn
-            style="width: 1500px; height: 150px; margin-top: 80px; right: 10px"
-          >
-            <span class="metronome-title">메트로놈</span>
-          </v-btn>
-        </v-toolbar>
-
-        <v-card-text>
-          <v-row
-            :style="{ height: cardOpen ? '300px' : '0px' }"
-            class="mb-4"
-            justify="space-between"
-          >
-            <v-col class="text-left" v-show="cardOpen">
-              <span class="bpm font-weight-light" v-text="bpm"></span>
-              <span class="bpm font-weight-light me-1">BPM</span>
-              <v-fade-transition>
-                <v-avatar
-                  v-if="isPlaying"
-                  :color="color"
-                  :style="{
-                    animationDuration: animationDuration,
-                  }"
-                  class="mb-1 v-avatar--metronome"
-                  size="12"
-                ></v-avatar>
-              </v-fade-transition>
-            </v-col>
-            <v-col v-show="cardOpen" class="text-right">
+      <v-row>
+        <v-col cols="6">
+          <v-card max-width="1500">
+            <v-toolbar
+              @click="toggleCard"
+              style="height: 150px; width: 1500px; cursor: pointer"
+            >
               <v-btn
+                style="
+                  width: 1430px;
+                  height: 150px;
+                  margin-top: 80px;
+                  right: 10px;
+                "
+              >
+                <span class="metronome-title">메트로놈</span>
+              </v-btn>
+            </v-toolbar>
+
+            <v-card-text>
+              <v-row
+                :style="{ height: cardOpen ? '300px' : '0px' }"
+                class="mb-4"
+                justify="space-between"
+              >
+                <v-col class="text-left" v-show="cardOpen">
+                  <span class="bpm font-weight-light" v-text="bpm"></span>
+                  <span class="bpm font-weight-light me-1">BPM</span>
+                  <v-fade-transition>
+                    <v-avatar
+                      v-if="isPlaying"
+                      :color="color"
+                      :style="{
+                        animationDuration: animationDuration,
+                      }"
+                      class="mb-1 v-avatar--metronome"
+                      size="12"
+                    ></v-avatar>
+                  </v-fade-transition>
+                </v-col>
+                <v-col v-show="cardOpen" class="text-right">
+                  <v-btn
+                    :color="color"
+                    theme="dark"
+                    icon
+                    elevation="0"
+                    size="x-large"
+                  >
+                    <v-icon
+                      id="metronomeButton"
+                      size="x-large"
+                      @click="toggle"
+                      :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+                    ></v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+              <v-slider
+                v-show="cardOpen"
+                v-model="bpm"
                 :color="color"
-                theme="dark"
-                icon
-                elevation="0"
+                track-color="grey"
+                min="40"
+                max="218"
+                :step="1"
+                @click="updateBpm"
+              >
+                <template v-slot:prepend>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    icon="mdi-minus"
+                    :color="color"
+                    @click="decrement"
+                  ></v-btn>
+                </template>
+
+                <template v-slot:append>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    icon="mdi-plus"
+                    :color="color"
+                    @click="increment"
+                  ></v-btn>
+                </template>
+              </v-slider>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="6">
+          <v-card>
+            <div class="play-container d-flex justify-between align-center">
+              <v-switch
+                v-model="isDrumOn"
+                label="drum"
+                color="primary"
+                value="primary"
+                hide-details
+                @click="toggleDrum"
+              ></v-switch>
+              <v-btn
+                id="playButton"
+                @click="playAudio"
+                class="me-5 text-none"
+                color=""
+                variant="text"
                 size="x-large"
               >
-                <v-icon
-                  id="metronomeButton"
-                  size="x-large"
-                  @click="toggle"
-                  :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
-                ></v-icon>
+                <v-icon> mdi-play </v-icon>
               </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-slider
-            v-show="cardOpen"
-            v-model="bpm"
-            :color="color"
-            track-color="grey"
-            min="40"
-            max="218"
-            :step="1"
-            @click="updateBpm"
-          >
-            <template v-slot:prepend>
-              <v-btn
-                size="small"
-                variant="text"
-                icon="mdi-minus"
-                :color="color"
-                @click="decrement"
-              ></v-btn>
-            </template>
-
-            <template v-slot:append>
-              <v-btn
-                size="small"
-                variant="text"
-                icon="mdi-plus"
-                :color="color"
-                @click="increment"
-              ></v-btn>
-            </template>
-          </v-slider>
-        </v-card-text>
-      </v-card>
-
-      <div class="button-container">
-        <!-- <v-btn
-          id="playButton"
-          @click="playAudio"
-          class="me-5 text-none"
-          color="#4f545c"
-          variant="flat"
-          size="x-large"
-        >
-          악보 재생
-        </v-btn>
-        <v-btn id="stopButton" border class="text-none" variant="text">
-          악보 정지
-        </v-btn> -->
-        <v-btn
-          id="playButton"
-          @click="playAudio"
-          class="me-5 text-none"
-          color=""
-          variant="text"
-          size="x-large"
-        >
-          <v-icon> mdi-play </v-icon>
-        </v-btn>
-        <v-btn id="stopButton" class="text-none" variant="text">
-          <v-icon> mdi-stop </v-icon>
-        </v-btn>
-
-        <div class="drum-container">
-          <v-switch
-            v-model="isDrumOn"
-            label="drum"
-            color="primary"
-            value="primary"
-            hide-details
-            @click="toggleDrum"
-          ></v-switch>
-        </div>
-
+              <v-btn id="stopButton" class="text-none" variant="text">
+                <v-icon> mdi-stop </v-icon>
+              </v-btn>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+      <div class="post-container">
         <v-row justify="center">
           <v-dialog v-model="dialog" persistent width="1024">
             <template v-slot:activator="{ props }">
@@ -265,6 +262,7 @@
           </v-dialog>
         </v-row>
       </div>
+
       <v-btn
         id="deleteButton"
         type="button"
@@ -1051,8 +1049,6 @@ export default {
 
 #playButton,
 #stopButton {
-  position: absolute;
-  bottom: 800px;
   width: 100px;
   height: 100px;
   font-size: 6em;
@@ -1063,15 +1059,15 @@ export default {
   right: 200px;
 }
 #stopButton {
-  right: 200px;
+  right: 100px;
 }
+.play-container {
+  padding: 50px;
+}
+
 #uploadButton {
   right: 1000px;
   bottom: 200px;
-}
-
-#playButton {
-  right: 490px;
 }
 
 #closeButton {
@@ -1103,7 +1099,7 @@ export default {
 .text-end {
   margin-right: 10px !important;
 }
-.button-container {
+.post-container {
   margin-bottom: 100px;
 }
 
