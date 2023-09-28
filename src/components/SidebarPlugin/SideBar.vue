@@ -1,15 +1,14 @@
 <template>
-  <div class="sidebar" :style="sidebarStyle" :data-color="backgroundColor">
-    <div
-      class="sidebar-wrapper"
-      :style="sidebarStyle"
-      :data-color="backgroundColor"
-    >
+  <div
+    id="sidebar"
+    class="sidebar"
+    :style="sidebarStyle"
+    :data-color="backgroundColor"
+  >
+    <div class="sidebar-wrapper" :data-color="backgroundColor">
       <div class="logo" @click="goMain" v-show="sidebarExpanded">
         <a class="simple-text logo__container">
-          <div class="logo-img">
-            <img src="img/vue-logo.png" alt="" />
-          </div>
+          <div class="logo-img"></div>
           {{ title }}
         </a>
       </div>
@@ -17,14 +16,15 @@
       <slot name="content"></slot>
       <ul
         class="nav nav-main__links"
-        :style="{ width: sidebarExpanded ? '1000px' : '280px' }"
+        :style="{
+          width: sidebarExpanded ? '1000px' : '280px',
+        }"
       >
         <slot>
           <sidebar-link
             v-for="(link, index) in sidebarLinks"
             :key="link.name + index"
             :to="link.path"
-            @click="closeNavbar"
             :link="link"
             :sidebarExpanded="sidebarExpanded"
           >
@@ -33,15 +33,7 @@
         </slot>
       </ul>
     </div>
-    <div class="toggle-button" @click="toggleSidebar">
-      <i
-        :class="
-          sidebarExpanded
-            ? 'fa fa-chevron-left icon-large'
-            : 'fa fa-chevron-right icon-large'
-        "
-      ></i>
-    </div>
+    <div class="toggle-button" @click="toggleSidebar"></div>
   </div>
 </template>
 <script>
@@ -55,11 +47,11 @@ export default {
   props: {
     title: {
       type: String,
-      default: "BackTracker",
+      default: "TwoFiveOne",
     },
     backgroundColor: {
       type: String,
-      default: "black",
+      default: "azure",
       validator: (value) => {
         let acceptedValues = [
           "",
@@ -74,24 +66,7 @@ export default {
         return acceptedValues.indexOf(value) !== -1;
       },
     },
-    backgroundImage: {
-      type: String,
-      default: "img/sidebar-5.jpg",
-    },
-    activeColor: {
-      type: String,
-      default: "success",
-      validator: (value) => {
-        let acceptedValues = [
-          "primary",
-          "info",
-          "success",
-          "warning",
-          "danger",
-        ];
-        return acceptedValues.indexOf(value) !== -1;
-      },
-    },
+
     sidebarLinks: {
       type: Array,
       default: () => [],
@@ -109,14 +84,21 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        // backgroundImage: `url(${this.backgroundImage})`,
         width: this.sidebarExpanded ? "1000px" : "280px",
+        borderRadius: "100px",
+        boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
+        textShadow: " 4px 4px 4px rgba(0, 0, 0, 0.5)",
       };
     },
   },
   data() {
     return {
       sidebarExpanded: false,
+      sidebarLinks: [
+        { name: "Main", path: "/main", scrollPosition: 0 },
+        { name: "Backtrack", path: "/backtrack", scrollPosition: 200 },
+        { name: "User", path: "/user", scrollPosition: 400 }, // 싱글 페이지 렌더링
+      ],
     };
   },
   methods: {
@@ -133,32 +115,39 @@ export default {
 .logo {
   cursor: pointer;
 }
+#sidebar {
+  height: 2000px;
+
+  top: 400px;
+  left: 30px;
+}
+
 .sidebar .sidebar-wrapper {
   display: flex;
   flex-direction: column;
-  z-index: 9998 !important;
 }
+
 .sidebar .nav-main__links {
   flex: 1;
 }
 .sidebar .sidebar-wrapper .logo .logo__container {
   padding-left: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 .toggle-button {
   position: absolute;
-  top: 0%; /* 세로 가운데 정렬을 위한 값 조정 */
-  right: 0; /* 사이드바 오른쪽에 위치하도록 설정 */
-  height: 10000px;
-  width: 95px;
+  top: 0%;
+  right: 0;
+  height: 100%;
+  width: 55px;
   z-index: 9999 !important;
   cursor: pointer;
-  /* background-color: #3f3c3c; */
   padding: 8px;
+  border-radius: 100px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 .toggle-button:hover {
-  /* background-color: #3f3c3c; */
-  background-color: rgba(63, 60, 60, 0.6);
+  background-color: rgba(14, 81, 111, 0.6);
 }
 
 .icon-large {
