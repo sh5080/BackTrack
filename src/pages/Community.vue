@@ -55,95 +55,109 @@
                 class="page"
               ></v-pagination>
               <div class="page-container">
-                <v-col cols="1">
-                  <v-menu offset-y>
-                    <template v-slot:activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        style="
-                          font-size: 70px;
-                          height: 150px;
+                <v-row>
+                  <v-col cols="6" class="search-container mx-auto">
+                    <v-col cols="2">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                            v-bind="props"
+                            style="
+                              font-size: 70px;
+                              height: 150px;
 
-                          width: 350px;
-                        "
+                              width: 350px;
+                            "
+                          >
+                            {{ selectedSortSearch }}
+                            <v-icon>mdi-chevron-down</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in searchOptions"
+                            style="height: 150px"
+                            :key="index"
+                            @click="sortedSearch(item.value)"
+                          >
+                            <v-list-item-title
+                              style="font-size: 70px; line-height: 5.5rem"
+                              >{{ item.text }}</v-list-item-title
+                            >
+                          </v-list-item>
+                        </v-list>
+                      </v-menu></v-col
+                    >
+                    <v-col cols="8">
+                      <v-card
+                        class="mx-auto text-right"
+                        color="grey-lighten-3"
+                        max-width="1200"
                       >
-                        {{ selectedSortSearch }}
-                        <v-icon>mdi-chevron-down</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        v-for="(item, index) in searchOptions"
-                        style="height: 150px"
-                        :key="index"
-                        @click="sortedSearch(item.value)"
-                      >
-                        <v-list-item-title
-                          style="font-size: 70px; line-height: 5.5rem"
-                          >{{ item.text }}</v-list-item-title
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-menu></v-col
-                >
-                <v-col cols="3">
-                  <v-card
-                    class="mx-auto text-right"
-                    color="grey-lighten-3"
-                    max-width="1200"
-                  >
-                    <v-card-text>
-                      <v-text-field
-                        v-model="searchValue"
-                        @keyup.enter="
-                          fetchCommunityPosts(searchValue, selectedSearch)
-                        "
-                        density="compact"
-                        variant="solo"
-                        append-inner-icon="mdi-magnify"
-                        single-line
-                        hide-details
-                      ></v-text-field>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-                <v-col cols="6" class="d-flex">
-                  <v-menu offset-y>
-                    <template v-slot:activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        style="
-                          font-size: 70px;
-                          height: 150px;
+                        <v-card-text>
+                          <v-text-field
+                            v-model="searchValue"
+                            @keyup.enter="
+                              fetchCommunityPosts(searchValue, selectedSearch)
+                            "
+                            density="compact"
+                            variant="solo"
+                            append-inner-icon="mdi-magnify"
+                            single-line
+                            hide-details
+                          ></v-text-field>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                    <v-col cols="6" class="d-flex">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                            v-bind="props"
+                            style="
+                              font-size: 70px;
+                              height: 150px;
 
-                          width: 400px;
-                        "
-                      >
-                        {{ selectedSortPosts }}
-                        <v-icon>mdi-chevron-down</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        v-for="(item, index) in sortOptions"
-                        style="height: 150px"
-                        :key="index"
-                        @click="sortedCommunityPosts(item.value)"
-                      >
-                        <v-list-item-title
-                          style="font-size: 70px; line-height: 5.5rem"
-                          >{{ item.text }}</v-list-item-title
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-col>
+                              width: 400px;
+                            "
+                          >
+                            {{ selectedSortPosts }}
+                            <v-icon>mdi-chevron-down</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in sortOptions"
+                            style="height: 150px"
+                            :key="index"
+                            @click="sortedCommunityPosts(item.value)"
+                          >
+                            <v-list-item-title
+                              style="font-size: 70px; line-height: 5.5rem"
+                              >{{ item.text }}</v-list-item-title
+                            >
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-col>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn
+                      style="font-size: 70px; height: 150px; width: 400px"
+                      @click="openCreateCommunityModal"
+                      >글쓰기</v-btn
+                    >
+                  </v-col>
+                </v-row>
               </div>
             </div>
           </div>
         </card>
         <v-dialog v-model="$store.state.showCommunityModal" persistent="">
           <CommunityModal />
+        </v-dialog>
+        <v-dialog v-model="$store.state.showCreateCommunityModal" persistent="">
+          <CreateCommunityModal />
         </v-dialog>
       </div>
     </div>
@@ -152,10 +166,13 @@
 <script>
 import Card from "./Card/Card.vue";
 import CommunityModal from "../components/Modals/CommunityModal.vue";
+import CreateCommunityModal from "../components/Modals/CreateCommunityModal.vue";
+import * as Toast from "../plugins/toast";
 export default {
   components: {
     Card,
     CommunityModal,
+    CreateCommunityModal,
   },
   computed: {
     selectedSortPosts() {
@@ -172,6 +189,9 @@ export default {
     },
     pageCount() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+    isLogged() {
+      return !!this.$store.state.loggedInNickname;
     },
   },
   created() {
@@ -208,6 +228,14 @@ export default {
     openCommunityModal(item) {
       this.$store.commit("setCommunityData", item);
       this.$store.commit("toggleShowCommunityModal", true);
+    },
+    openCreateCommunityModal() {
+      if (!this.isLogged) {
+        Toast.customError("로그인 후 이용 가능합니다.");
+        this.$store.commit("toggleLoginModal", true);
+        return;
+      }
+      this.$store.commit("toggleShowCreateCommunityModal", true);
     },
 
     sortedCommunityPosts(value) {
@@ -307,6 +335,7 @@ export default {
 
 .page-container {
   display: flex;
+  padding: 10px 600px;
 }
 
 :deep(.v-text-field .v-field--single-line input) {
@@ -322,5 +351,8 @@ export default {
 }
 :deep(.v-field--center-affix .v-field__append-inner) {
   font-size: 50px;
+}
+.search-container {
+  display: flex;
 }
 </style>
