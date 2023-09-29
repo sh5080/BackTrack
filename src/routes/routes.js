@@ -68,13 +68,6 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
   linkActiveClass: "nav-item active",
-  // scrollBehavior: (to) => {
-  //   if (to.hash) {
-  //     return { el: to.hash };
-  //   } else {
-  //     return { x: 0, y: 0 };
-  //   }
-  // },
 });
 
 router.beforeEach((to, from, next) => {
@@ -95,6 +88,19 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
+
+router.afterEach((to) => {
+  const componentName = to.name;
+  if (componentName) {
+    const componentId = componentName;
+    const componentData = document.querySelector(`#${componentId}`);
+    if (componentData) {
+      const yOffset = componentData.getBoundingClientRect().top;
+      window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
+    }
+  }
+});
+
 import axios from "axios";
 let alerted = false;
 axios.interceptors.response.use(

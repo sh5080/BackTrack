@@ -1,6 +1,6 @@
 <template>
   <div class="main-body">
-    <h1 class="main-title">원하는 코드대로 반주를 생성해보세요</h1>
+    <h1 class="main-title">원하는 코드로 반주를 생성해보세요</h1>
     <h1 class="main-title start" @click="goBacktrack">시작하기</h1>
   </div>
 </template>
@@ -8,23 +8,7 @@
 export default {
   methods: {
     goBacktrack() {
-      const currentPath = this.$route.path;
-
-      if (currentPath === "/backtrack") {
-        this.scrollToComponent();
-      } else {
-        // 다른 경로로 이동
-        this.$router.push("/backtrack");
-      }
-    },
-    scrollToComponent() {
-      const componentId = "Backtrack";
-      const componentData = document.querySelector(`#${componentId}`);
-
-      if (componentData) {
-        const yOffset = componentData.getBoundingClientRect().top;
-        window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
-      }
+      this.$router.push("/backtrack");
     },
   },
 };

@@ -56,16 +56,8 @@ export default {
       return components;
     },
   },
-  watch: {
-    $route(to, from) {
-      this.currentRoute = to;
-      this.scrollToComponent();
-    },
-  },
+
   methods: {
-    scrollToTop() {
-      window.scrollTo(0, 0);
-    },
     getComponentName(component) {
       let filePath = component.__file;
       if (filePath === "src/pages/BacktrackGenerator.vue") {
@@ -79,20 +71,6 @@ export default {
         const componentName = filePath.split("/").pop().split(".")[0];
         return componentName;
       } else return component;
-    },
-    scrollToComponent() {
-      const componentName = this.$route.name;
-
-      if (componentName) {
-        const componentId = this.getComponentName(componentName);
-
-        const componentData = document.querySelector(`#${componentId}`);
-
-        if (componentData) {
-          const yOffset = componentData.getBoundingClientRect().top;
-          window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
-        }
-      }
     },
   },
   data() {
@@ -110,7 +88,7 @@ export default {
 }
 
 .fade-enter,
-  .fade-leave-to
+.fade-leave-to
     /* .fade-leave-active in <2.1.8 */ {
   opacity: 0;
 }
@@ -126,5 +104,13 @@ export default {
   margin-top: 300px;
   border: 10px solid #000;
   /* padding: 100px 300px; */
+}
+#Main {
+  height: 2400px;
+  max-height: 5500px;
+  width: 5500px;
+
+  margin-top: 300px;
+  border: 10px solid #000;
 }
 </style>
