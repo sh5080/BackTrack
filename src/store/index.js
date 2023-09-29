@@ -36,6 +36,7 @@ export const store = createStore({
     showMyPostModal: false,
     showPostModal: false,
     showCommunityModal: false,
+    showCreateCommunityModal: false,
     currentPost: null,
     currentPostAuthor: null,
     communityData: {
@@ -148,6 +149,9 @@ export const store = createStore({
     },
     toggleShowCommunityModal(state, value) {
       state.showCommunityModal = value;
+    },
+    toggleShowCreateCommunityModal(state, value) {
+      state.showCreateCommunityModal = value;
     },
     setCommunityData(state, value) {
       state.communityData = value;
