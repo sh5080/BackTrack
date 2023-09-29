@@ -16,7 +16,7 @@
         <v-col cols="4">
           <v-col>
             <div class="input-group2">
-              <v-col cols="6">
+              <v-col cols="6" class="key-area">
                 <div class="key-label-container">
                   <label class="key-label">Key</label>
                 </div>
@@ -32,7 +32,7 @@
                       {{ key }}
                     </button>
                     <button
-                      class="key-button"
+                      class="fs-button"
                       v-for="modifier_fs in ['b', '#']"
                       :key="modifier_fs"
                       @click="toggleButton('selectedModifier_fs', modifier_fs)"
@@ -44,7 +44,7 @@
                 </div>
               </v-col>
 
-              <v-col cols="6">
+              <v-col cols="6" class="key-area">
                 <div class="ext-label-container">
                   <label class="ext-label">Extends</label>
                 </div>
@@ -60,7 +60,7 @@
                       {{ extend }}
                     </button>
                     <button
-                      class="key-button"
+                      class="fs-button"
                       v-for="modifier_b5 in ['b5']"
                       :key="modifier_b5"
                       @click="toggleButton('selectedModifier_b5', modifier_b5)"
@@ -71,7 +71,7 @@
                       {{ modifier_b5 }}
                     </button>
                     <button
-                      class="key-button"
+                      class="fs-button"
                       v-for="modifier_67 in ['6', '7']"
                       :key="modifier_67"
                       @click="toggleButton('selectedModifier_67', modifier_67)"
@@ -87,7 +87,7 @@
             </div>
           </v-col>
           <div class="input-group2" style="margin-left: 40px">
-            <v-col cols="6">
+            <v-col cols="6" class="key-area">
               <div class="ext-label-container">
                 <label class="ext-label">Tensions</label>
               </div>
@@ -116,13 +116,11 @@
                   >
                     {{ modifier_tension }}
                   </button>
-                  <button class="extra-button" @click="registerComma">
-                    쉼표
-                  </button>
+                  <button class="fs-button" @click="registerComma">쉼표</button>
                 </div>
               </div>
             </v-col>
-            <v-col>
+            <v-col cols="6" class="key-area">
               <div class="chord-container">
                 <v-col>
                   <div class="ext-label-container">
@@ -140,13 +138,13 @@
                     </span>
                   </div>
                 </v-col>
-                <v-col cols="11" class="chord-button">
+                <v-col cols="12" class="chord-button">
                   <button class="register-button" @click="registerBacktrack">
                     등록
                   </button>
 
                   <button class="next-button" @click="nextMeasure">
-                    마디 넘기기
+                    다음 마디
                   </button>
                 </v-col>
               </div>
@@ -888,7 +886,7 @@ export default {
         this.$store.commit("toggleBacktrackSuccessModal", true);
 
         Toast.alertMessage(
-          "성공적으로 완료되었습니다. 잠시 후 백킹트랙이 생성됩니다."
+          "성공적으로 생성이 완료되었습니다. 만든 트랙을 재생해보세요!"
         );
       } catch (error) {
         console.error("Error generating backtrack:", error);
@@ -926,7 +924,7 @@ export default {
 
 .backtrack-generator {
   width: 100%;
-  max-height: 2500px;
+  height: 2700px;
   padding: 20px 0px;
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -938,6 +936,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  font-family: "Noto Sans", sans-serif;
 
   /*  */
 }
@@ -963,15 +962,14 @@ export default {
 
 .backtrack-generator button {
   margin-top: 10px;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 10px;
+
+  font-size: 4rem;
   cursor: pointer;
   border: none;
 }
 
 .backtrack-generator button:hover {
-  background-color: #00b869;
+  background-color: #6e78a0;
 }
 
 .backtrack-generator ul {
@@ -1085,7 +1083,12 @@ export default {
 .ext-label,
 .key-label,
 .bpm-label {
+  color: #f0f0f0;
   font-size: 70px;
+  padding: 50px;
+  border-radius: 50px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to top, #3a3f50, #3a4154);
 }
 
 .ext-selector,
@@ -1100,7 +1103,7 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 10px;
 }
-
+.fs-button,
 .ext-button,
 .key-button {
   color: #fff;
@@ -1109,69 +1112,84 @@ export default {
   margin-right: 20px;
   border-radius: 4px;
   width: 200px;
+  height: 200px;
   cursor: pointer;
-  background: linear-gradient(to top, #00b869, #03c75a);
+  border-radius: 50px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to top, #2b3143, #2b3143);
 }
-.ext-button.selected,
-.key-button.selected {
-  background-color: #084dbf;
+.fs-button {
+  color: #f09d3b;
+}
+.key-area {
+  background: linear-gradient(to top, #2a3243, #394358);
+  border-radius: 50px;
+  padding: 50px;
+  margin: 20px;
 }
 .generate-button:hover,
 .reset-button:hover,
 .ext-button:hover,
 .key-button:hover {
-  background: #60a687;
+  background: #3a467d;
 }
 
 .register-button {
-  background-color: #f2c72d !important;
+  background-color: #ffb703;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
   width: 200px;
+  height: 200px;
+  border-radius: 50px;
+  font-family: "Noto Sans", sans-serif;
+  white-space: nowrap;
 }
 .next-button {
-  background-color: #f2c72d !important;
+  background-color: #ffb703;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
   margin-left: 30px;
-  /* width: 200px; */
+  border-radius: 50px;
+  font-family: "Noto Sans", sans-serif;
+  white-space: nowrap;
+  padding: 5px 40px;
 }
+
 .next-button:hover,
 .register-button:hover {
   background-color: #dcb837 !important;
 }
-.extra-button {
-  background-color: #357df2;
-  padding: 5px 10px;
-  margin-right: 20px;
-  border-radius: 4px;
-  width: 200px;
-  cursor: pointer;
-}
-.extra-button:hover {
-  background-color: #245ebc !important;
-}
+
 .chord-button {
-  /* position: relative; */
-  margin-top: 230px;
-  margin-left: 50px;
+  display: flex;
+  justify-content: center;
 }
 .reset-button {
-  margin-right: 10px;
-  font-size: 80px;
+  margin-right: 30px;
+  font-size: 4rem;
   width: 500px;
+  height: 200px;
   flex-wrap: wrap;
   cursor: pointer;
-  background: linear-gradient(to top, #00b869, #03c75a);
+  color: #ffffff;
+  border-radius: 30px;
+  background: linear-gradient(to top, #3a3f50, #3a4154);
   z-index: 1;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
 }
 .generate-button {
   position: relative;
   margin-right: 20px;
   top: 0;
   left: 0;
-  font-size: 80px;
+  font-size: 4rem;
   width: 1000px;
+  height: 200px;
   flex-wrap: wrap;
-  background: linear-gradient(to top, #00b869, #03c75a);
+  color: #023047;
+  border-radius: 30px;
+  background-color: #ffb703;
   cursor: pointer;
-  z-index: 100 !important;
+  z-index: 1;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
 }
 .welcome-message {
   display: flex;
@@ -1189,7 +1207,7 @@ export default {
   width: 440px;
   height: 141px;
   font-size: 80px;
-  background: linear-gradient(to top, #00b869, #03c75a);
+  background: linear-gradient(to top, #3a3f50, #3a4154);
 }
 
 .dropdown-menu1,
@@ -1234,14 +1252,15 @@ export default {
   align-items: center;
 }
 .chord-list {
-  position: absolute;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   overflow: hidden;
-  margin-top: 80px;
-  /* margin-bottom: -50px; */
-  /* padding: 50px 0px; */
+  margin-top: 140px;
+  height: 225px;
+  color: #ffffff;
+  font-family: "Noto Sans", sans-serif;
+  justify-content: center;
 }
 
 .chords {
