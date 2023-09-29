@@ -5,7 +5,12 @@ import { validateToken } from "../middlewares/jwt";
 const router = Router();
 
 /** 커뮤니티 게시글 업로드 */
-router.post("/", validateToken, communityController.createCommunity);
+router.post(
+  "/",
+  validateToken,
+  validateRequestBody(["title", "description"]),
+  communityController.createCommunity
+);
 
 /** 커뮤니티 게시글 특정 조회 */
 router.get("/:id", communityController.getOneCommunity);

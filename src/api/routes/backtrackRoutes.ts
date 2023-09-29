@@ -9,7 +9,7 @@ const router = Router();
 router.post(
   "/",
   validateToken,
-  // validateRequestBody(["bpm", "measures", "chordPattern"]),
+  validateRequestBody(["title", "backtrack"]),
   backtrackController.createBacktrack
 );
 /** 백킹트랙 조회 */
