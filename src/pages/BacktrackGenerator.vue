@@ -926,7 +926,7 @@ export default {
   width: 100%;
   height: 2700px;
   padding: 20px 0px;
-  background-color: #fff;
+
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   /* margin-left: -20px; */
@@ -946,6 +946,8 @@ export default {
   flex-direction: column;
   width: 6000px;
   height: 10000px;
+  border: 1px solid #ccc;
+  /* background-color: #ffd166; */
 }
 
 .backtrack-generator label {
@@ -988,9 +990,8 @@ export default {
 }
 
 .input-group1 {
-  background-color: #f0f0f0;
   padding: 20px 100px;
-  border: 1px solid #ccc;
+
   margin-left: 45px;
   font-size: 80px;
   display: flex;
@@ -1000,9 +1001,8 @@ export default {
 }
 
 .input-group2 {
-  background-color: #f0f0f0;
   padding: 20px;
-  border: 1px solid #ccc;
+
   margin-top: 18px;
   margin-left: 30px;
 
@@ -1119,7 +1119,7 @@ export default {
   background: linear-gradient(to top, #2b3143, #2b3143);
 }
 .fs-button {
-  color: #f09d3b;
+  color: #ffd60a;
 }
 .key-area {
   background: linear-gradient(to top, #2a3243, #394358);
@@ -1127,7 +1127,7 @@ export default {
   padding: 50px;
   margin: 20px;
 }
-.generate-button:hover,
+.fs-button:hover,
 .reset-button:hover,
 .ext-button:hover,
 .key-button:hover {
@@ -1135,8 +1135,8 @@ export default {
 }
 
 .register-button {
-  background-color: #ffb703;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  background-color: #ffd60a;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   width: 200px;
   height: 200px;
   border-radius: 50px;
@@ -1144,15 +1144,15 @@ export default {
   white-space: nowrap;
 }
 .next-button {
-  background-color: #ffb703;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  background-color: #ffd60a;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   margin-left: 30px;
   border-radius: 50px;
   font-family: "Noto Sans", sans-serif;
   white-space: nowrap;
   padding: 5px 40px;
 }
-
+.generate-button:hover,
 .next-button:hover,
 .register-button:hover {
   background-color: #dcb837 !important;
@@ -1186,7 +1186,7 @@ export default {
   flex-wrap: wrap;
   color: #023047;
   border-radius: 30px;
-  background-color: #ffb703;
+  background-color: #ffd60a;
   cursor: pointer;
   z-index: 1;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
