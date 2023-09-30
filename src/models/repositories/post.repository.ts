@@ -109,10 +109,102 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         post.likedUsers = [];
       }
 
-      const alreadyLiked = user.likedPosts.includes(post.id);
+      const alreadyLiked =
+        user.likedPosts.includes(post.id) && post.likedUsers.includes(user.id);
+
       if (!alreadyLiked) {
+        user.likedPosts = user.likedPosts.filter((id) => id !== post.id);
+        post.likedUsers = post.likedUsers.filter((id) => id !== user.id);
         user.likedPosts.push(post.id);
         post.likedUsers.push(user.id);
+
+        await AuthRepository.save(user);
+        await PostRepository.save(post);
+
+        const postAuthorId = post.backtrack?.userId;
+
+        if (postAuthorId) {
+          const postAuthor = await AuthRepository.findOne({
+            where: { id: postAuthorId },
+          });
+
+          if (!postAuthor) {
+            throw new AppError(
+              CommonError.RESOURCE_NOT_FOUND,
+              "백킹트랙에 해당하는 사용자를 찾을 수 없습니다.",
+              404
+            );
+          }
+
+          const postBacktracks = await BacktrackRepository.find({
+            where: { userId: postAuthorId },
+          });
+
+          if (postBacktracks) {
+            const totalLikes = await Promise.all(
+              postBacktracks.map(async (backtrack) => {
+                const posts = await PostRepository.find({
+                  where: { backtrack: { id: backtrack.id } },
+                });
+
+                return posts.reduce(
+                  (count, post) => count + (post.likedUsers?.length || 0),
+                  0
+                );
+              })
+            );
+
+            const finalTotalLikes = totalLikes.reduce(
+              (total, likes) => total + likes,
+              0
+            );
+
+            postAuthor.totalLikes = finalTotalLikes;
+            await AuthRepository.save(postAuthor);
+          }
+        }
+
+        return post;
+      } else return null;
+    } catch (error) {
+      await connect.rollbackTransaction();
+      await connect.release();
+      throw error;
+    }
+  },
+
+  // 좋아요 취소
+  async removeLikeFromPost(userId: number, id: number) {
+    const connect = AppDataSource.createQueryRunner();
+    await connect.connect();
+    await connect.startTransaction();
+    try {
+      const user = await AuthRepository.findOne({
+        where: { id: userId },
+      });
+      const post = await PostRepository.findOne({
+        where: { id },
+        relations: ["backtrack"],
+      });
+
+      if (!user || !post) {
+        throw new AppError(
+          CommonError.RESOURCE_NOT_FOUND,
+          "사용자 또는 게시물을 찾을 수 없습니다.",
+          404
+        );
+      }
+      const alreadyLiked = user.likedPosts.includes(post.id);
+
+      if (alreadyLiked) {
+        user.likedPosts = user.likedPosts.filter(
+          (likedPost) => likedPost !== post.id
+        );
+        post.likedUsers = post.likedUsers.filter(
+          (likedUser) => likedUser !== user.id
+        );
+        await AuthRepository.save(user);
+        await PostRepository.save(post);
 
         const postAuthorId = post.backtrack?.userId;
 
@@ -151,8 +243,6 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
           );
 
           postAuthor.totalLikes = finalTotalLikes;
-          console.log("postAuthor: ", postAuthor);
-          console.log("finalTotalLikes: ", finalTotalLikes);
           await AuthRepository.save(postAuthor);
         } else {
           throw new AppError(
@@ -162,83 +252,6 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
           );
         }
 
-        // await AuthRepository.save(user);
-        await PostRepository.save(post);
-
-        return post;
-      } else return null;
-    } catch (error) {
-      await connect.rollbackTransaction();
-      await connect.release();
-      throw error;
-    }
-  },
-
-  // 좋아요 취소
-  async removeLikeFromPost(userId: number, id: number) {
-    const connect = AppDataSource.createQueryRunner();
-    await connect.connect();
-    await connect.startTransaction();
-    try {
-      const user = await AuthRepository.findOne({
-        where: { id: userId },
-      });
-      const post = await PostRepository.findOne({
-        where: { id },
-      });
-
-      if (!user || !post) {
-        throw new AppError(
-          CommonError.RESOURCE_NOT_FOUND,
-          "사용자 또는 게시물을 찾을 수 없습니다.",
-          404
-        );
-      }
-      const alreadyLiked = user.likedPosts.includes(post.id);
-      console.log("before:: ", user, post, alreadyLiked);
-      if (alreadyLiked) {
-        user.likedPosts = user.likedPosts.filter(
-          (likedPost) => likedPost !== post.id
-        );
-        post.likedUsers = post.likedUsers.filter(
-          (likedUser) => likedUser !== user.id
-        );
-
-        const backtrackData = await BacktrackRepository.findOne({
-          where: { id: post.backtrackId },
-        });
-        console.log("after:: ", user, post);
-        if (!backtrackData) {
-          throw new AppError(
-            CommonError.RESOURCE_NOT_FOUND,
-            "포스트에 해당하는 백킹트랙을 찾을 수 없습니다.",
-            404
-          );
-        }
-        const author = await AuthRepository.findOne({
-          where: { id: backtrackData.userId },
-        });
-        if (!author) {
-          throw new AppError(
-            CommonError.RESOURCE_NOT_FOUND,
-            "백킹트랙에 해당하는 사용자를 찾을 수 없습니다.",
-            404
-          );
-        }
-        const totalLikes = post.likedUsers.length;
-        if (user.id === author.id) {
-          user.totalLikes = totalLikes;
-          const userSaved = await AuthRepository.save(user);
-          console.log("user in remove::: ", userSaved);
-        } else {
-          author.totalLikes = totalLikes;
-          const authorSaved = await AuthRepository.save(author);
-          await AuthRepository.save(user);
-          console.log("author in remove:::: ", authorSaved);
-        }
-
-        // await AuthRepository.save(user);
-        await PostRepository.save(post);
         return post;
       } else return null;
     } catch (error) {
