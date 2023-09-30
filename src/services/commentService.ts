@@ -65,6 +65,13 @@ export const getPostCommentsByPostId = async (
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const comments = await postCommentRepository.getPostCommentsByPostId(postId);
+  if (comments.length < 1) {
+    throw new AppError(
+      CommonError.RESOURCE_NOT_FOUND,
+      "조회된 댓글이 없습니다.",
+      400
+    );
+  }
   const totalItemsCount = comments.length;
   const currentComments = comments.slice(-2);
   const paginatedComments = comments.slice(startIndex, endIndex);
@@ -85,6 +92,13 @@ export const getCommunityCommentsByCommunityId = async (
     await communityCommentRepository.getCommunityCommentsByCommunityId(
       communityId
     );
+  if (comments.length < 1) {
+    throw new AppError(
+      CommonError.RESOURCE_NOT_FOUND,
+      "조회된 댓글이 없습니다.",
+      400
+    );
+  }
   const totalItemsCount = comments.length;
   const currentComments = comments.slice(-2);
   const paginatedComments = comments.slice(startIndex, endIndex);
