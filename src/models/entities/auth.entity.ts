@@ -39,13 +39,11 @@ export class AuthEntity {
   @Column({ name: "liked_posts", nullable: true, type: "json" })
   likedPosts: number[];
 
+  @Column({ name: "total_likes", nullable: true })
+  totalLikes: number;
+
   @ManyToMany(() => PostEntity, (post) => post.likedUsers)
   @JoinTable()
-  //   {
-  //   // name: "liked",
-  //   joinColumn: { name: "user_id", referencedColumnName: "id" },
-  //   inverseJoinColumn: { name: "post_id", referencedColumnName: "id" },
-  // }
   likedUsers!: PostEntity[];
 
   @OneToMany(() => postCommentEntity, (comment) => comment.nickname)
@@ -61,7 +59,8 @@ export class AuthEntity {
     password: string,
     email: string,
     oauth_provider: string,
-    likedPosts: number[]
+    likedPosts: number[],
+    totalLikes: number
   ) {
     this.id = id;
     this.username = username;
@@ -70,5 +69,6 @@ export class AuthEntity {
     this.email = email;
     this.oauth_provider = oauth_provider;
     this.likedPosts = likedPosts;
+    this.totalLikes = totalLikes;
   }
 }
