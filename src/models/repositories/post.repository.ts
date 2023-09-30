@@ -91,6 +91,7 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
       });
       const post = await PostRepository.findOne({
         where: { id },
+        relations: ["backtrack"],
       });
       if (!user || !post) {
         throw new AppError(
@@ -113,8 +114,57 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         user.likedPosts.push(post.id);
         post.likedUsers.push(user.id);
 
-        await AuthRepository.save(user);
+        const postAuthorId = post.backtrack?.userId;
+
+        const postAuthor = await AuthRepository.findOne({
+          where: { id: postAuthorId },
+        });
+        const postBacktracks = await BacktrackRepository.find({
+          where: { userId: postAuthorId },
+        });
+
+        if (!postAuthor) {
+          throw new AppError(
+            CommonError.RESOURCE_NOT_FOUND,
+            "백킹트랙에 해당하는 사용자를 찾을 수 없습니다.",
+            404
+          );
+        }
+
+        if (postBacktracks) {
+          const totalLikes = await Promise.all(
+            postBacktracks.map(async (backtrack) => {
+              const posts = await PostRepository.find({
+                where: { backtrack: { id: backtrack.id } },
+              });
+
+              return posts.reduce(
+                (count, post) => count + (post.likedUsers?.length || 0),
+                0
+              );
+            })
+          );
+
+          const finalTotalLikes = totalLikes.reduce(
+            (total, likes) => total + likes,
+            0
+          );
+
+          postAuthor.totalLikes = finalTotalLikes;
+          console.log("postAuthor: ", postAuthor);
+          console.log("finalTotalLikes: ", finalTotalLikes);
+          await AuthRepository.save(postAuthor);
+        } else {
+          throw new AppError(
+            CommonError.RESOURCE_NOT_FOUND,
+            "포스트에 해당하는 백킹트랙을 찾을 수 없습니다.",
+            404
+          );
+        }
+
+        // await AuthRepository.save(user);
         await PostRepository.save(post);
+
         return post;
       } else return null;
     } catch (error) {
@@ -145,6 +195,7 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         );
       }
       const alreadyLiked = user.likedPosts.includes(post.id);
+      console.log("before:: ", user, post, alreadyLiked);
       if (alreadyLiked) {
         user.likedPosts = user.likedPosts.filter(
           (likedPost) => likedPost !== post.id
@@ -152,7 +203,41 @@ export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
         post.likedUsers = post.likedUsers.filter(
           (likedUser) => likedUser !== user.id
         );
-        await AuthRepository.save(user);
+
+        const backtrackData = await BacktrackRepository.findOne({
+          where: { id: post.backtrackId },
+        });
+        console.log("after:: ", user, post);
+        if (!backtrackData) {
+          throw new AppError(
+            CommonError.RESOURCE_NOT_FOUND,
+            "포스트에 해당하는 백킹트랙을 찾을 수 없습니다.",
+            404
+          );
+        }
+        const author = await AuthRepository.findOne({
+          where: { id: backtrackData.userId },
+        });
+        if (!author) {
+          throw new AppError(
+            CommonError.RESOURCE_NOT_FOUND,
+            "백킹트랙에 해당하는 사용자를 찾을 수 없습니다.",
+            404
+          );
+        }
+        const totalLikes = post.likedUsers.length;
+        if (user.id === author.id) {
+          user.totalLikes = totalLikes;
+          const userSaved = await AuthRepository.save(user);
+          console.log("user in remove::: ", userSaved);
+        } else {
+          author.totalLikes = totalLikes;
+          const authorSaved = await AuthRepository.save(author);
+          await AuthRepository.save(user);
+          console.log("author in remove:::: ", authorSaved);
+        }
+
+        // await AuthRepository.save(user);
         await PostRepository.save(post);
         return post;
       } else return null;
