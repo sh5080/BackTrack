@@ -183,6 +183,13 @@ export const getMyPostsInfo = async (
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const allBacktracks = await BacktrackRepository.getMyBacktrack(id);
+    if (allBacktracks.length < 1) {
+      throw new AppError(
+        CommonError.UNEXPECTED_ERROR,
+        "사용자의 백킹트랙 정보가 없습니다.",
+        404
+      );
+    }
     const ids = allBacktracks.map((backtrack) => backtrack.id);
     const posts = await PostRepository.getMyPosts(ids);
     const totalItems = posts.length;

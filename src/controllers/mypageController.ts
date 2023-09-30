@@ -75,6 +75,14 @@ export const getLikesInfo = async (
       );
     }
     const likedPostArray = userData.likedPosts;
+    console.log("여기: ", likedPostArray);
+    if (!likedPostArray || likedPostArray.length < 1) {
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        "조회된 게시글이 없습니다.",
+        400
+      );
+    }
     const filteredLikedPostTitles = await mypageService.getPaginatedLikedPosts(
       likedPostArray,
       parseInt(page),
