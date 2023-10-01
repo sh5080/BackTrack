@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as postService from "../services/postService";
+import * as authService from "../services/authService";
 import { AppError, CommonError } from "../types/AppError";
 import { CustomRequest } from "../types/customRequest";
 import path from "path";
@@ -17,7 +18,6 @@ export const createPost = async (
     const { description } = req.body;
     const userId = req.user!.userId;
     const { backtrackId } = req.query;
-    console.log("여기: ", description, backtrackId);
     if (description.length > 200 || !description) {
       throw new AppError(
         CommonError.INVALID_INPUT,
@@ -74,25 +74,28 @@ export const getPost = async (
     const sortBy = req.query.sortBy;
     const searchBy = req.query.searchBy;
     const option = req.query.option;
-    let postData;
+    let resultData;
+    if (!page) {
+      throw new AppError(
+        CommonError.UNAUTHORIZED_ACCESS,
+        "올바른 검색경로가 아닙니다.",
+        400
+      );
+    }
     if (sortBy === "oldest") {
-      postData = await postService.getOldestPosts(
+      resultData = await postService.getOldestPosts(
         parseInt(page),
         8,
         option,
         searchBy
       );
     } else if (sortBy === "likes") {
-      if (option === "rank") {
-        postData = await postService.getPostsByLikes(
-          parseInt(page),
-
-          10,
-          option,
-          searchBy
-        );
+      if (option === "rankPost") {
+        resultData = await postService.getPostsByLikes(parseInt(page), 10);
+      } else if (option === "rankUser") {
+        resultData = await authService.getUsersByLikes(parseInt(page), 10);
       } else {
-        postData = await postService.getPostsByLikes(
+        resultData = await postService.getPostsByLikes(
           parseInt(page),
           8,
           option,
@@ -100,7 +103,7 @@ export const getPost = async (
         );
       }
     } else {
-      postData = await postService.getLatestPosts(
+      resultData = await postService.getLatestPosts(
         parseInt(page),
         8,
         option,
@@ -108,14 +111,8 @@ export const getPost = async (
       );
     }
 
-    if (postData.paginatedPosts.length < 1) {
-      throw new AppError(
-        CommonError.RESOURCE_NOT_FOUND,
-        "조회된 게시글이 없습니다.",
-        400
-      );
-    }
-    res.json({ message: "게시글 조회 완료되었습니다.", postData });
+    console.log(resultData);
+    res.json({ message: "게시글 조회 완료되었습니다.", resultData });
   } catch (error) {
     next(error);
   }
@@ -154,6 +151,8 @@ export const deletePost = async (
     next(error);
   }
 };
+
+/** 좋아요 추가 */
 export const addLikeToPost = async (
   req: CustomRequest,
   res: Response,
@@ -171,6 +170,7 @@ export const addLikeToPost = async (
   }
 };
 
+/** 좋아요 취소 */
 export const removeLikeFromPost = async (
   req: CustomRequest,
   res: Response,

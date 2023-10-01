@@ -42,6 +42,8 @@ export class AuthEntity {
   @Column({ name: "total_likes", nullable: true })
   totalLikes: number;
 
+  mostLikedPost!: string | undefined;
+
   @ManyToMany(() => PostEntity, (post) => post.likedUsers)
   @JoinTable()
   likedUsers!: PostEntity[];

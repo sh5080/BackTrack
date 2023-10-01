@@ -5,6 +5,7 @@ import config from "../config";
 import * as Type from "../types/type";
 import { AppError, CommonError } from "../types/AppError";
 import { AuthRepository } from "../models/repositories/auth.repository";
+import { PostRepository } from "../models/repositories/post.repository";
 import * as nodemailer from "../config/nodemailer";
 import { AppDataSource } from "../loaders/dbLoader";
 const { saltRounds } = config.bcrypt;
@@ -290,3 +291,42 @@ function generateTemporaryPassword(length: number = 10): string {
 
   return temporaryPassword;
 }
+
+export const getUsersByLikes = async (page: number, pageSize: number) => {
+  try {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    let allUsers = await AuthRepository.find();
+
+    allUsers = allUsers.sort((a, b) => {
+      const aLikes = a.totalLikes || 0;
+      const bLikes = b.totalLikes || 0;
+      return bLikes - aLikes;
+    });
+
+    const totalItemsCount = allUsers.length;
+    const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+    for (const user of paginatedUsers) {
+      const userPosts = await PostRepository.find({
+        where: { backtrack: { userId: user.id } },
+        relations: ["backtrack"],
+      });
+
+      let mostLikedPost;
+      let maxLikes = 0;
+      for (const post of userPosts) {
+        const likes = post.likedUsers ? post.likedUsers.length : 0;
+        if (likes > maxLikes) {
+          maxLikes = likes;
+          mostLikedPost = post;
+        }
+      }
+
+      user.mostLikedPost = mostLikedPost?.backtrack.title;
+    }
+    return { paginatedUsers, totalItemsCount };
+  } catch (error) {
+    throw error;
+  }
+};
