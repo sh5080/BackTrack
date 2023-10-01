@@ -2,17 +2,15 @@
   <div class="table-container">
     <div class="current-time">{{ formattedDate }}</div>
     <div class="table-header-container">
-      <v-btn class="table-header" @click="showTable('currentFamousPost')"
-        >최근 일주일</v-btn
-      >
       <v-btn class="table-header" @click="showTable('totalFamousPost')"
-        >전체 게시물</v-btn
+        >인기 게시물</v-btn
       >
       <v-btn class="table-header" @click="showTable('totalFamousUser')"
-        >전체 사용자</v-btn
+        >인기 사용자</v-btn
       >
     </div>
     <v-data-table
+      v-if="currentTable === 'totalFamousPost'"
       :items="posts"
       :items-per-page="10"
       class="mx-auto table"
@@ -21,15 +19,15 @@
         /* margin-top: 100px; */
         /* max-height: 1775px; */
         height: 1775px;
-        width: 2500px;
+        width: 2100px;
         align-content: center;
       "
     >
       <template v-slot:item="item">
         <tr>
           <td>
-            <v-row>
-              <v-col cols="1" class="rank-number">
+            <v-row class="rank-row">
+              <v-col cols="3" class="rank-number">
                 <span class="table-rank">
                   {{ item.index + 1 }}
                 </span>
@@ -43,11 +41,67 @@
                   item.item.selectable.author
                 }}</span>
               </v-col>
-              <v-col cols="5" class="rank-right">
+              <v-col cols="3" class="rank-right">
                 <span class="table-likedCount">
+                  <v-icon size="small" :color="'surface-variant'"
+                    >mdi-heart</v-icon
+                  >
                   {{
                     item.item.selectable.likedUsers
                       ? item.item.selectable.likedUsers.length
+                      : ""
+                  }}
+                </span>
+              </v-col>
+            </v-row>
+          </td>
+        </tr>
+      </template>
+      <template v-slot:bottom></template>
+    </v-data-table>
+
+    <v-data-table
+      v-if="currentTable === 'totalFamousUser'"
+      :items="users"
+      :items-per-page="10"
+      class="mx-auto table"
+      style="
+        font-size: 60px;
+        /* margin-top: 100px; */
+        /* max-height: 1775px; */
+        height: 1775px;
+        width: 2100px;
+        align-content: center;
+      "
+    >
+      <template v-slot:item="item">
+        <tr>
+          <td>
+            <v-row class="rank-row">
+              <v-col cols="3" class="rank-number">
+                <span class="table-rank">
+                  {{ item.index + 1 }}
+                </span>
+              </v-col>
+
+              <v-col cols="6" class="rank-left">
+                <span class="table-title">{{
+                  item.item.selectable.nickname
+                }}</span>
+                <span class="table-author">{{
+                  item.item.selectable.mostLikedPost
+                    ? item.item.selectable.mostLikedPost
+                    : ""
+                }}</span>
+              </v-col>
+              <v-col cols="3" class="rank-right">
+                <span class="table-likedCount">
+                  <v-icon size="small" :color="'surface-variant'"
+                    >mdi-heart</v-icon
+                  >
+                  {{
+                    item.item.selectable.totalLikes
+                      ? item.item.selectable.totalLikes
                       : ""
                   }}
                 </span>
@@ -70,8 +124,10 @@ export default {
         { title: "좋아요", key: "likedUsers.length", sortable: false },
       ],
       posts: [],
+      users: [],
       currentPage: 1,
       currentTime: new Date(),
+      currentTable: "totalFamousPost",
     };
   },
   computed: {
@@ -100,25 +156,42 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await this.$axios.get(
-          `/api/post?page=${this.currentPage}&sortBy=likes&option=rank`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        this.posts = response.data.postData.paginatedPosts;
-        console.log("여기: ", response.data);
-        this.totalItems = response.data.postData.totalItemsCount;
+        if (this.currentTable === "totalFamousPost") {
+          const response = await this.$axios.get(
+            `/api/post?page=${this.currentPage}&sortBy=likes&option=rankPost`,
+            {
+              withCredentials: true,
+            }
+          );
+          this.posts = response.data.resultData.paginatedPosts;
+          this.totalItems = response.data.resultData.totalItemsCount;
+        } else if (this.currentTable === "totalFamousUser") {
+          const response = await this.$axios.get(
+            `/api/post?page=${this.currentPage}&sortBy=likes&option=rankUser`,
+            {
+              withCredentials: true,
+            }
+          );
+          this.users = response.data.resultData.paginatedUsers;
+          this.totalItems = response.data.resultData.totalItemsCount;
+        }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
+    },
+    showTable(table) {
+      this.currentTable = table;
+      this.fetchPosts();
     },
   },
 };
 </script>
 
 <style scoped>
+.table-container {
+  font-family: "Noto Sans", sans-serif;
+}
+
 :deep(.v-toolbar__content) {
   height: 200px !important;
 }
@@ -146,7 +219,7 @@ export default {
   margin: 0 auto;
 }
 .current-time {
-  font-size: 6rem;
+  font-size: 5rem;
   display: flex;
   justify-content: center;
   margin-top: 100px;
@@ -156,7 +229,7 @@ export default {
   justify-content: center;
 }
 .table-header {
-  width: 835px !important;
+  width: 1050px !important;
   font-size: 4rem !important;
 }
 .rank-left {
@@ -173,11 +246,16 @@ export default {
 }
 .table-rank {
   display: flex;
+  justify-content: center;
 }
 .table-title {
   font-size: 4rem;
 }
 .table-author {
   font-size: 3rem;
+}
+.rank-row {
+  height: 195px;
+  max-height: 200px;
 }
 </style>
