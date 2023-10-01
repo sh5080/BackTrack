@@ -305,7 +305,7 @@ export default {
           this.$store.commit("setChordData", backtrackData.backtrack);
         }
 
-        const result = response.data.postData;
+        const result = response.data.resultData;
 
         this.$store.commit("setPostData", result);
         this.$store.commit("setPostAuthor", author);
@@ -337,9 +337,9 @@ export default {
           withCredentials: true,
         });
 
-        this.posts = response.data.postData.paginatedPosts;
+        this.posts = response.data.resultData.paginatedPosts;
 
-        this.totalItems = response.data.postData.totalItemsCount;
+        this.totalItems = response.data.resultData.totalItemsCount;
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
