@@ -54,7 +54,6 @@ export const createPost = async (
       description,
       imgNames
     );
-    console.log(postData);
     res
       .status(201)
       .json({ message: "게시글 생성이 완료되었습니다.", postData });
@@ -111,7 +110,6 @@ export const getPost = async (
       );
     }
 
-    console.log(resultData);
     res.json({ message: "게시글 조회 완료되었습니다.", resultData });
   } catch (error) {
     next(error);

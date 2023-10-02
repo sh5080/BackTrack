@@ -12,7 +12,6 @@ export const createBacktrack = async (
   try {
     const { title, backtrack } = req.body;
     const userId = req.user!.userId;
-    console.log("backtrack: ", backtrack);
 
     if (title.length > 30) {
       throw new AppError(

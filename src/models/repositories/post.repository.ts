@@ -1,10 +1,8 @@
-import * as Type from "../../types/type";
 import { PostEntity } from "../entities/post.entity";
 import { AppDataSource } from "../../loaders/dbLoader";
 import { AppError, CommonError } from "../../types/AppError";
 import { BacktrackRepository } from "./backtrack.repository";
 import { AuthRepository } from "./auth.repository";
-import { In } from "typeorm";
 
 export const PostRepository = AppDataSource.getRepository(PostEntity).extend({
   async createPost(

@@ -75,7 +75,6 @@ export const getLikesInfo = async (
       );
     }
     const likedPostArray = userData.likedPosts;
-    console.log("여기: ", likedPostArray);
     if (!likedPostArray || likedPostArray.length < 1) {
       throw new AppError(
         CommonError.RESOURCE_NOT_FOUND,

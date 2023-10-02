@@ -15,7 +15,7 @@ router.post(
 /** [댓글] post 댓글 조회 */
 router.get("/post/:postId", commentController.getPostCommentsByPostId);
 
-/** [댓글] post 댓글 조회 */
+/** [댓글] community 댓글 조회 */
 router.get(
   "/community/:communityId",
   commentController.getCommunityCommentsByCommunityId
