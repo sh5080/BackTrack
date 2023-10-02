@@ -45,10 +45,20 @@ export default {
       message: "",
     };
   },
+  computed: {
+    isAdmin() {
+      return this.$store.state.isAdmin;
+    },
+  },
   methods: {
     submitMessage() {
       if (this.message) {
-        this.$emit("submitMessage", this.message);
+        const sender =
+          this.isAdmin === true ? "admin" : this.$store.state.loggedInNickname;
+        const receiver =
+          this.isAdmin === true ? "admin" : this.$store.state.loggedInNickname;
+
+        this.$emit("submitMessage", this.message, sender, receiver);
         this.message = "";
       }
       return;
