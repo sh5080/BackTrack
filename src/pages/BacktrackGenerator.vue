@@ -1260,6 +1260,7 @@ export default {
   height: 225px;
   color: #ffffff;
   font-family: "Noto Sans", sans-serif;
+  font-size: 5.3rem;
   justify-content: center;
 }
 
