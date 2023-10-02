@@ -18,22 +18,22 @@
         <p>커뮤니티</p>
       </sidebar-link>
 
-      <sidebar-link to="/board">
+      <!-- <sidebar-link to="/board">
         <i class="nc-icon nc-settings-gear-64"></i>
         <p>환경설정</p>
-      </sidebar-link>
+      </sidebar-link> -->
       <sidebar-link to="/questions">
         <i class="nc-icon nc-chat-round"></i>
         <p>문의사항</p>
       </sidebar-link>
-      <sidebar-link
+      <!-- <sidebar-link
         v-if="shouldShowAdminLink"
         style="margin-top: 400px"
         to="/admin"
       >
         <i class="nc-icon nc-settings-gear-64"></i>
         <p>관리자</p>
-      </sidebar-link>
+      </sidebar-link> -->
     </side-bar>
     <div class="content-wrapper">
       <header-section></header-section>
