@@ -1,8 +1,6 @@
 import { Router } from "express";
 import * as postController from "../../controllers/postController";
-import { validateRequestBody } from "../middlewares/validateRequest";
 import { validateToken } from "../middlewares/jwt";
-import transactionMiddleware from "../middlewares/transactionHandler";
 import { processImage } from "../middlewares/multer";
 const router = Router();
 
