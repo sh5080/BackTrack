@@ -165,6 +165,7 @@
                 value="primary"
                 hide-details
                 @click="toggleDrum"
+                class="drum-switch"
               ></v-switch>
 
               <v-btn
@@ -1188,5 +1189,22 @@ export default {
 }
 .play-container {
   padding: 50px;
+}
+:deep(.v-switch__track) {
+  width: 170px;
+  height: 60px;
+}
+:deep(.v-switch__thumb) {
+  width: 60px;
+  height: 60px;
+}
+:deep(.v-selection-control--density-default) {
+  --v-selection-control-size: none;
+}
+.v-switch .drum-switch::before {
+  left: 100px;
+}
+.v-switch .drum-switch::after {
+  right: 100px;
 }
 </style>

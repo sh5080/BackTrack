@@ -5,12 +5,9 @@ import SidebarLink from "./SidebarLink.vue";
 const sidebarStore = reactive({
   showSidebar: false,
   sidebarLinks: [
-    {
-      name: "Dashboard",
-      icon: "ti-panel",
-      path: "/",
-    },
-    // ...
+    { name: "Main", path: "main", scrollPosition: 0 },
+    { name: "Backtrack", path: "backtrack", scrollPosition: 200 },
+    { name: "User", path: "user", scrollPosition: 400 }, // 싱글 페이지 렌더링
   ],
   displaySidebar(value) {
     sidebarStore.showSidebar = value;

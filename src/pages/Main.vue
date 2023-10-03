@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <v-carousel
-      height="2200"
+      height="2350"
       hide-delimiter-background
       show-arrows="hover"
       color="blue-grey"

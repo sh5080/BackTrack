@@ -7,7 +7,7 @@ import { store } from "./store/index";
 import LightBootstrap from "./light-bootstrap-main";
 import { router } from "./routes/routes";
 import { SocketPlugin } from "./plugins/socketPlugin";
-import "./registerServiceWorker";
+// import "./registerServiceWorker";
 
 const serverUrl = "http://localhost:4000";
 
@@ -21,6 +21,6 @@ app.use(SocketPlugin);
 app.use(vuetify);
 app.use(router);
 app.use(store);
-app.use(LightBootstrap);
+// app.use(LightBootstrap);
 
 app.mount("#app");

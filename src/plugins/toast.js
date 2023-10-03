@@ -1,4 +1,4 @@
-import { createToast } from "@/libs/mosha-vue-toastify";
+import { createToast } from "../libs/mosha-vue-toastify";
 import "./style.css";
 export function errorMessage(error) {
   if (error.response) {
