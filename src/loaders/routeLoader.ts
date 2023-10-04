@@ -3,7 +3,8 @@ import router from "../api/routes/index";
 
 const routeLoader = (app: Application): Application => {
   app.get("/", (req: Request, res: Response) => {
-    res.send("hello world");
+    const userAgent = req.headers["user-agent"];
+    res.send(`User-Agent: ${userAgent}`);
   });
 
   /** 정적 파일 경로 */
