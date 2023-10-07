@@ -98,7 +98,7 @@ export default {
         ) {
           matchedComponentName = "Questions";
         }
-
+        console.log(matchedComponentName);
         return matchedComponentName;
       }
     },
