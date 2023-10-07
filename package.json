@@ -6,7 +6,7 @@
   "author": "sh5080 <prpn97@gmail.com>",
   "scripts": {
     "serve": "vue-cli-service serve --open",
-    "build": "vue-cli-service build",
+    "build": "npx sass ./src/assets/sass/light-bootstrap-dashboard.scss ./public/css/main.css && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service serve --open",
     "e2e": "node test/e2e/runner.js",
