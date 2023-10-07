@@ -53,26 +53,57 @@ export default {
           components.push(Admin);
         }
       }
+      console.log(components);
       return components;
     },
   },
 
   methods: {
     getComponentName(component) {
+      //개발환경
       let filePath = component.__file;
+
       if (filePath === "src/pages/BacktrackGenerator.vue") {
         filePath = "src/pages/Backtrack.vue";
       }
+
       if (filePath === "src/pages/UserProfile.vue") {
         filePath = "src/pages/User.vue";
       }
 
       if (filePath && filePath.includes("/")) {
         const componentName = filePath.split("/").pop().split(".")[0];
+        console.log("여기: ", componentName);
         return componentName;
-      } else return component;
+      }
+      //배포환경
+      else {
+        let componentName = Object.keys(component.components);
+        let matchedComponentName = "";
+
+        if (componentName.includes("Mainpage1")) {
+          matchedComponentName = "Main";
+        } else if (componentName.includes("BacktrackSuccessModal")) {
+          matchedComponentName = "Backtrack";
+        } else if (componentName.includes("ItemCard")) {
+          matchedComponentName = "Board";
+        } else if (
+          componentName.includes("Card") &&
+          componentName.includes("CommunityModal")
+        ) {
+          matchedComponentName = "Community";
+        } else if (
+          componentName.includes("Card") &&
+          !componentName.includes("CommunityModal")
+        ) {
+          matchedComponentName = "Questions";
+        }
+
+        return matchedComponentName;
+      }
     },
   },
+
   data() {
     return {
       currentRoute: this.$route,
@@ -102,7 +133,7 @@ export default {
   /* overflow-y: auto; */
   /* overflow-x: hidden; */
   margin-top: 300px;
-  border: 10px solid #000;
+  /* border: 10px solid #000; */
   /* padding: 100px 300px; */
 }
 #Main {

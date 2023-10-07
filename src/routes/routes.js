@@ -93,11 +93,14 @@ router.afterEach((to) => {
   const componentName = to.name;
   if (componentName) {
     const componentId = componentName;
-    const componentData = document.querySelector(`#${componentId}`);
-    if (componentData) {
-      const yOffset = componentData.getBoundingClientRect().top;
-      window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
-    }
+
+    setTimeout(() => {
+      const componentData = document.querySelector(`#${componentId}`);
+      if (componentData) {
+        const yOffset = componentData.getBoundingClientRect().top;
+        window.scrollBy({ top: yOffset - 270, behavior: "smooth" });
+      }
+    }, 100);
   }
 });
 
