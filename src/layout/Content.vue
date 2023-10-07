@@ -53,7 +53,6 @@ export default {
           components.push(Admin);
         }
       }
-      console.log(components);
       return components;
     },
   },
@@ -73,7 +72,6 @@ export default {
 
       if (filePath && filePath.includes("/")) {
         const componentName = filePath.split("/").pop().split(".")[0];
-        console.log("여기: ", componentName);
         return componentName;
       }
       //배포환경
@@ -98,7 +96,6 @@ export default {
         ) {
           matchedComponentName = "Questions";
         }
-        console.log(matchedComponentName);
         return matchedComponentName;
       }
     },
