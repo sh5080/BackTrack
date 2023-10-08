@@ -41,6 +41,15 @@ export default {
 </script>
 
 <style lang="scss">
+body {
+  margin: 0;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
 .vue-notifyjs.notifications {
   .list-move {
     transition: transform 0.3s, opacity 0.4s;

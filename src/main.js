@@ -18,10 +18,9 @@ app.config.globalProperties.$axios = axios.create({
 
 loadFonts();
 app.use(SocketPlugin);
-
+app.use(vuetify);
 app.use(router);
 app.use(store);
-app.use(vuetify);
 // app.use(LightBootstrap);
 
 app.mount("#app");

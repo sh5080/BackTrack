@@ -7,6 +7,7 @@ function resolveSrc(_path) {
 
 module.exports = {
   // outputDir: "dist",
+  publicPath: "",
   lintOnSave: false,
 
   configureWebpack: {
@@ -50,13 +51,13 @@ module.exports = {
 
   css: {
     sourceMap: process.env.NODE_ENV !== "production",
-    loaderOptions: {
-      scss: {
-        additionalData: `
-          @import "@/assets/sass/light-bootstrap-dashboard.scss";
-        `,
-      },
-    },
+    // loaderOptions: {
+    //   scss: {
+    //     additionalData: `
+    //       @import "@/assets/sass/light-bootstrap-dashboard.scss";
+    //     `,
+    //   },
+    // },
   },
 
   pluginOptions: {
