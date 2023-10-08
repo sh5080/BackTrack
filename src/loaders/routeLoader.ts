@@ -1,12 +1,14 @@
 import express, { Application, Request, Response } from "express";
 import router from "../api/routes/index";
-
+import path from "path";
+import history from "connect-history-api-fallback";
 const routeLoader = (app: Application): Application => {
   app.get("/", (req: Request, res: Response) => {
-    const userAgent = req.headers["user-agent"];
-    res.send(`User-Agent: ${userAgent}`);
+    // res.sendFile(path.resolve(__dirname, "index.html"));
+    // console.log("여기: ", path.resolve(__dirname, "index.html"));
   });
 
+  app.use(history());
   /** 정적 파일 경로 */
   app.use("/static", express.static("public"));
 
