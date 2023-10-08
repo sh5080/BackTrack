@@ -41,16 +41,16 @@ module.exports = {
     });
   },
 
-  pwa: {
-    name: "Vue Light Bootstrap Dashboard",
-    themeColor: "#344675",
-    msTileColor: "#344675",
-    appleMobileWebAppCapable: "yes",
-    appleMobileWebAppStatusBarStyle: "#344675",
-  },
+  // pwa: {
+  //   name: "Vue Light Bootstrap Dashboard",
+  //   themeColor: "#344675",
+  //   msTileColor: "#344675",
+  //   appleMobileWebAppCapable: "yes",
+  //   appleMobileWebAppStatusBarStyle: "#344675",
+  // },
 
   css: {
-    sourceMap: process.env.NODE_ENV !== "production",
+    // sourceMap: process.env.NODE_ENV !== "production",
     // loaderOptions: {
     //   scss: {
     //     additionalData: `
