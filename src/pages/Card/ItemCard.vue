@@ -305,7 +305,7 @@ export default {
           this.$store.commit("setChordData", backtrackData.backtrack);
         }
 
-        const result = response.data.resultData;
+        const result = response.data.postData;
 
         this.$store.commit("setPostData", result);
         this.$store.commit("setPostAuthor", author);
