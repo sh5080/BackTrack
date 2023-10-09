@@ -21,7 +21,7 @@
       <ul
         class="nav nav-main__links"
         :style="{
-          width: sidebarExpanded ? '400px' : '90px',
+          width: sidebarExpanded ? '300px' : '90px',
         }"
       >
         <slot>
@@ -87,10 +87,10 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        width: this.sidebarExpanded ? "400px" : "90px",
+        width: this.sidebarExpanded ? "300px" : "90px",
         height: "500px",
         borderRadius: "100px",
-        boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
+        // boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
         textShadow: " 4px 4px 4px rgba(0, 0, 0, 0.2)",
       };
     },
@@ -121,8 +121,8 @@ export default {
   position: fixed;
   /* top: 15%;
   left: 0 !important; */
-  top: 5%;
-  left: 5%;
+  top: 15%;
+  left: 1%;
   /* transform: translate(-50%, -50%); */
   /* transform: translateY(-50%); */
 }

@@ -1,6 +1,6 @@
 <template>
   <header class="input-group">
-    <v-row style="align-items: center; justify-content: flex-end">
+    <v-row style="align-items: center">
       <v-col cols="1" style="display: flex; justify-content: flex-start">
         <div class="logo-button-container" @click="goToBacktrack">
           <img
@@ -10,7 +10,8 @@
               margin-left: 50px;
               width: 400%;
               height: auto;
-              max-width: 800px;
+              max-width: 200px;
+              /* max-width: 800px; */
               display: block;
             "
           />
@@ -24,7 +25,7 @@
 
           <button
             class="button-container"
-            style="font-size: 80px"
+            style="font-size: 1.5rem"
             v-show="!$store.state.isAuthenticated"
             @click="openLoginModal"
           >
@@ -107,17 +108,18 @@ export default {
 <style scoped>
 .input-group {
   background-color: #fff;
-  font-size: 80px;
-  padding: 30px;
-  margin-left: 325px;
+  font-size: 3rem;
+  /* padding: 30px; */
+
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 93%;
   box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
   position: fixed;
   z-index: 9;
-  top: 0;
-  left: 0;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .categories {
   display: flex;
@@ -137,10 +139,9 @@ export default {
 }
 .button-container {
   display: flex;
-  margin-top: 10px;
   color: #0c1860;
   font-weight: 500;
-  padding: 10px 40px;
+  /* padding: 10px 40px; */
   border-radius: 10px;
   cursor: pointer;
   border: none;
@@ -168,6 +169,6 @@ export default {
   align-items: center;
 }
 .v-row {
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
 }
 </style>

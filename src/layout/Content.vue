@@ -123,22 +123,25 @@ export default {
 
 .content,
 .component-style {
-  height: 3200px;
-  max-height: 5500px;
-  width: 5500px;
+  /* height: 3200px;
+  max-height: 5500px; */
+  /* height: 1200px; */
+  /* max-height: 1200px; */
+  /* width: 5500px; */
+
   /* margin-left: 200px; */
   /* overflow-y: auto; */
   /* overflow-x: hidden; */
-  margin-top: 300px;
+  /* margin-top: 300px; */
   /* border: 10px solid #000; */
   /* padding: 100px 300px; */
 }
 #Main {
-  height: 2400px;
-  max-height: 5500px;
-  width: 5500px;
+  height: 700px;
+  /* max-height: 1200px; */
+  /* width: 5500px; */
 
-  margin-top: 300px;
-  border: 10px solid #000;
+  /* margin-top: 300px; */
+  /* border: 10px solid #000; */
 }
 </style>
