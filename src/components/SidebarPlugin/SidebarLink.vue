@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" @click.native="hideSidebar" v-bind="$attrs" tag="li">
+  <component :is="tag" v-bind="$attrs" tag="li">
     <a class="nav-link" v-bind="$attrs">
       <slot>
         <i v-if="link.icon" :class="link.icon"></i>
@@ -18,7 +18,7 @@ export default {
       default: () => {
         return {
           name: "",
-          path: "",
+          // path: "",
           icon: "",
         };
       },
@@ -26,17 +26,6 @@ export default {
     tag: {
       type: String,
       default: "router-link",
-    },
-  },
-  methods: {
-    hideSidebar() {
-      if (
-        this.autoClose &&
-        this.$root.sidebarStore.showSidebar &&
-        this.$root.sidebarStore.showSidebar === true
-      ) {
-        this.$root.sidebarStore.displaySidebar(false);
-      }
     },
   },
 };

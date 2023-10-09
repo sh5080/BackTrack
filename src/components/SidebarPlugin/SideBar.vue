@@ -21,14 +21,13 @@
       <ul
         class="nav nav-main__links"
         :style="{
-          width: sidebarExpanded ? '1000px' : '280px',
+          width: sidebarExpanded ? '400px' : '90px',
         }"
       >
         <slot>
           <sidebar-link
             v-for="(link, index) in sidebarLinks"
             :key="link.name + index"
-            :to="link.path"
             :link="link"
             :sidebarExpanded="sidebarExpanded"
           >
@@ -88,28 +87,26 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        width: this.sidebarExpanded ? "1000px" : "280px",
-        height: "2000px",
+        width: this.sidebarExpanded ? "400px" : "90px",
+        height: "500px",
         borderRadius: "100px",
         boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
-        textShadow: " 4px 4px 4px rgba(0, 0, 0, 0.5)",
+        textShadow: " 4px 4px 4px rgba(0, 0, 0, 0.2)",
       };
     },
   },
   data() {
     return {
-      sidebarExpanded: false,
-      sidebarLinks: [
-        { name: "Main", path: "/main", scrollPosition: 0 },
-        { name: "Backtrack", path: "/backtrack", scrollPosition: 200 },
-        { name: "User", path: "/user", scrollPosition: 400 }, // 싱글 페이지 렌더링
-      ],
+      // sidebarExpanded: false,
+      sidebarExpanded: this.$store.state.openSidebar,
     };
   },
   methods: {
     toggleSidebar() {
+      this.$store.commit("setOpenSidebar", !this.sidebarExpanded);
       this.sidebarExpanded = !this.sidebarExpanded;
     },
+
     goMain() {
       this.$router.push("/");
     },
@@ -121,10 +118,13 @@ export default {
   cursor: pointer;
 }
 #sidebar {
-  height: 2000px;
-
-  top: 400px;
-  left: 30px;
+  position: fixed;
+  /* top: 15%;
+  left: 0 !important; */
+  top: 5%;
+  left: 5%;
+  /* transform: translate(-50%, -50%); */
+  /* transform: translateY(-50%); */
 }
 
 .sidebar .sidebar-wrapper {
@@ -144,18 +144,14 @@ export default {
   top: 0%;
   right: 0;
   height: 100%;
-  width: 55px;
+  /* width: 55px; */
   z-index: 9999 !important;
   cursor: pointer;
   padding: 8px;
   border-radius: 100px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); */
 }
 .toggle-button:hover {
   background-color: rgba(14, 81, 111, 0.6);
-}
-
-.icon-large {
-  font-size: 60px;
 }
 </style>

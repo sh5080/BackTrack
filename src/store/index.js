@@ -46,6 +46,7 @@ export const store = createStore({
       description: "",
       createdAt: "",
     },
+    openSidebar: false,
   },
   mutations: {
     setAuthenticated(state, isAuthenticated) {
@@ -155,6 +156,9 @@ export const store = createStore({
     },
     setCommunityData(state, value) {
       state.communityData = value;
+    },
+    setOpenSidebar(state, value) {
+      state.openSidebar = value;
     },
   },
 

@@ -3,19 +3,19 @@
     <side-bar style="z-index: 10">
       <sidebar-link to="/backtrack">
         <i class="nc-icon nc-note-03"></i>
-        <p>백킹트랙</p>
+        <p v-if="isSidebarExpanded">백킹트랙</p>
       </sidebar-link>
       <sidebar-link v-if="shouldShowUserInfoLink" to="/user">
         <i class="nc-icon nc-circle-09"></i>
-        <p>회원정보</p>
+        <p v-if="isSidebarExpanded">회원정보</p>
       </sidebar-link>
       <sidebar-link to="/board">
         <i class="nc-icon nc-grid-45"></i>
-        <p>게시판</p>
+        <p v-if="isSidebarExpanded">게시판</p>
       </sidebar-link>
       <sidebar-link to="/community">
         <i class="nc-icon nc-bullet-list-67"></i>
-        <p>커뮤니티</p>
+        <p v-if="isSidebarExpanded">커뮤니티</p>
       </sidebar-link>
 
       <!-- <sidebar-link to="/board">
@@ -24,7 +24,7 @@
       </sidebar-link> -->
       <sidebar-link to="/questions">
         <i class="nc-icon nc-chat-round"></i>
-        <p>문의사항</p>
+        <p v-if="isSidebarExpanded">문의사항</p>
       </sidebar-link>
       <!-- <sidebar-link
         v-if="shouldShowAdminLink"
@@ -41,7 +41,6 @@
       <div class="main-panel">
         <chat> </chat>
         <dashboard-content> </dashboard-content>
-        <content-footer></content-footer>
       </div>
     </div>
   </div>
@@ -50,18 +49,14 @@
 <script>
 import { defineComponent } from "vue";
 import HeaderSection from "./HeaderSection.vue";
-import ContentFooter from "./ContentFooter.vue";
 import DashboardContent from "./Content.vue";
-import MobileMenu from "./MobileMenu.vue";
 import sideBar from "../components/SidebarPlugin/SideBar.vue";
 import sidebarLink from "../components/SidebarPlugin/SidebarLink.vue";
 import Chat from "./Chat.vue";
 export default defineComponent({
   components: {
     HeaderSection,
-    ContentFooter,
     DashboardContent,
-    MobileMenu,
     sideBar,
     sidebarLink,
     Chat,
@@ -73,6 +68,9 @@ export default defineComponent({
     },
     shouldShowAdminLink() {
       return this.$store.state.isAdmin;
+    },
+    isSidebarExpanded() {
+      return this.$store.state.openSidebar;
     },
   },
 });
