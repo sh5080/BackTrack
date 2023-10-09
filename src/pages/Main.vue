@@ -1,9 +1,9 @@
 <template>
   <div style="position: relative">
     <v-carousel
-      height="2350"
+      height="700"
       hide-delimiter-background
-      show-arrows="hover"
+      :show-arrows="false"
       color="blue-grey"
       size="1000"
     >
@@ -118,15 +118,21 @@ export default {
 };
 </script>
 <style scoped>
-:deep(button:not(:disabled), [type="button"]:not(:disabled)) {
+/* :deep(button:not(:disabled), [type="button"]:not(:disabled)) {
   cursor: pointer;
   font-size: 5rem;
   width: 200px;
   height: 200px;
-}
+} */
 :deep(.v-carousel--hide-delimiter-background .v-carousel__controls) {
   padding: 100px;
 }
+:deep(.v-window__controls) {
+  /* padding: 100px;
+  left: -15%;
+  width: 130%; */
+}
+
 .coso_blur3_right,
 .coso_blur2_right,
 .coso_blur1_right,

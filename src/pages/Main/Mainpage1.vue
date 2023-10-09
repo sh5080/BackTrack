@@ -18,17 +18,18 @@ export default {
 .main-body {
   text-align: center;
   position: relative;
-  top: 36%;
+  top: 30%;
+  /* top: 10%; */
 }
 
 .main-title {
   color: #1d1d22;
-  font-size: 10rem;
+  /* font-size: 10rem; */
   line-height: 10rem;
   z-index: 999;
   text-align: center;
   margin: 0;
-  padding: 80px;
+  /* padding: 80px; */
 }
 
 .start:hover {
