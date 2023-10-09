@@ -4,8 +4,8 @@ import path from "path";
 import history from "connect-history-api-fallback";
 const routeLoader = (app: Application): Application => {
   app.get("/", (req: Request, res: Response) => {
-    // res.sendFile(path.resolve(__dirname, "index.html"));
-    // console.log("여기: ", path.resolve(__dirname, "index.html"));
+    res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+    console.log("여기: ", path.resolve(__dirname, "dist", "index.html"));
   });
 
   app.use(history());
