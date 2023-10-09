@@ -20,14 +20,14 @@ License - nucleoapp.com/license/
 .nc-icon {
   display: inline-block;
   font: normal normal normal 14px/1 "nucleo-icons";
-  font-size: 120px;
+  font-size: 2rem;
   text-transform: none;
   /* Better Font Rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  position: fixed;
-  margin-top: 15px;
-  margin-left: -30px;
+  position: absolute;
+  margin-top: 3px;
+  // margin-left: -30px;
 }
 /*------------------------
   change icon size
