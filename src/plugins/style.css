@@ -5,20 +5,19 @@
   justify-content: space-between;
   position: fixed;
   min-height: 64px;
-  max-height: 3000px;
-  height: 400px;
+  max-height: 150px;
   box-sizing: border-box;
   overflow: hidden;
   padding: 12px 8px;
   word-break: break-word;
   min-width: 312px;
-  max-width: 3000px;
+  max-width: 480px;
   z-index: 9999;
   width: -webkit-max-content;
   width: -moz-max-content;
   width: max-content;
   transition: top 0.3s ease-out 0.5s, bottom 0.3s ease-out 0.5s;
-  border-radius: 20px;
+  border-radius: 8px;
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1), 0 2px 15px 0 rgba(0, 0, 0, 0.05);
   margin: 0 16px;
   -webkit-touch-callout: none;
@@ -33,32 +32,31 @@
 }
 .mosha__toast__content {
   font-family: sans-serif;
-  line-height: 90px;
+  line-height: 20px;
   display: flex;
   flex-direction: column;
   color: #fff;
 }
 .mosha__toast__content__text {
   margin-bottom: 2px;
-  font-size: 70px;
-  font-weight: 550;
-  padding: 20px;
+  font-size: 16px;
+  font-weight: 700;
 }
 .mosha__toast__content__description {
-  font-size: 70px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
 }
 .mosha__toast__slot-wrapper {
   width: 100%;
 }
 .mosha__toast__close-icon::before {
-  font-size: 80px;
+  font-size: 20px;
   cursor: pointer;
   content: "×";
   color: #fff;
   transition: color 0.3s;
   font-weight: 600;
-  margin-right: 28px;
+  margin-left: 10px;
   position: relative;
   top: -12px;
 }
@@ -69,16 +67,11 @@
   transition: all linear 0.2s;
   position: absolute;
   z-index: 9999;
-  height: 20px;
+  height: 8px;
   background-color: rgba(255, 255, 255, 0.6);
   bottom: 0;
   margin-left: -8px;
 }
-
-.mosha__icon {
-  margin-left: 80px;
-}
-
 .mosha__toast.success {
   background-color: #06d6a0;
 }

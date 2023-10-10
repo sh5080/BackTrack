@@ -40,14 +40,17 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 body {
   margin: 0;
 }
 
 #app {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  margin: 0 auto;
+}
+.mosha__toast__content-wrapper > span > svg {
+  width: 70px;
 }
 
 .vue-notifyjs.notifications {
