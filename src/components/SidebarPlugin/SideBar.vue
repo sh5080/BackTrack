@@ -21,7 +21,7 @@
       <ul
         class="nav nav-main__links"
         :style="{
-          width: sidebarExpanded ? '300px' : '90px',
+          width: sidebarExpanded ? '260px' : '80px',
         }"
       >
         <slot>
@@ -74,20 +74,12 @@ export default {
       type: Array,
       default: () => [],
     },
-    autoClose: {
-      type: Boolean,
-      default: true,
-    },
   },
-  provide() {
-    return {
-      autoClose: this.autoClose,
-    };
-  },
+
   computed: {
     sidebarStyle() {
       return {
-        width: this.sidebarExpanded ? "300px" : "90px",
+        width: this.sidebarExpanded ? "260px" : "80px",
         height: "500px",
         borderRadius: "100px",
         // boxShadow: " 20px 20px 20px rgba(0, 0, 0, 0.1)",
@@ -137,13 +129,13 @@ export default {
 }
 .sidebar .sidebar-wrapper .logo .logo__container {
   padding-left: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 .toggle-button {
   position: absolute;
-  top: 0%;
+  top: 10%;
   right: 0;
-  height: 100%;
+  height: 80%;
   /* width: 55px; */
   z-index: 9999 !important;
   cursor: pointer;

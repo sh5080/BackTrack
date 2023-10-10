@@ -108,12 +108,13 @@ export default {
 <style scoped>
 .input-group {
   background-color: #fff;
-  font-size: 3rem;
+  font-size: 1.2rem;
   /* padding: 30px; */
 
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 93%;
+  height: 60px;
   box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
   position: fixed;
   z-index: 9;
@@ -121,21 +122,12 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.categories {
-  display: flex;
-  gap: 0px;
-  width: 100%;
-  padding: 0px 400px;
-  margin-bottom: 40px;
-  justify-content: space-between;
-  /* background: linear-gradient(to top, #00b869, #03c75a); */
-}
 
 .auth-container {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-right: 50px;
+  margin-right: 25px;
 }
 .button-container {
   display: flex;
@@ -164,7 +156,6 @@ export default {
 
 .welcome-message {
   display: flex;
-  margin-top: 15px;
   margin-right: 25px;
   align-items: center;
 }
