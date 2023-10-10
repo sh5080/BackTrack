@@ -11,7 +11,11 @@ export function socketIoLoader(app: Application): Server {
   const httpServer = app.listen(3000);
   const io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:8080"],
+      origin: [
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://192.168.0.13:8080",
+      ],
       credentials: true,
     },
   });
