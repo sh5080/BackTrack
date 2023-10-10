@@ -172,13 +172,13 @@ export const store = createStore({
 
     async fetchSessionData({ commit }) {
       try {
+        const serverUrl = process.env.VUE_APP_SERVER_URL;
         const response = await axios.get(
-          `http://localhost:4000/api/auth/getSessionData`,
+          `${serverUrl}/api/auth/getSessionData`,
           {
             withCredentials: true,
           }
         );
-
         const nickname = response.data.nickname;
         const role = response.data.role;
         if (role === "ADMIN") {

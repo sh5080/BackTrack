@@ -100,7 +100,9 @@ export default {
     const pushmessageData = (data) => {
       store.commit(Constant.PUSH_message_DATA, data);
     };
-    const socket = io("http://localhost:3000/");
+
+    const serverUrl = process.env.VUE_APP_SOCKET_URL;
+    const socket = io(`${serverUrl}`);
     const sendMessage = async (message) => {
       //사용자인 경우
       if (!store.state.isAdmin) {

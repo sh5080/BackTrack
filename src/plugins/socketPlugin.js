@@ -1,6 +1,6 @@
 import io from "socket.io-client";
-
-const socket = io("http://localhost:3000");
+const serverUrl = process.env.VUE_APP_SOCKET_URL;
+const socket = io(`${serverUrl}`);
 
 export const SocketPlugin = {
   install(app) {
