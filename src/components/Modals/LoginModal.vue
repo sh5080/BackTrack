@@ -1,9 +1,7 @@
 <template>
   <div id="content" class="container">
-    <form @submit.prevent="login" style="margin-left: 10px" autocomplete="off">
-      <h2 class="title" style="position: relative; top: 50px; font-size: 6em">
-        로그인
-      </h2>
+    <form @submit.prevent="login" autocomplete="off">
+      <h2 class="title" style="position: relative; font-size: 2em">로그인</h2>
       <div class="input">
         <input
           class="form-control"
@@ -11,26 +9,23 @@
           name="username"
           placeholder="아이디"
           v-model="username"
-          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: 100px"
+          style="font-size: 1em; padding: 0.5em; height: 1em"
         />
-      </div>
 
-      <div class="input">
         <input
           class="form-control"
           type="password"
           name="password"
           placeholder="비밀번호"
           v-model="password"
-          style="font-size: 4em; padding: 0.5em; height: 1em; margin-top: -90px"
+          style="font-size: 1em; padding: 0.5em; height: 1em"
         />
       </div>
       <div
-        class="login-error-alert alert-warning alert-dismissible fade show mt-5"
+        class="login-error-alert alert-warning fade show"
         role="alert"
         v-if="errorAlert"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
       >
         {{ errorMessage }}
       </div>
@@ -49,59 +44,56 @@
         type="submit"
         class="btn-pers"
         id="login_button"
-        style="font-size: 3.5em"
+        style="font-size: 0.85em"
       >
         Login
       </button>
 
       <div class="image-button">
-        <button type="button" @click="oauthLogin('GOOGLE')">
-          <img
-            src="/img/google.png"
-            style="margin-top: 50px"
-            alt="Google 로그인"
-          />
-        </button>
+        <img
+          @click="oauthLogin('GOOGLE')"
+          src="/img/google.png"
+          style="margin-top: 50px; width: 51%"
+          alt="Google 로그인"
+        />
       </div>
 
       <div class="image-button">
-        <button type="button" @click="oauthLogin('KAKAO')">
-          <img
-            src="/img/kakao.png"
-            style="width: -40px"
-            alt="카카오 로그인"
-            class="image-button-img"
-          />
-        </button>
+        <img
+          @click="oauthLogin('KAKAO')"
+          src="/img/kakao.png"
+          alt="카카오 로그인"
+          class="image-button-img"
+        />
       </div>
 
       <div
         class="alternative-option"
-        style="
-          font-size: 3em;
-          display: grid;
-          grid-gap: 10px;
-          grid-auto-flow: column;
-        "
+        style="display: grid; grid-gap: 10px; grid-auto-flow: column"
       >
         <span
           class="alt-reg"
           @click="openRegisterModal"
-          style="font-size: 1.3em; cursor: pointer"
+          style="font-size: 1.2em; cursor: pointer"
           >회원가입</span
         >
-        <span
-          class="alt-id"
-          @click="openFindUsernameModal"
-          style="font-size: 1.3em; cursor: pointer"
-          >아이디 찾기&nbsp;&nbsp;&nbsp;&nbsp;/</span
-        >
-        <span
-          class="alt-pw"
-          @click="openFindPasswordModal"
-          style="font-size: 1.3em; margin-left: -200px; cursor: pointer"
-          >비밀번호 재설정</span
-        >
+        <div class="alt-container">
+          <div
+            class="alt-id"
+            @click="openFindUsernameModal"
+            style="font-size: 1.2em; cursor: pointer"
+          >
+            아이디 찾기
+          </div>
+          <div style="padding: 0px 5px">/</div>
+          <div
+            class="alt-pw"
+            @click="openFindPasswordModal"
+            style="font-size: 1.2em; cursor: pointer"
+          >
+            비밀번호 재설정
+          </div>
+        </div>
       </div>
     </form>
   </div>
@@ -157,7 +149,7 @@ export default {
       setTimeout(() => {
         this.isShaking = false;
         this.clearErrors();
-      }, 3000);
+      }, 300000);
     },
 
     async oauthLogin(provider) {
@@ -259,11 +251,11 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid lightgray;
-  padding: 4rem 4rem;
+  padding: 1rem;
   border-radius: 5px;
   background: #fefefe;
-  max-width: 2000px;
-  max-height: 5000px;
+  max-width: 470px;
+  max-height: 600px;
 }
 .title {
   font-weight: 600;
@@ -313,9 +305,10 @@ export default {
 .input {
   display: flex;
   flex-direction: column;
-  margin-top: 80px;
-  margin-bottom: 0px;
-  padding: 50px;
+  margin-top: 40px;
+  margin-bottom: 30px;
+  align-items: center;
+  /* padding: 50px; */
 }
 
 .input > label {
@@ -323,10 +316,10 @@ export default {
 }
 
 .input > input {
-  margin-top: 100px;
+  margin-top: 20px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  height: 150px !important;
+  width: 75%;
+  height: 39px !important;
 }
 
 .image-button {
@@ -343,24 +336,25 @@ export default {
 .image-button img {
   /* width: 250%;
   max-width: 700px; */
-  width: 700px;
+  width: 50%;
   height: auto;
   margin-right: auto;
   margin-left: auto;
+  object-fit: cover;
 
   /* height: 208px; */
 }
-.image-button-img {
+/* .image-button-img {
   width: 100%;
   max-width: 680px;
   height: 200px;
   object-fit: cover;
-}
+} */
 
 .btn-pers {
   position: relative;
   left: 50%;
-  width: 93%;
+  width: 75%;
   padding: 1em 2.5em;
   font-size: 12px;
   text-transform: uppercase;
@@ -369,13 +363,13 @@ export default {
   color: #000;
   background-color: #cff7aa;
   border: none;
-  border-radius: 45px;
+  border-radius: 15px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease 0s;
   cursor: pointer;
   outline: none;
   transform: translateX(-50%);
-  margin-top: 100px;
+  margin-top: 40px;
 }
 
 .btn-pers:hover {
@@ -391,15 +385,21 @@ export default {
 
 .alternative-option {
   text-align: center;
-  margin-top: 100px;
+  margin-top: 20px;
   transition: transform 0.2s;
 }
+.alt-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .alt-id:hover,
 .alt-pw:hover,
 .alt-reg:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
-
+.alt-container,
 .alternative-option > span {
   color: #0e9448;
   cursor: pointer;
@@ -407,6 +407,10 @@ export default {
 
 .login-error-alert {
   font-size: 0.9rem;
-  margin-bottom: -92px;
+  text-align: center;
+  margin-bottom: -21.5px;
+  width: 80%;
+  position: relative;
+  left: 10%;
 }
 </style>
