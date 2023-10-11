@@ -5,7 +5,6 @@
       class="btn-check"
       type="button"
       :class="{ 'btn-success': usernameIsValid }"
-      style="font-size: 3em"
     >
       중복확인
     </button>
@@ -14,29 +13,20 @@
       style="margin-left: 10px"
       autocomplete="off"
     >
-      <h2
-        class="mb-3"
-        style="font-size: 6em; margin-top: -90px; padding-bottom: 0px"
+      <div
+        class="title"
+        style="font-size: 1.5em; margin-top: -20px; padding-bottom: 10px"
       >
         회원가입
-      </h2>
+      </div>
       <div class="input-reg">
-        <label for="username" style="font-size: 4em; margin-top: 80px"
-          >아이디</label
-        >
+        <label for="username">아이디</label>
 
         <input
           class="form-control"
           type="text"
           v-model="username"
           placeholder="아이디"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
-          "
         />
       </div>
 
@@ -45,7 +35,7 @@
         role="alert"
         v-if="usernameError"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
+        style="font-size: 1em; text-align: center"
       >
         <div class="error-message">
           {{ usernameErrorMessage }}
@@ -55,22 +45,20 @@
         class="alert_correct alert-success alert-dismissible fade show"
         role="alert"
         v-if="usernameIsValid"
-        style="font-size: 3em; text-align: center"
+        style="font-size: 1em; text-align: center"
       >
         {{ usernameMessage }}
       </div>
 
       <div class="input-reg3">
         <div>
-          <label for="nickname" style="font-size: 4em; margin-top: 100px"
-            >닉네임</label
-          >
+          <label for="nickname">닉네임</label>
           <button
             @click="checkNickname"
             class="btn-check"
             type="button"
             :class="{ 'btn-success': nicknameIsValid }"
-            style="font-size: 3em; left: 74%"
+            style="left: 75%"
           >
             중복확인
           </button>
@@ -80,13 +68,6 @@
           type="text"
           v-model="nickname"
           placeholder="닉네임"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
-          "
         />
       </div>
       <div
@@ -94,7 +75,7 @@
         role="alert"
         v-if="nicknameError"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
+        style="font-size: 1em; text-align: center"
       >
         <div class="error-message">
           {{ nicknameErrorMessage }}
@@ -109,7 +90,7 @@
         {{ nicknameMessage }}
       </div>
       <div class="input-reg">
-        <label for="password" style="font-size: 4em; margin-top: 140px"
+        <label for="password" style="font-size: 1em; margin-top: 140px"
           >비밀번호 (영문, 숫자 포함 10자 이상 20자 이내)</label
         >
         <input
@@ -118,13 +99,6 @@
           v-model="password"
           placeholder="비밀번호"
           @blur="validatePasswordValidity"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 20px;
-            margin-bottom: 0px;
-          "
         />
         <input
           class="form-control"
@@ -132,13 +106,6 @@
           v-model="passwordConfirm"
           placeholder="비밀번호 확인"
           @blur="validatePasswordEquality"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 0px;
-            margin-bottom: 0px;
-          "
         />
       </div>
       <div
@@ -146,13 +113,13 @@
         role="alert"
         v-if="passwordError"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
+        style="font-size: 1em; text-align: center"
       >
         {{ passwordErrorMessage }}
       </div>
 
       <div class="input-reg3">
-        <label for="email" style="font-size: 4em; margin-top: 100px"
+        <label for="email" style="font-size: 1em; margin-top: 100px"
           >이메일</label
         >
         <input
@@ -161,13 +128,6 @@
           v-model="email"
           placeholder="이메일   (비밀번호 찾기 등에 사용됩니다.)"
           @blur="validateEmail"
-          style="
-            font-size: 4em;
-            padding: 0.5em;
-            height: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
-          "
         />
       </div>
       <div
@@ -175,12 +135,12 @@
         role="alert"
         v-if="emailError"
         :class="{ 'error-shake-animation': isShaking }"
-        style="font-size: 3em; text-align: center"
+        style="font-size: 1em; text-align: center"
       >
         {{ emailErrorMessage }}
       </div>
 
-      <div class="alternative-option" style="font-size: 3em">
+      <div class="alternative-option">
         이미 가입되어 있으신가요?
         <span
           @click="hideRegisterModal"
@@ -192,7 +152,7 @@
         v-if="showRegisterButton"
         type="submit"
         class="mt-4 btn-reg"
-        style="font-size: 3.5em"
+        style="font-size: 1.5em"
       >
         Register
       </button>
@@ -476,17 +436,15 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid lightgray;
-  padding: 4rem 4rem;
+  padding: 4rem;
   border-radius: 5px;
   background: #fefefe;
   max-width: 2000px;
   max-height: 80vh;
-  width: 1600px;
+  /* width: 1600px; */
   /* z-index: 9997; */
 }
-.mb-3 {
-  font-weight: 600;
-}
+
 .mt-3nt {
   max-height: calc(100% - 48px);
   width: calc(100% - 48px);
@@ -501,13 +459,13 @@ export default {
 .input-reg {
   display: flex;
   flex-direction: column;
-  margin-top: -80px;
-  margin-bottom: 0px;
+  /* margin-top: -80px; */
+  /* margin-bottom: 0px; */
 }
 .input-reg3 {
   display: flex;
   flex-direction: column;
-  margin-top: 0px;
+  margin-top: 20px;
   margin-bottom: 0px;
 }
 
@@ -518,9 +476,9 @@ export default {
 
 .input-reg3 > input,
 .input-reg > input {
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  height: 150px !important;
+  /* height: 150px !important; */
 }
 
 .btn-reg {
@@ -536,7 +494,7 @@ export default {
   background-color: #fff;
   border: none;
   border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease 0s;
   cursor: pointer;
   outline: none;
@@ -544,17 +502,18 @@ export default {
 }
 .btn-check {
   position: relative;
-  top: 6%;
+  top: 9%;
   left: 85%;
   padding: 0.5em 2.5em;
-  font-size: 8px;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 2.5px;
   font-weight: 700;
   color: #000;
   background-color: #fff;
   border: none;
-  border-radius: 45px;
+  border-radius: 12px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease 0s;
   cursor: pointer;
@@ -581,7 +540,7 @@ export default {
 
 .alternative-option {
   text-align: center;
-  margin-top: 130px;
+  margin-top: 30px;
 }
 
 .alternative-option > span {
@@ -590,30 +549,30 @@ export default {
 }
 
 .alert_username {
-  font-size: 0.9rem;
-  margin-bottom: -72px;
+  font-size: 0.4rem;
+  margin-bottom: -32px;
 }
 .alert_nickname {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   margin-bottom: -152px;
 }
 .alert_password {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
 
   margin-bottom: -48px;
   max-height: 0px;
 }
 .alert {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   margin-bottom: -142px;
 }
 .alert_correct {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   /* margin-bottom: -152px; */
   margin-bottom: -72px;
 }
 .alert-reg {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   /* margin-bottom: -92px; */
   margin-bottom: -120px;
 }

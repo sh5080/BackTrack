@@ -1,7 +1,7 @@
 <template>
   <div id="content" class="container">
     <form @submit.prevent="login" autocomplete="off">
-      <h2 class="title" style="position: relative; font-size: 2em">로그인</h2>
+      <h2 class="title" style="position: relative; font-size: 1.8em">로그인</h2>
       <div class="input">
         <input
           class="form-control"
@@ -74,14 +74,14 @@
         <span
           class="alt-reg"
           @click="openRegisterModal"
-          style="font-size: 1.2em; cursor: pointer"
+          style="font-size: 1.1em; cursor: pointer"
           >회원가입</span
         >
         <div class="alt-container">
           <div
             class="alt-id"
             @click="openFindUsernameModal"
-            style="font-size: 1.2em; cursor: pointer"
+            style="font-size: 1.1em; cursor: pointer"
           >
             아이디 찾기
           </div>
@@ -89,7 +89,7 @@
           <div
             class="alt-pw"
             @click="openFindPasswordModal"
-            style="font-size: 1.2em; cursor: pointer"
+            style="font-size: 1.1em; cursor: pointer"
           >
             비밀번호 재설정
           </div>
@@ -305,7 +305,7 @@ export default {
 .input {
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
+  /* margin-top: 40px; */
   margin-bottom: 30px;
   align-items: center;
   /* padding: 50px; */

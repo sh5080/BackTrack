@@ -3,90 +3,84 @@
     <form @submit.prevent>
       <h4
         class="title"
-        style="
-          font-size: 90px;
-          margin-bottom: 80px;
-          font-weight: 500;
-          padding: 50px 100px;
-        "
+        style="font-size: 30px; font-weight: 500; padding: 0px 120px"
       >
         백킹트랙 생성
       </h4>
       <v-row>
-        <v-col cols="4">
-          <v-col>
-            <div class="input-group2">
-              <v-col cols="6" class="key-area">
-                <div class="key-label-container">
-                  <label class="key-label">Key</label>
+        <v-col cols="1">
+          <div class="input-group2">
+            <v-col cols="6" class="key-area">
+              <div class="key-label-container">
+                <label class="key-label">Key</label>
+              </div>
+              <div class="key-selector">
+                <div class="key-grid">
+                  <button
+                    class="key-button"
+                    v-for="key in keyOptions"
+                    :key="key"
+                    @click="toggleButton('selectedKey', key)"
+                    :class="{ selected: selectedKey === key }"
+                  >
+                    {{ key }}
+                  </button>
+                  <button
+                    class="fs-button"
+                    v-for="modifier_fs in ['b', '#']"
+                    :key="modifier_fs"
+                    @click="toggleButton('selectedModifier_fs', modifier_fs)"
+                    :class="{ selected: selectedModifier_fs === modifier_fs }"
+                  >
+                    {{ modifier_fs }}
+                  </button>
                 </div>
-                <div class="key-selector">
-                  <div class="key-grid">
-                    <button
-                      class="key-button"
-                      v-for="key in keyOptions"
-                      :key="key"
-                      @click="toggleButton('selectedKey', key)"
-                      :class="{ selected: selectedKey === key }"
-                    >
-                      {{ key }}
-                    </button>
-                    <button
-                      class="fs-button"
-                      v-for="modifier_fs in ['b', '#']"
-                      :key="modifier_fs"
-                      @click="toggleButton('selectedModifier_fs', modifier_fs)"
-                      :class="{ selected: selectedModifier_fs === modifier_fs }"
-                    >
-                      {{ modifier_fs }}
-                    </button>
-                  </div>
-                </div>
-              </v-col>
+              </div>
+            </v-col>
 
-              <v-col cols="6" class="key-area">
-                <div class="ext-label-container">
-                  <label class="ext-label">Extends</label>
+            <v-col cols="6" class="key-area">
+              <div class="ext-label-container">
+                <label class="ext-label">Extends</label>
+              </div>
+              <div class="ext-selector">
+                <div class="ext-grid">
+                  <button
+                    class="ext-button"
+                    v-for="extend in extendOptions"
+                    :key="extend"
+                    @click="toggleButton('selectedExtend', extend)"
+                    :class="{ selected: selectedExtend === extend }"
+                  >
+                    {{ extend }}
+                  </button>
+                  <button
+                    class="fs-button"
+                    v-for="modifier_b5 in ['b5']"
+                    :key="modifier_b5"
+                    @click="toggleButton('selectedModifier_b5', modifier_b5)"
+                    :class="{
+                      selected: selectedModifier_b5 === modifier_b5,
+                    }"
+                  >
+                    {{ modifier_b5 }}
+                  </button>
+                  <button
+                    class="fs-button"
+                    v-for="modifier_67 in ['6', '7']"
+                    :key="modifier_67"
+                    @click="toggleButton('selectedModifier_67', modifier_67)"
+                    :class="{
+                      selected: selectedModifier_67 === modifier_67,
+                    }"
+                  >
+                    {{ modifier_67 }}
+                  </button>
                 </div>
-                <div class="ext-selector">
-                  <div class="ext-grid">
-                    <button
-                      class="ext-button"
-                      v-for="extend in extendOptions"
-                      :key="extend"
-                      @click="toggleButton('selectedExtend', extend)"
-                      :class="{ selected: selectedExtend === extend }"
-                    >
-                      {{ extend }}
-                    </button>
-                    <button
-                      class="fs-button"
-                      v-for="modifier_b5 in ['b5']"
-                      :key="modifier_b5"
-                      @click="toggleButton('selectedModifier_b5', modifier_b5)"
-                      :class="{
-                        selected: selectedModifier_b5 === modifier_b5,
-                      }"
-                    >
-                      {{ modifier_b5 }}
-                    </button>
-                    <button
-                      class="fs-button"
-                      v-for="modifier_67 in ['6', '7']"
-                      :key="modifier_67"
-                      @click="toggleButton('selectedModifier_67', modifier_67)"
-                      :class="{
-                        selected: selectedModifier_67 === modifier_67,
-                      }"
-                    >
-                      {{ modifier_67 }}
-                    </button>
-                  </div>
-                </div>
-              </v-col>
-            </div>
-          </v-col>
-          <div class="input-group2" style="margin-left: 40px">
+              </div>
+            </v-col>
+          </div>
+
+          <div class="input-group2">
             <v-col cols="6" class="key-area">
               <div class="ext-label-container">
                 <label class="ext-label">Tensions</label>
@@ -127,17 +121,17 @@
                     <label class="key-label">Chord</label>
                   </div>
                 </v-col>
-                <v-col>
-                  <div class="chord-list">
-                    <span
-                      class="chord"
-                      v-for="chord in resultChords"
-                      :key="chord"
-                    >
-                      {{ chord }}
-                    </span>
-                  </div>
-                </v-col>
+
+                <div class="chord-list">
+                  <span
+                    class="chord"
+                    v-for="chord in resultChords"
+                    :key="chord"
+                  >
+                    {{ chord }}
+                  </span>
+                </div>
+
                 <v-col cols="12" class="chord-button">
                   <button class="register-button" @click="registerBacktrack">
                     등록
@@ -153,7 +147,7 @@
           <div class="input-group1 bpm-container">
             <div class="bpm-input-container">
               <div class="bpm-label-container">
-                <label class="bpm-label">BPM:</label>
+                <label class="bpm-label">BPM</label>
               </div>
               <div class="bpm-input">
                 <input
@@ -194,7 +188,7 @@
           </div>
         </v-col>
 
-        <v-col cols="6">
+        <v-col cols="2">
           <div class="input-group3">
             <label class="key-label">Preview</label>
             <v-col cols="11">
@@ -964,8 +958,7 @@ export default {
 
 .backtrack-generator button {
   margin-top: 10px;
-
-  font-size: 4rem;
+  font-size: 1rem;
   cursor: pointer;
   border: none;
 }
@@ -992,8 +985,8 @@ export default {
 .input-group1 {
   padding: 20px 100px;
 
-  margin-left: 45px;
-  font-size: 80px;
+  /* margin-left: 45px; */
+  /* font-size: 80px; */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1001,29 +994,27 @@ export default {
 }
 
 .input-group2 {
-  padding: 20px;
+  padding: 0px 20px;
 
-  margin-top: 18px;
-  margin-left: 30px;
-
+  margin-left: 90px;
   font-size: 75px;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   align-items: flex-start;
-  width: 1650px;
+  width: 400px;
 }
 .input-group3 {
   background-color: #f0f0f0;
-  padding: 50px;
+  padding: 10px;
   border: 1px solid #ccc;
-  margin-top: 30px;
-  margin-left: -250px;
+  /* margin-top: 30px; */
+  /* margin-left: -250px; */
   font-size: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 122%;
+  width: 89%;
 }
 .input-group4 {
   background-color: #f0f0f0;
@@ -1037,7 +1028,7 @@ export default {
 }
 .preview-container,
 .fix-container {
-  font-size: 75px;
+  /* font-size: 75px; */
   display: flex;
   flex-direction: row;
 }
@@ -1071,10 +1062,10 @@ export default {
 .measure-input,
 .bpm-input {
   margin-top: 5px;
-  width: 500px;
+  width: 120px;
 }
 .bpm-container {
-  margin-top: 30px;
+  /* margin-top: 30px; */
 }
 .measure-container {
   margin-right: 23px;
@@ -1084,9 +1075,9 @@ export default {
 .key-label,
 .bpm-label {
   color: #f0f0f0;
-  font-size: 70px;
-  padding: 50px;
-  border-radius: 50px;
+  font-size: 1rem;
+  padding: 6px 20px;
+  border-radius: 15px;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
   background: linear-gradient(to top, #3a3f50, #3a4154);
 }
@@ -1109,23 +1100,27 @@ export default {
   color: #fff;
   border: 1px solid #ccc;
   padding: 5px 10px;
-  margin-right: 20px;
-  border-radius: 4px;
-  width: 200px;
-  height: 200px;
+  margin: 1px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  border-radius: 50px;
+  border-radius: 12px;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
   background: linear-gradient(to top, #2b3143, #2b3143);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .fs-button {
   color: #ffd60a;
+  font-size: 0.9rem !important;
+  padding: 0;
 }
 .key-area {
   background: linear-gradient(to top, #2a3243, #394358);
-  border-radius: 50px;
-  padding: 50px;
-  margin: 20px;
+  border-radius: 30px;
+  padding: 15px 20px;
+  margin: 5px;
 }
 .fs-button:hover,
 .reset-button:hover,
@@ -1137,20 +1132,23 @@ export default {
 .register-button {
   background-color: #ffd60a;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-  width: 200px;
-  height: 200px;
-  border-radius: 50px;
-  font-family: "Noto Sans", sans-serif;
-  white-space: nowrap;
+  width: 40px !important;
+  height: 40px;
+
+  border-radius: 12px;
+
+  margin: 1px;
+  /* white-space: nowrap; */
+  font-size: 0.9rem !important;
 }
 .next-button {
   background-color: #ffd60a;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-  margin-left: 30px;
-  border-radius: 50px;
-  font-family: "Noto Sans", sans-serif;
+  /* margin-left: 20px; */
+  border-radius: 12px;
+
   white-space: nowrap;
-  padding: 5px 40px;
+  padding: 5px 10px;
 }
 .generate-button:hover,
 .next-button:hover,
@@ -1160,20 +1158,21 @@ export default {
 
 .chord-button {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 5px;
 }
 .reset-button {
-  margin-right: 30px;
+  margin-right: 15px;
   font-size: 4rem;
-  width: 500px;
-  height: 200px;
+  width: 120px;
+  height: 50px;
   flex-wrap: wrap;
   cursor: pointer;
   color: #ffffff;
-  border-radius: 30px;
+  border-radius: 10px;
   background: linear-gradient(to top, #3a3f50, #3a4154);
   z-index: 1;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
 }
 .generate-button {
   position: relative;
@@ -1181,11 +1180,11 @@ export default {
   top: 0;
   left: 0;
   font-size: 4rem;
-  width: 1000px;
-  height: 200px;
+  width: 200px;
+  height: 50px;
   flex-wrap: wrap;
   color: #023047;
-  border-radius: 30px;
+  border-radius: 10px;
   background-color: #ffd60a;
   cursor: pointer;
   z-index: 1;
@@ -1204,8 +1203,8 @@ export default {
   /* z-index: 1; */
 }
 .dropdown-toggle1 {
-  width: 440px;
-  height: 141px;
+  width: 100px;
+  height: 40px;
   font-size: 80px;
   background: linear-gradient(to top, #3a3f50, #3a4154);
 }
@@ -1256,29 +1255,30 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   overflow: hidden;
-  margin-top: 140px;
-  height: 225px;
+  /* margin-top: 10px; */
+  height: 88px;
   color: #ffffff;
   font-family: "Noto Sans", sans-serif;
-  font-size: 5.3rem;
+  font-size: 1.5rem;
   justify-content: center;
+  align-items: center;
 }
 
-.chords {
-  padding: 0px 50px;
+.chord {
+  padding: 0px 2px;
 }
 .table-container {
   /* width: 100%; */
-  margin-bottom: 100px;
+  /* margin-bottom: 100px; */
   /* overflow: auto;  */
 }
 
 .chord-table {
-  width: 3500px;
-  margin-top: 100px;
+  width: 800px;
+  margin-top: 20px;
 }
 .table {
-  width: 750px;
+  width: 200px;
 }
 .chord-cell {
   width: 25%;
@@ -1292,21 +1292,22 @@ export default {
   position: absolute;
   display: flex;
   justify-content: center;
-  top: 0;
+  /* top: 0; */
   left: 0;
   right: 0;
-  bottom: 0;
-  height: 450px;
+  bottom: 35px;
+  height: 50px;
   padding: 20px;
 
-  transform: translateY(-50%);
+  /* transform: translateY(-50%); */
   /* font-family: "Font1"; */
 }
 .chord-content img {
   position: absolute;
-  top: 160px;
-  left: 0;
-  margin-left: 30px;
+  top: 60px;
+  /* bottom: 30px; */
+  left: 20px;
+  /* margin-left: 10px; */
 }
 
 @font-face {
@@ -1325,14 +1326,15 @@ export default {
 
 .key-font {
   font-family: "Font1";
-  font-size: 90px;
-  padding: 0 20px;
+  font-size: 1.3rem;
+  padding: 0 5px;
 }
 
 .extends-font {
   position: relative;
   font-family: "Font2";
-  font-size: 50px;
+  font-size: 0.9rem;
+  right: 5px;
   /* bottom: 100px; */
 }
 .blank-font {
