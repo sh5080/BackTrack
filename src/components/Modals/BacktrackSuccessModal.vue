@@ -9,7 +9,7 @@
         <div class="logged-title">
           {{ $store.state.loggedInNickname }} 님의 백킹트랙
         </div>
-        <div class="sheet-message" style="top: 180px">
+        <div class="sheet-message">
           백킹트랙이 생성되었습니다. <br />만들어진 백킹트랙을 재생 및 저장할 수
           있습니다.
         </div>
@@ -22,167 +22,157 @@
         </div>
       </div>
 
-      <div class="sheet-music">
-        <div v-if="previousChordArray">
-          <div class="previous-measure">
-            <span
-              v-for="(chordSegment, segmentIndex) in previousChordArray
-                .join(' ')
-                .split(' ')"
-              :key="segmentIndex"
-              :class="getChordInPreviousMeasure(chordSegment)"
-            >
-              {{ chordSegment }}
-            </span>
-          </div>
-        </div>
+      <v-row class="body-container">
+        <v-col cols="6" class="option-container">
+          <v-col>
+            <v-card class="metronome-container">
+              <v-toolbar>
+                <span class="metronome-title">BPM 설정</span>
+              </v-toolbar>
 
-        <div class="measure">
-          <span
-            v-for="(chordSegment, segmentIndex) in currentChordArray
-              .join(' ')
-              .split(' ')"
-            :key="segmentIndex"
-            :class="getChordInMeasure(chordSegment)"
-          >
-            {{ chordSegment }}
-          </span>
-        </div>
-
-        <div v-if="nextChordArray">
-          <div class="next-measure">
-            <span
-              v-for="(chordSegment, segmentIndex) in nextChordArray
-                .join(' ')
-                .split(' ')"
-              :key="segmentIndex"
-              :class="getChordInNextMeasure(chordSegment)"
-            >
-              {{ chordSegment }}
-            </span>
-          </div>
-        </div>
-      </div>
-      <v-row class="option-container">
-        <v-col cols="6">
-          <v-card class="metronome-container" max-width="1500">
-            <v-toolbar
-              @click="toggleCard"
-              style="height: 150px; width: 1500px; cursor: pointer"
-            >
-              <v-btn
-                style="
-                  width: 1420px;
-                  height: 150px;
-                  margin-top: 80px;
-                  right: 10px;
-                "
-              >
-                <span class="metronome-title">메트로놈</span>
-              </v-btn>
-            </v-toolbar>
-
-            <v-card-text>
-              <v-row
-                :style="{ height: cardOpen ? '300px' : '0px' }"
-                class="mb-4"
-                justify="space-between"
-              >
-                <v-col class="text-left" v-show="cardOpen">
-                  <span class="bpm font-weight-light" v-text="bpm"></span>
-                  <span class="bpm font-weight-light me-1">BPM</span>
-                  <v-fade-transition>
-                    <v-avatar
-                      v-if="isPlaying"
+              <v-card-text>
+                <v-row class="mb-4" justify="space-between">
+                  <v-col class="text-left">
+                    <span class="bpm font-weight-light" v-text="bpm"></span>
+                    <span class="bpm font-weight-light me-1">BPM</span>
+                    <v-fade-transition>
+                      <v-avatar
+                        v-if="isPlaying"
+                        :color="color"
+                        :style="{
+                          animationDuration: animationDuration,
+                        }"
+                        class="mb-1 v-avatar--metronome"
+                        size="12"
+                      ></v-avatar>
+                    </v-fade-transition>
+                  </v-col>
+                  <v-col v-show="cardOpen" class="text-right">
+                    <v-btn
                       :color="color"
-                      :style="{
-                        animationDuration: animationDuration,
-                      }"
-                      class="mb-1 v-avatar--metronome"
-                      size="12"
-                    ></v-avatar>
-                  </v-fade-transition>
-                </v-col>
-                <v-col v-show="cardOpen" class="text-right">
-                  <v-btn
-                    :color="color"
-                    theme="dark"
-                    icon
-                    elevation="0"
-                    size="x-large"
-                  >
-                    <v-icon
-                      id="metronomeButton"
+                      theme="dark"
+                      icon
+                      elevation="0"
                       size="x-large"
-                      @click="toggle"
-                      :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
-                    ></v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
+                    >
+                      <v-icon
+                        id="metronomeButton"
+                        size="x-large"
+                        @click="toggle"
+                        :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+                      ></v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
 
-              <v-slider
-                v-show="cardOpen"
-                v-model="bpm"
-                :color="color"
-                track-color="grey"
-                min="40"
-                max="218"
-                :step="1"
-                @click="updateBpm"
-              >
-                <template v-slot:prepend>
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    icon="mdi-minus"
-                    :color="color"
-                    @click="decrement"
-                  ></v-btn>
-                </template>
+                <v-slider
+                  v-model="bpm"
+                  :color="color"
+                  track-color="grey"
+                  min="40"
+                  max="218"
+                  :step="1"
+                  @click="updateBpm"
+                >
+                  <template v-slot:prepend>
+                    <v-btn
+                      size="small"
+                      variant="text"
+                      icon="mdi-minus"
+                      :color="color"
+                      @click="decrement"
+                    ></v-btn>
+                  </template>
 
-                <template v-slot:append>
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    icon="mdi-plus"
-                    :color="color"
-                    @click="increment"
-                  ></v-btn>
-                </template>
-              </v-slider>
-            </v-card-text>
-          </v-card>
+                  <template v-slot:append>
+                    <v-btn
+                      size="small"
+                      variant="text"
+                      icon="mdi-plus"
+                      :color="color"
+                      @click="increment"
+                    ></v-btn>
+                  </template>
+                </v-slider>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <v-col>
+            <v-card>
+              <div class="play-container d-flex justify-between align-center">
+                <v-switch
+                  v-model="isDrumOn"
+                  label="drum"
+                  color="primary"
+                  value="primary"
+                  hide-details
+                  @click="toggleDrum"
+                  class="drum-switch"
+                ></v-switch>
+
+                <v-btn
+                  id="playButton"
+                  @click="playAudio"
+                  class="me-5 text-none"
+                  color=""
+                  variant="text"
+                  size="x-large"
+                >
+                  <v-icon> mdi-play </v-icon>
+                </v-btn>
+                <v-btn id="stopButton" class="text-none" variant="text">
+                  <v-icon> mdi-stop </v-icon>
+                </v-btn>
+              </div>
+            </v-card>
+          </v-col>
         </v-col>
-
         <v-col cols="6">
-          <v-card>
-            <div class="play-container d-flex justify-between align-center">
-              <v-switch
-                v-model="isDrumOn"
-                label="drum"
-                color="primary"
-                value="primary"
-                hide-details
-                @click="toggleDrum"
-                class="drum-switch"
-              ></v-switch>
-
-              <v-btn
-                id="playButton"
-                @click="playAudio"
-                class="me-5 text-none"
-                color=""
-                variant="text"
-                size="x-large"
+          <div class="sheet-music">
+            <div class="previous-measure" v-if="previousChordArray">
+              <span
+                v-for="(chordSegment, segmentIndex) in previousChordArray
+                  .join(' ')
+                  .split(' ')"
+                :key="segmentIndex"
+                :class="getChordInPreviousMeasure(chordSegment)"
               >
-                <v-icon> mdi-play </v-icon>
-              </v-btn>
-              <v-btn id="stopButton" class="text-none" variant="text">
-                <v-icon> mdi-stop </v-icon>
-              </v-btn>
+                {{ chordSegment }}
+              </span>
             </div>
-          </v-card>
+
+            <div
+              class="measure"
+              :style="
+                previousChordArray && !nextChordArray
+                  ? 'margin-bottom: 60px;'
+                  : ''
+              "
+            >
+              <span
+                v-for="(chordSegment, segmentIndex) in currentChordArray
+                  .join(' ')
+                  .split(' ')"
+                :key="segmentIndex"
+                :class="getChordInMeasure(chordSegment)"
+              >
+                {{ chordSegment }}
+              </span>
+            </div>
+
+            <div class="next-measure" v-if="nextChordArray">
+              <span
+                v-for="(chordSegment, segmentIndex) in nextChordArray
+                  .join(' ')
+                  .split(' ')"
+                :key="segmentIndex"
+                :class="getChordInNextMeasure(chordSegment)"
+              >
+                {{ chordSegment }}
+              </span>
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -216,7 +206,7 @@
                     <v-col cols="12">
                       <v-text-field
                         v-model="title"
-                        style="font-size: 130px; height: 300px"
+                        style="font-size: 1rem; height: 300px"
                         label="제목*"
                         hint="30자 이내로 입력 가능합니다."
                         persistent-hint
@@ -889,88 +879,91 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid lightgray;
-  padding: 4rem 4rem;
+  padding: 1rem;
   border-radius: 5px;
   background: #fefefe;
-  width: 3000px;
-  height: 2200px;
+  width: 90%;
+  height: 600px;
   text-align: center;
+}
+.body-container {
+  margin-top: 10px;
 }
 
 .previous-measure,
 .measure,
 .next-measure {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  /* position: absolute; */
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
 }
 
 .previous-measure {
   /* top: 320px; */
-  top: -40px;
+  /* top: -40px; */
   color: rgb(165, 165, 165);
 }
 
 .measure {
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-top: 30px;
+  /* top: 50%;
+  transform: translate(-50%, -50%); */
 }
 
 .next-measure {
   /* bottom: 820px; */
-  bottom: 10px;
+  margin-top: 40px;
   color: rgb(165, 165, 165);
 }
 
 .sheet-music {
-  width: 96%;
-  height: 1000px;
+  /* width: 93%; */
+  height: 300px;
   background-color: #f0f0f0;
-  margin-top: 50px;
+  /* margin-top: 50px; */
   padding: 20px;
-  font-size: 200px;
+  /* font-size: 1rem; */
   text-align: center;
   justify-content: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 300px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
+
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  justify-content: center;
 }
 #saveButton1,
 #saveButton,
 #closeButton,
 #closeButton1 {
   position: absolute;
-  right: 60px;
-  bottom: 640px;
-  width: 450px;
-  height: 150px;
-  font-size: 4em;
+  right: 30px;
+  bottom: 740px;
+  /* width: 450px; */
+  /* height: 150px; */
+  font-size: 1em;
 }
 #playButton,
 #stopButton {
   width: 100px;
   height: 100px;
-  font-size: 6em;
+  font-size: 1.2em;
 
   background-color: none;
 }
 #playButton {
-  right: 200px;
-}
-#stopButton {
   right: 100px;
 }
+#stopButton {
+  /* right: 100px; */
+}
 #saveButton {
-  right: 600px;
+  right: 120px;
 }
 
 #saveButton,
 #closeButton {
-  bottom: 200px;
+  bottom: 25px;
 }
 #mypageButton,
 #mainButton {
@@ -978,7 +971,7 @@ export default {
   height: 150px;
   margin-top: 400px;
   margin-right: 100px;
-  font-size: 4em;
+  font-size: 1.2em;
 }
 #saveButton1 {
   bottom: 100px;
@@ -995,27 +988,17 @@ export default {
 .button-container {
   margin-bottom: 100px;
 }
-
-.abc-container {
-  width: 100%;
-  height: 100%;
-  font-size: 80px;
-  /* transform: scale(3); */
-}
 .logged-title {
-  position: fixed;
-  font-size: 5em;
-  top: 70px;
+  /* position: fixed; */
+  font-size: 1.4em;
+  /* top: 10px;
   left: 0;
-  right: 0;
+  right: 0; */
   /* bottom: 0; */
 }
 .sheet-message {
-  position: absolute;
-  font-size: 3em;
-  top: 70px;
-  left: 0;
-  right: 0;
+  position: relative;
+  font-size: 0.8em;
 }
 @font-face {
   font-family: "Font1";
@@ -1033,41 +1016,41 @@ export default {
 
 .key-font {
   font-family: "Font1";
-  font-size: 300px;
-  padding: 0px 100px;
+  font-size: 4rem;
+  padding: 0px 20px;
 }
 .small-key-font {
   font-family: "Font1";
-  font-size: 150px;
-  padding: 0px 100px;
+  font-size: 1.5rem;
+  padding: 0px 20px;
 }
 
 .small-extends-font {
   position: relative;
   font-family: "Font2";
-  font-size: 70px;
-  bottom: 100px;
-  right: 100px;
+  font-size: 1rem;
+  bottom: 10px;
+  right: 18px;
 }
 
 .extends-font {
   position: relative;
   font-family: "Font2";
-  font-size: 100px;
-  bottom: 200px;
-  right: 100px;
+  font-size: 1.8rem;
+  bottom: 36px;
+  right: 20px;
 }
 .blank-font {
   font-family: "Font1";
-  font-size: 250px;
-  padding: 0px 100px;
-  margin-bottom: 50px;
+  font-size: 2.5rem;
+  padding: 0px 23px;
+  /* margin-bottom: 50px; */
 }
 .small-blank-font {
   font-family: "Font1";
-  font-size: 130px;
-  padding: 0px 100px;
-  margin-bottom: 30px;
+  font-size: 1.5rem;
+  padding: 0px 20px;
+  /* margin-bottom: 30px; */
 }
 
 @keyframes metronome-example {
@@ -1092,37 +1075,35 @@ export default {
   /* top: 1340px; */
 }
 :deep(.v-card .v-card-text) {
-  line-height: 300px;
-  margin-top: -40px;
-  padding: 50px;
+  /* padding: 50px; */
 }
 :deep(.v-card .v-card-title) {
   line-height: none !important;
 }
 :deep(.v-toolbar-title__placeholder) {
   height: 100px;
-  font-size: 200px;
+  font-size: 2rem;
   align-items: center;
 }
 :deep(.v-btn--icon.v-btn--density-default) {
   width: 100px;
   height: 100px;
-  font-size: 50px;
+  font-size: 0.8rem;
 }
 
 :deep(.v-toolbar__content) {
-  position: fixed;
-  max-width: 1500px;
+  /* position: fixed;
+  max-width: 1500px; */
 }
 
 .bpm {
-  font-size: 200px;
+  font-size: 2rem;
   margin-left: 30px;
 }
 .metronome-title {
   position: relative;
-  font-size: 70px;
-  padding: 50px 50px;
+  font-size: 0.9rem;
+  padding: 0px 50px;
   text-align: left;
 
   /* height: 200px; */
@@ -1142,7 +1123,7 @@ export default {
   padding: 100px 100px;
 }
 .success-title {
-  font-size: 6rem !important;
+  font-size: 2rem !important;
   font-weight: 400;
   line-height: 5rem;
   letter-spacing: normal !important;
@@ -1150,7 +1131,7 @@ export default {
   text-transform: none !important;
 }
 .success-message {
-  font-size: 4rem !important;
+  font-size: 2rem !important;
   font-weight: 400;
   line-height: 3rem;
   letter-spacing: normal !important;
@@ -1158,7 +1139,7 @@ export default {
   text-transform: none !important;
 }
 :deep(.v-text-field input.v-field__input) {
-  font-size: 70px;
+  font-size: 0.7rem;
 }
 :deep(
     .v-input--density-default
@@ -1166,15 +1147,15 @@ export default {
       .v-label.v-field-label--floating,
     .v-label.v-field-label
   ) {
-  font-size: 40px;
+  font-size: 0.4rem;
 }
 :deep(.v-messages) {
-  font-size: 60px;
+  font-size: 0.6rem;
   top: 40px;
 }
 
 :deep(.v-label) {
-  font-size: 70px;
+  font-size: 0.7rem;
 }
 :deep(.v-input__details) {
   overflow: visible;
@@ -1185,26 +1166,27 @@ export default {
 .option-container {
   display: flex;
   position: relative;
-  top: 1340px;
+  flex-direction: column;
+  /* top: 350px; */
 }
 .play-container {
-  padding: 50px;
+  /* padding: 50px; */
 }
 :deep(.v-switch__track) {
-  width: 170px;
-  height: 60px;
+  /* width: 170px;
+  height: 60px; */
 }
 :deep(.v-switch__thumb) {
-  width: 60px;
-  height: 60px;
+  /* width: 60px;
+  height: 60px; */
 }
 :deep(.v-selection-control--density-default) {
-  --v-selection-control-size: none;
+  /* --v-selection-control-size: none; */
 }
 .v-switch .drum-switch::before {
-  left: 100px;
+  /* left: 100px; */
 }
 .v-switch .drum-switch::after {
-  right: 100px;
+  /* right: 100px; */
 }
 </style>
