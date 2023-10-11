@@ -15,18 +15,17 @@ export default async function expressLoader(
     const io = socketIoLoader(app);
     const corsOptions = {
       origin: [
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "http://192.168.0.75:8080",
+        process.env.FRONTEND_URL_1!,
+        process.env.FRONTEND_URL_2!,
+        process.env.FRONTEND_URL_3!,
       ],
       credentials: true,
     };
+
     app.use(responseTime);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    app.use(express.static(path.join(__dirname, "../../dist")));
 
-    console.log(path.join(__dirname, "../../dist"));
     app.use(cors(corsOptions));
 
     app.locals.redisClient = redisClient;
