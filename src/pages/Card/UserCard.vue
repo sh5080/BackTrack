@@ -1,9 +1,11 @@
 <template>
   <v-row>
-    <v-col cols="6">
-      <card v-if="fetchedUserInfo" class="card-user">
+    <v-col cols="5">
+      <v-card v-if="fetchedUserInfo" class="card-user">
         <div class="author">
           <h4 class="title">기본 회원정보</h4>
+          <!-- TODO 왼쪽페이지 시작지점 -->
+
           <div class="user-info">
             <div class="info-item">
               <span class="info-label">아이디</span>
@@ -28,14 +30,14 @@
 
             <div
               class="change-password"
-              :style="{ height: passwordExpanded ? '800px' : '0px' }"
+              :style="{ height: passwordExpanded ? '250px' : '0px' }"
             >
               <p
                 style="
-                  font-size: 3.5em;
-                  padding: 0.5em;
+                  font-size: 0.9em;
                   height: 1em;
-                  margin-top: 50px;
+                  margin-top: 5px;
+                  margin-bottom: 25px;
                   margin-left: 0px;
                 "
                 v-show="passwordExpanded"
@@ -87,11 +89,10 @@
                   placeholder="새 비밀번호 확인"
                 />
                 <button
-                  class="generate-button"
+                  class="generate-inner-button"
                   type="button"
                   @click="showFindPassword"
                   v-show="passwordExpanded"
-                  style="margin-left: 530px"
                 >
                   비밀번호 변경
                 </button>
@@ -292,7 +293,7 @@
         <v-dialog v-model="$store.state.showFindPasswordModal">
           <FindPassword />
         </v-dialog>
-      </card>
+      </v-card>
     </v-col>
     <v-col cols="5">
       <card v-if="fetchedUserInfo" class="card-backtrack">
@@ -300,6 +301,8 @@
           <h4 class="title">
             {{ fetchedUserInfo.nickname }} 님의 백킹트랙 관리
           </h4>
+
+          <!--TODO 오른쪽페이지 시작지점 -->
           <div class="user-info">
             <div class="info-item">
               <v-data-table
@@ -310,10 +313,10 @@
                 hide-default-footer
                 class="elevation-1"
                 style="
-                  font-size: 50px;
-                  margin-top: 100px;
-                  max-height: 1775px;
-                  height: 1775px;
+                  font-size: 1rem;
+                  margin-top: 50px;
+                  max-height: 1000px;
+                  height: 1000px;
                 "
               >
                 <template v-slot:item.id="{ item, index }">
@@ -363,7 +366,12 @@ import LikedPostModal from "../../components/Modals/LikedPostModal.vue";
 import MyPostModal from "../../components/Modals/MyPostModal.vue";
 import * as Toast from "../../plugins/toast";
 export default {
-  props: ["userInfo"],
+  props: {
+    fetchedUserInfo: {
+      type: Object,
+      required: true,
+    },
+  },
   components: {
     Card,
     FindPassword,
@@ -371,6 +379,7 @@ export default {
     LikedPostModal,
     MyPostModal,
   },
+
   data() {
     return {
       fetchedUserInfo: null,
@@ -644,17 +653,17 @@ export default {
 </script>
 <style scoped>
 .card-backtrack {
-  width: 2750px;
+  width: 2000px;
   flex-direction: row;
-  height: 3100px;
+  height: 2500px;
   overflow: hidden;
-  min-width: 2750px;
+  min-width: 2000px;
   min-height: 2500px;
 }
 .card-user {
   /* overflow: hidden; */
-  width: 2750px;
-  height: 3100px;
+  width: 100%;
+  height: 2500px;
 }
 .error-shake-animation {
   animation: shake 0.5s;
@@ -681,27 +690,26 @@ export default {
 }
 
 .author {
-  margin-top: 20px;
-  padding: 70px 100px;
-  min-height: 2350px;
+  /* margin-top: 20px; */
+  padding: 40px 100px;
+  /* min-height: 2350px; */
 }
 
 .title {
-  font-size: 90px;
-  margin-bottom: 80px;
+  font-size: 2rem;
+  margin-bottom: 30px;
   font-weight: 500;
 }
 
 .user-info {
-  /* border-top: 1px solid #ccc; */
-  margin-top: 150px;
-  margin-bottom: 100px;
+  border-top: 1px solid #ccc;
+  /* margin-top: 150px; */
+  /* margin-bottom: 100px; */
 }
 
 .info-item {
   position: relative;
-  margin-top: 100px;
-  margin-bottom: 10px;
+  padding: 25px 0;
   border-top: 1px solid #ccc;
 }
 .info-delete {
@@ -716,38 +724,56 @@ export default {
 
 .info-label {
   display: inline-block;
-  min-width: 600px;
-  font-size: 75px;
-  font-weight: 400;
-  margin-top: 70px;
+  min-width: 150px;
+  font-size: 1rem;
+  /* font-weight: 400; */
+  /* margin-top: 70px; */
 }
 
 .info-value {
   display: inline-block;
-  font-size: 70px;
-  width: 1250px;
+  font-size: 1rem;
+  /* width: 1250px; */
   margin-left: 10px;
 }
 .generate-button {
   border: 1px solid #ccc;
-  padding: 20px 0px;
-  width: 600px;
-  display: inline-block;
 
-  font-size: 70px;
+  height: 40px;
+  width: 120px;
+  display: inline-block;
+  position: absolute;
+  top: 25%;
+  right: 0;
+  font-size: 1rem;
+}
+.generate-inner-button {
+  border: 1px solid #ccc;
+  height: 40px;
+  width: 120px;
+  display: inline-block;
+  position: absolute;
+  top: 15%;
+  right: 12%;
+  font-size: 1rem;
 }
 
 .change-password-input {
-  font-size: 70px;
+  font-size: 0.7rem;
   border: 1px solid #ccc;
-  margin-top: 40px;
-  margin-left: 200px;
-  padding: 20px 200px;
+  margin-top: 15px;
+  height: 40px;
+  width: 250px;
+
   text-align: center;
   position: relative;
+  display: flex;
 }
 .change-pw {
-  margin-top: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10%;
 }
 .change-input {
   font-size: 70px;
@@ -772,11 +798,11 @@ export default {
 :deep(.v-data-table__td .v-data-table-column--align-start) {
   max-width: 10px;
 }
-:deep(.v-data-table__tr) {
+/* :deep(.v-data-table__tr) {
   height: 138px;
-}
+} */
 :deep(.v-pagination .v-btn) {
-  font-size: 50px;
+  font-size: 1rem;
   width: 100px;
   height: 100px;
 }

@@ -6,10 +6,10 @@
           <h4
             class="title"
             style="
-              font-size: 90px;
+              font-size: 1rem;
               margin-bottom: 80px;
               font-weight: 500;
-              padding: 50px 100px;
+              /* padding: 50px 100px; */
             "
           >
             게시판 (백킹트랙 공유)
@@ -30,7 +30,7 @@
           class="d-flex justify-center"
           @click="openPost(post.id, post.backtrackId, post.author)"
         >
-          <v-card style="width: 1000px" class="card-hover">
+          <v-card style="width: 500px" class="card-hover">
             <img
               v-if="post.image"
               :src="post.image"
@@ -412,7 +412,7 @@ export default {
 
 <style scoped>
 :deep(.v-card-text) {
-  font-size: 3.5rem;
+  font-size: 1.5rem;
 }
 
 .card-btn {
@@ -422,7 +422,7 @@ export default {
   padding: 10px 60px;
 }
 .card-img {
-  height: 800px;
+  height: 200px;
 }
 .likes-count {
   font-size: 50px;
